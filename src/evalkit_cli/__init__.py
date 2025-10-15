@@ -612,6 +612,136 @@ def download_template_from_github(
     return zip_path, metadata
 
 
+def copy_local_template(
+    project_path: Path,
+    ai_assistant: str,
+    script_type: str,
+    is_current_dir: bool = False,
+    *,
+    verbose: bool = True,
+    tracker: StepTracker | None = None,
+    debug: bool = False,
+) -> Path:
+    """Build and copy templates from local directories using the same process as releases.
+
+    This function:
+    1. Runs the local development build script to process templates
+    2. Copies the processed templates to the target project directory
+    3. Uses the exact same transformation logic as GitHub releases
+
+    Args:
+        project_path: Target directory for the project
+        ai_assistant: AI assistant type (kilocode, claude, q)
+        script_type: Script type (sh, ps)
+        is_current_dir: Whether initializing in current directory
+        verbose: Whether to show verbose output
+        tracker: Optional progress tracker
+        debug: Whether to show debug information
+
+    Returns:
+        Path to the created project directory
+    """
+    # Get repo root directory (where this CLI script is located)
+    repo_root = Path(__file__).parent.parent.parent
+    genlocal_dir = repo_root / ".genlocal"
+
+    if tracker:
+        tracker.start("local-build", f"building {ai_assistant} ({script_type}) templates")
+    elif verbose:
+        console.print(f"[cyan]Building local templates for {ai_assistant} ({script_type})...[/cyan]")
+
+    # Run the local development build script
+    build_script = repo_root / ".github" / "workflows" / "scripts" / "build-local-dev.sh"
+
+    try:
+        # Execute the build script with the specified agent and script type
+        result = subprocess.run(
+            [str(build_script), ai_assistant, script_type],
+            check=True,
+            cwd=repo_root,
+            capture_output=not debug,  # Show output in debug mode
+            text=True,
+        )
+
+        if debug and result.stdout:
+            console.print(f"[dim]Build output: {result.stdout}[/dim]")
+
+    except subprocess.CalledProcessError as e:
+        error_msg = f"Failed to build local development package: {e}"
+        if debug and e.stderr:
+            error_msg += f"\nBuild error: {e.stderr}"
+        if tracker:
+            tracker.error("local-build", error_msg)
+        raise RuntimeError(error_msg)
+
+    if tracker:
+        tracker.complete("local-build", "templates processed")
+        tracker.add("local-copy", "Copy processed templates")
+        tracker.start("local-copy")
+    elif verbose:
+        console.print("[cyan]Copying processed templates...[/cyan]")
+
+    # Find the built package directory
+    package_dir = genlocal_dir / f"evalkit-{ai_assistant}-package-{script_type}"
+
+    if not package_dir.exists():
+        error_msg = f"Local package not found: {package_dir}"
+        if tracker:
+            tracker.error("local-copy", error_msg)
+        raise RuntimeError(error_msg)
+
+    try:
+        # Copy the built package to the target location
+        if is_current_dir:
+            # Merge into current directory (same logic as GitHub download)
+            for item in package_dir.iterdir():
+                dest_path = project_path / item.name
+                if item.is_dir():
+                    if dest_path.exists():
+                        # Merge directories recursively
+                        if verbose and not tracker:
+                            console.print(f"[yellow]Merging directory:[/yellow] {item.name}")
+                        for sub_item in item.rglob("*"):
+                            if sub_item.is_file():
+                                rel_path = sub_item.relative_to(item)
+                                dest_file = dest_path / rel_path
+                                dest_file.parent.mkdir(parents=True, exist_ok=True)
+                                shutil.copy2(sub_item, dest_file)
+                    else:
+                        shutil.copytree(item, dest_path)
+                else:
+                    if dest_path.exists() and verbose and not tracker:
+                        console.print(f"[yellow]Overwriting file:[/yellow] {item.name}")
+                    shutil.copy2(item, dest_path)
+            if verbose and not tracker:
+                console.print("[cyan]Local templates merged into current directory[/cyan]")
+        else:
+            # Copy entire package to new directory
+            if not project_path.exists():
+                project_path.mkdir(parents=True)
+
+            for item in package_dir.iterdir():
+                dest_path = project_path / item.name
+                if item.is_dir():
+                    shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(item, dest_path)
+
+            if verbose and not tracker:
+                console.print(f"[cyan]Local templates copied to {project_path}[/cyan]")
+
+    except Exception as e:
+        error_msg = f"Failed to copy local templates: {e}"
+        if tracker:
+            tracker.error("local-copy", error_msg)
+        raise RuntimeError(error_msg)
+
+    if tracker:
+        tracker.complete("local-copy", "templates ready")
+
+    return project_path
+
+
 def download_and_extract_template(
     project_path: Path,
     ai_assistant: str,
@@ -623,10 +753,26 @@ def download_and_extract_template(
     client: httpx.Client = None,
     debug: bool = False,
     github_token: str = None,
+    local_dev: bool = False,
 ) -> Path:
     """Download the latest release and extract it to create a new project.
+
+    If local_dev=True, uses local templates instead of downloading from GitHub.
     Returns project_path. Uses tracker if provided (with keys: fetch, download, extract, cleanup)
     """
+    # Route to local development function if requested
+    if local_dev:
+        return copy_local_template(
+            project_path,
+            ai_assistant,
+            script_type,
+            is_current_dir,
+            verbose=verbose,
+            tracker=tracker,
+            debug=debug,
+        )
+
+    # Continue with existing GitHub download logic
     current_dir = Path.cwd()
 
     if tracker:
@@ -854,6 +1000,9 @@ def init(
         "--github-token",
         help="GitHub token to use for API requests (or set GH_TOKEN or GITHUB_TOKEN environment variable)",
     ),
+    local_dev: bool = typer.Option(
+        False, "--local-dev", help="Use local templates instead of downloading from GitHub (for development)"
+    ),
 ):
     """
     Initialize a new EvalKit project from the latest template.
@@ -861,7 +1010,7 @@ def init(
     This command will:
     1. Check that required tools are installed (git is optional)
     2. Let you choose your AI assistant
-    3. Download the appropriate template from GitHub
+    3. Download the appropriate template from GitHub (or use local templates with --local-dev)
     4. Extract the template to a new project directory or current directory
     5. Initialize a fresh git repository (if not --no-git and no existing repo)
     6. Optionally set up AI assistant commands
@@ -877,7 +1026,11 @@ def init(
         evalkit init --here --ai q
         evalkit init --here --ai kilocode
         evalkit init --here
-        evalkit init --here --force  # Skip confirmation when current directory not empty
+        evalkit init --here --force        # Skip confirmation when current directory not empty
+
+    Development Examples:
+        evalkit init demo-project --local-dev --ai kilocode    # Use local templates for development
+        evalkit init --here --local-dev --ai claude           # Use local templates in current directory
     """
 
     show_banner()
@@ -1007,18 +1160,30 @@ def init(
     tracker.complete("ai-select", f"{selected_ai}")
     tracker.add("script-select", "Select script type")
     tracker.complete("script-select", selected_script)
-    for key, label in [
-        ("fetch", "Fetch latest release"),
-        ("download", "Download template"),
-        ("extract", "Extract template"),
-        ("zip-list", "Archive contents"),
-        ("extracted-summary", "Extraction summary"),
-        ("chmod", "Ensure scripts executable"),
-        ("cleanup", "Cleanup"),
-        ("git", "Initialize git repository"),
-        ("final", "Finalize"),
-    ]:
-        tracker.add(key, label)
+
+    # Add tracker steps based on whether we're using local development or GitHub download
+    if local_dev:
+        for key, label in [
+            ("local-build", "Build local templates"),
+            ("local-copy", "Copy processed templates"),
+            ("chmod", "Ensure scripts executable"),
+            ("git", "Initialize git repository"),
+            ("final", "Finalize"),
+        ]:
+            tracker.add(key, label)
+    else:
+        for key, label in [
+            ("fetch", "Fetch latest release"),
+            ("download", "Download template"),
+            ("extract", "Extract template"),
+            ("zip-list", "Archive contents"),
+            ("extracted-summary", "Extraction summary"),
+            ("chmod", "Ensure scripts executable"),
+            ("cleanup", "Cleanup"),
+            ("git", "Initialize git repository"),
+            ("final", "Finalize"),
+        ]:
+            tracker.add(key, label)
 
     # Track git error message outside Live context so it persists
     git_error_message = None
@@ -1040,6 +1205,7 @@ def init(
                 client=local_client,
                 debug=debug,
                 github_token=github_token,
+                local_dev=local_dev,
             )
 
             ensure_executable_scripts(project_path, tracker=tracker)

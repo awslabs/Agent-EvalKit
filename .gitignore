@@ -44,3 +44,4 @@ env/
 *.zip
 sdd-*/
 transformation-plan.md
+.genlocal/

@@ -96,28 +96,47 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
 
 3. **Testing template/script changes workflow:**
    ```bash
-   # 1. Create demo project from current branch (main or your feature branch)
-   evalkit init demo-evaluation --ai kilocode --ignore-agent-tools
+   # 1. Use --local-dev flag to test your current branch changes immediately
+   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools
    cd demo-evaluation
    
-   # 2. Edit files directly in demo project for testing:
-   # - Commands: .claude/commands/ or .kilocode/workflows/ or .amazonq/prompts/
-   # - Templates: .evalkit/templates/
-   # - Scripts: .evalkit/scripts/
-   # Test and iterate until changes work well
+   # 2. Test your changes - templates and scripts reflect your current branch
+   # - Commands are in: .claude/commands/ or .kilocode/workflows/ or .amazonq/prompts/
+   # - Templates are in: .evalkit/templates/
+   # - Scripts are in: .evalkit/scripts/
    
-   # 3. Copy working changes back to your feature branch
+   # 3. Make changes to templates/scripts in your main repo, then re-init to test
    cd ../  # Back to main repo
-   cp -r demo-evaluation/.evalkit/templates/* templates/
-   cp -r demo-evaluation/.evalkit/scripts/* scripts/
-   cp -r demo-evaluation/.claude/commands/* templates/commands/  # if using Claude
-   cp -r demo-evaluation/.kilocode/workflows/* templates/commands/  # if using Kilo Code
-   cp -r demo-evaluation/.amazonq/prompts/* templates/commands/  # if using Amazon Q
+   # Edit files in templates/ or scripts/ directories
+   # Re-initialize to test changes:
+   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools --here --force
    
-   # 4. Commit changes to your feature branch, then PR to main
+   # 4. Commit changes when satisfied
    git add templates/ scripts/
    git commit -m "Update templates and scripts"
    ```
+
+   **Alternative: Test build script directly**
+   ```bash
+   # You can also test the build process directly without creating a project
+   .github/workflows/scripts/build-local-dev.sh kilocode sh
+   # This creates processed templates in .genlocal/ directory for inspection
+   ```
+
+   **Key Benefits of Local Development Mode:**
+   - ✅ **Immediate reflection**: Changes to `templates/` and `scripts/` are used instantly
+   - ✅ **Proper processing**: Templates are processed with the same logic as GitHub releases
+   - ✅ **Branch-aware**: Uses whatever templates/scripts are in your current working branch
+   - ✅ **Faster iteration**: No need to manually copy files back and forth
+   - ✅ **Consistent**: Identical transformation logic as production releases
+
+   **How Local Development Mode Works:**
+   The `--local-dev` flag triggers a local build process that:
+   1. Runs [`.github/workflows/scripts/build-local-dev.sh`](../.github/workflows/scripts/build-local-dev.sh)
+   2. Uses the same template processing logic as GitHub releases
+   3. Processes templates (replaces `{SCRIPT}`, `{ARGS}`, etc. placeholders)
+   4. Creates proper directory structure for your AI assistant
+   5. Copies processed templates to your project directory
 
 ### Committing Changes
 
