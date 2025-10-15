@@ -109,7 +109,7 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
    cd ../  # Back to main repo
    # Edit files in templates/ or scripts/ directories
    # Re-initialize to test changes:
-   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools --here --force
+   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools
    
    # 4. Commit changes when satisfied
    git add templates/ scripts/
