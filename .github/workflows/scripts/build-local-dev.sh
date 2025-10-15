@@ -57,8 +57,10 @@ export NEW_VERSION="$VERSION"
 # We need to extract the functions without running the main script logic
 {
     # Read the script and extract only the function definitions
+    # Also patch the macOS cp --parents compatibility issue
     sed -n '/^rewrite_paths()/,/^}$/p; /^generate_commands()/,/^}$/p; /^build_variant()/,/^}$/p' \
-        "$REPO_ROOT/.github/workflows/scripts/create-release-packages.sh"
+        "$REPO_ROOT/.github/workflows/scripts/create-release-packages.sh" | \
+    sed 's/cp --parents {} "$EVALKIT_DIR"\//cp {} "$EVALKIT_DIR\/templates\/"/'
 } > "$GENLOCAL_DIR/functions.sh"
 
 # Source the extracted functions

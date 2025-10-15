@@ -1069,16 +1069,22 @@ def init(
     else:
         project_path = Path(project_name).resolve()
         if project_path.exists():
-            error_panel = Panel(
-                f"Directory '[cyan]{project_name}[/cyan]' already exists\n"
-                "Please choose a different project name or remove the existing directory.",
-                title="[red]Directory Conflict[/red]",
-                border_style="red",
-                padding=(1, 2),
-            )
-            console.print()
-            console.print(error_panel)
-            raise typer.Exit(1)
+            if local_dev:
+                # Allow re-initialization for local development
+                console.print(f"[yellow]Warning:[/yellow] Directory '[cyan]{project_name}[/cyan]' already exists")
+                console.print("[yellow]Local development mode: will overwrite existing templates and scripts[/yellow]")
+            else:
+                error_panel = Panel(
+                    f"Directory '[cyan]{project_name}[/cyan]' already exists\n"
+                    "Please choose a different project name or remove the existing directory.\n\n"
+                    "Tip: Use [cyan]--local-dev[/cyan] to allow re-initialization for development",
+                    title="[red]Directory Conflict[/red]",
+                    border_style="red",
+                    padding=(1, 2),
+                )
+                console.print()
+                console.print(error_panel)
+                raise typer.Exit(1)
 
     current_dir = Path.cwd()
 
