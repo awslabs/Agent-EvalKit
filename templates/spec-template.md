@@ -22,10 +22,10 @@
 
 ### Agent Architecture & Capabilities
 
-**Agent Type**: [e.g., Conversational, RAG, Tool-using, Code generation]
-**Input/Output Formats**: [Describe data types and interaction patterns]
-**Key Functions**: [List primary capabilities and decision points]
-**Available Tools**: [If applicable, list tools the agent can use]
+**Agent Type**: [e.g., Conversational, RAG, Tool-using, Code generation]  
+**Input/Output Formats**: [Describe data types and interaction patterns]  
+**Key Functions**: [List primary capabilities and decision points]  
+**Available Tools**: [If applicable, list tools the agent can use]  
 **Technology Stack**: [Languages, frameworks, dependencies]
 
 ### Evaluation Area 1 - [Brief Title] (Priority: P1)

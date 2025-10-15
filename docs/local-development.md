@@ -89,7 +89,7 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
    # Test your CLI changes in demo projects (uses isolated environment)
    # Navigate to your preferred directory for demo projects
    cd /path/to/your/projects  # e.g., ~/projects, /tmp, or same level as eval-kit
-   evalkit init demo-evaluation --ai kilocode --ignore-agent-tools
+   evalkit init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
    cd demo-evaluation
    code .
    # Test evalkit commands in your AI assistant (/evalkit.design, etc.)
@@ -100,7 +100,7 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
    # 1. Use --local-dev flag to test your current branch changes immediately
    # Navigate to your preferred directory for demo projects
    cd /path/to/your/projects
-   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools
+   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools --script sh
    cd demo-evaluation
    
    # 2. Test your changes - templates and scripts reflect your current branch
@@ -113,7 +113,7 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
    # Edit files in templates/ or scripts/ directories
    # Re-initialize to test changes:
    cd /path/to/your/projects
-   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools
+   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools --script sh
    
    # 4. Commit changes when satisfied (from eval-kit directory)
    cd /path/to/eval-kit

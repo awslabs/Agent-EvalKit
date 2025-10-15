@@ -4,7 +4,7 @@ This guide will help you get started with Agent Evaluation using EvalKit.
 
 > NEW: All automation scripts now provide both Bash (`.sh`) and PowerShell (`.ps1`) variants. The `evalkit` CLI auto-selects based on OS unless you pass `--script sh|ps`.
 
-## The 6-Step Evaluation Process
+## The 5-Step Evaluation Process
 
 ### 1. Install EvalKit
 
@@ -28,15 +28,7 @@ Use the `/evalkit.design` command to analyze your agent and design a comprehensi
 /evalkit.design Analyze my customer service chatbot agent located in ./src/chatbot.py and design evaluation strategy focusing on response accuracy, conversation flow, and user satisfaction metrics.
 ```
 
-### 3. Clarify Evaluation Requirements (Optional)
-
-Use the `/evalkit.clarify` command to clarify any underspecified areas in your evaluation design.
-
-```bash
-/evalkit.clarify
-```
-
-### 4. Create Evaluation Implementation Plan
+### 3. Create Evaluation Implementation Plan
 
 Use the `/evalkit.plan` command to create technical implementation plans for your evaluation infrastructure.
 
@@ -44,7 +36,7 @@ Use the `/evalkit.plan` command to create technical implementation plans for you
 /evalkit.plan Use DeepEval for LLM-based metrics, implement real-time monitoring with custom dashboards, store results in JSON format, and create automated reporting pipeline.
 ```
 
-### 5. Generate and Execute Tasks
+### 4. Generate and Execute Tasks
 
 Use `/evalkit.tasks` to create an actionable task list, then `/evalkit.implement` to build the evaluation pipeline.
 
@@ -53,7 +45,7 @@ Use `/evalkit.tasks` to create an actionable task list, then `/evalkit.implement
 /evalkit.implement
 ```
 
-### 6. Analyze Results and Get Insights
+### 5. Analyze Results and Get Insights
 
 Use `/evalkit.insights` to analyze evaluation results and get actionable improvement recommendations.
 
@@ -75,16 +67,7 @@ and customer satisfaction. Focus on real-world scenarios including edge cases li
 and system errors.
 ```
 
-### Step 2: Clarify Requirements (Optional)
-
-After the initial evaluation design is created, clarify any missing requirements:
-
-```text
-Should we include multi-turn conversation evaluation? What about testing with different customer personas 
-(angry, confused, technical)? Do we need to test the agent's ability to escalate to human support?
-```
-
-### Step 3: Create Implementation Plan with `/evalkit.plan`
+### Step 2: Create Implementation Plan with `/evalkit.plan`
 
 Be specific about your evaluation infrastructure and technical requirements:
 
@@ -95,7 +78,7 @@ Set up monitoring dashboard with real-time results. Store evaluation data in str
 for analysis and reporting.
 ```
 
-### Step 4: Generate Tasks and Implement
+### Step 3: Generate Tasks and Implement
 
 Generate the evaluation task breakdown:
 
@@ -109,7 +92,7 @@ Then implement the evaluation pipeline:
 /evalkit.implement
 ```
 
-### Step 5: Analyze Results
+### Step 4: Analyze Results
 
 After running evaluations, analyze the results:
 

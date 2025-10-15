@@ -21,7 +21,7 @@ Given that agent description or code path, do this:
 1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and EVAL_SPEC_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. For single quotes in args like "I'm analyzing", use escape syntax: e.g 'I'\''m analyzing' (or double-quote if possible: "I'm analyzing").
 
-2. Load `templates/eval-template.md` to understand required sections.
+2. Load `templates/spec-template.md` to understand required sections.
 
 3. Follow this execution flow:
 
@@ -35,7 +35,7 @@ Given that agent description or code path, do this:
          - The choice significantly impacts evaluation scope or metrics
          - Multiple reasonable evaluation approaches exist with different implications
          - No reasonable default evaluation strategy exists
-       - **LIMIT: Maximum 3 [NEEDS CLARIFICATION] markers total**
+       - **LIMIT: Maximum 5 [NEEDS CLARIFICATION] markers total**
        - Prioritize clarifications by impact: evaluation scope > metrics > test data > implementation details
     4. Design evaluation strategy and metrics
        If no clear evaluation approach: ERROR "Cannot determine evaluation strategy"
@@ -60,7 +60,7 @@ Given that agent description or code path, do this:
       
       **Purpose**: Validate evaluation design completeness and quality before proceeding to implementation
       **Created**: [DATE]
-      **Agent**: [Link to evaluation_plan_spec.md]
+      **Agent**: [Link to spec.md]
       
       ## Design Quality
       
@@ -90,7 +90,7 @@ Given that agent description or code path, do this:
       
       ## Notes
       
-      - Items marked incomplete require spec updates before `/evalkit.clarify` or `/evalkit.plan`
+      - Items marked incomplete require spec updates before `/evalkit.plan`
       ```
    
    b. **Run Validation Check**: Review the spec against each checklist item:
@@ -109,8 +109,8 @@ Given that agent description or code path, do this:
       
       - **If [NEEDS CLARIFICATION] markers remain**:
         1. Extract all [NEEDS CLARIFICATION: ...] markers from the spec
-        2. **LIMIT CHECK**: If more than 3 markers exist, keep only the 3 most critical (by evaluation impact) and make informed guesses for the rest
-        3. For each clarification needed (max 3), present options to user in this format:
+        2. **LIMIT CHECK**: If more than 5 markers exist, keep only the 5 most critical (by evaluation impact) and make informed guesses for the rest
+        3. For each clarification needed (max 5), present options to user in this format:
         
            ```markdown
            ## Question [N]: [Topic]
@@ -136,15 +136,15 @@ Given that agent description or code path, do this:
            - Each cell should have spaces around content: `| Content |` not `|Content|`
            - Header separator must have at least 3 dashes: `|--------|`
            - Test that the table renders correctly in markdown preview
-        5. Number questions sequentially (Q1, Q2, Q3 - max 3 total)
+        5. Number questions sequentially (Q1, Q2, Q3 - max 5 total)
         6. Present all questions together before waiting for responses
-        7. Wait for user to respond with their choices for all questions (e.g., "Q1: A, Q2: Custom - [details], Q3: B")
+        7. Wait for user to respond with their choices for all questions (e.g., "Q1: A, Q2: Custom - [details], Q3: B, ...")
         8. Update the spec by replacing each [NEEDS CLARIFICATION] marker with the user's selected or provided answer
         9. Re-run validation after all clarifications are resolved
    
    d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
 
-6. Report completion with branch name, evaluation spec file path, checklist results, and readiness for the next phase (`/evalkit.clarify` or `/evalkit.plan`).
+6. Report completion with branch name, evaluation spec file path, checklist results, and readiness for the next phase (`/evalkit.plan`).
 
 **NOTE:** The script creates and checks out the new branch and initializes the evaluation spec file before writing.
 
@@ -169,7 +169,7 @@ When creating this evaluation design from a user prompt:
 
 1. **Make informed guesses**: Use context, agent type patterns, and evaluation best practices to fill gaps
 2. **Document assumptions**: Record reasonable defaults in the Assumptions section
-3. **Limit clarifications**: Maximum 3 [NEEDS CLARIFICATION] markers - use only for critical decisions that:
+3. **Limit clarifications**: Maximum 5 [NEEDS CLARIFICATION] markers - use only for critical decisions that:
    - Significantly impact evaluation scope or approach
    - Have multiple reasonable interpretations with different implications
    - Lack any reasonable default evaluation strategy

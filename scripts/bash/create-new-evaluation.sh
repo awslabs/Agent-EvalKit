@@ -50,26 +50,28 @@ fi
 
 cd "$REPO_ROOT"
 
-EVALS_DIR="$REPO_ROOT/evals"
-mkdir -p "$EVALS_DIR"
+EVAL_DIR="$REPO_ROOT/eval"
+mkdir -p "$EVAL_DIR"
 
+# Find the highest evaluation number from existing git branches
 HIGHEST=0
-if [ -d "$EVALS_DIR" ]; then
-    for dir in "$EVALS_DIR"/*; do
-        [ -d "$dir" ] || continue
-        dirname=$(basename "$dir")
-        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
-        number=$((10#$number))
-        if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
+if [ "$HAS_GIT" = true ]; then
+    # Get all branch names and extract numbers from evaluation branches
+    for branch in $(git branch -a | sed 's/^[* ] //' | sed 's/remotes\/origin\///' | sort -u); do
+        # Extract number from branch names like "001-city-agent", "002-weather-app", etc.
+        number=$(echo "$branch" | grep -o '^[0-9]\+' || echo "0")
+        if [[ "$number" =~ ^[0-9]+$ ]]; then
+            number=$((10#$number))
+            if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
+        fi
     done
 fi
 
 NEXT=$((HIGHEST + 1))
 EVALUATION_NUM=$(printf "%03d" "$NEXT")
 
-BRANCH_NAME=$(echo "$EVALUATION_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-WORDS=$(echo "$BRANCH_NAME" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
-BRANCH_NAME="${EVALUATION_NUM}-${WORDS}"
+# Use fixed professional naming: 001-eval-pipeline, 002-eval-pipeline, etc.
+BRANCH_NAME="${EVALUATION_NUM}-eval-pipeline"
 
 if [ "$HAS_GIT" = true ]; then
     git checkout -b "$BRANCH_NAME"
@@ -77,11 +79,9 @@ else
     >&2 echo "[evalkit] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
 fi
 
-EVALUATION_DIR="$EVALS_DIR/$BRANCH_NAME"
-mkdir -p "$EVALUATION_DIR"
-
+# Use flat structure - files go directly in eval/ directory
 TEMPLATE="$REPO_ROOT/.evalkit/templates/spec-template.md"
-SPEC_FILE="$EVALUATION_DIR/spec.md"
+SPEC_FILE="$EVAL_DIR/spec.md"
 if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
 
 # Set the EVALKIT_FEATURE environment variable for the current session

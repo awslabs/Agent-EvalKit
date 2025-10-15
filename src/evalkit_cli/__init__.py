@@ -1325,16 +1325,16 @@ def init(
     console.print()
     console.print(steps_panel)
 
-    enhancement_lines = [
-        "Optional command that you can use for your evaluation [bright_black](improve evaluation quality)[/bright_black]",
-        "",
-        "○ [cyan]/evalkit.clarify[/] [bright_black](optional)[/bright_black] - Clarify underspecified areas in evaluation design (run before [cyan]/evalkit.plan[/] if used)",
-    ]
-    enhancements_panel = Panel(
-        "\n".join(enhancement_lines), title="Enhancement Commands", border_style="cyan", padding=(1, 2)
-    )
-    console.print()
-    console.print(enhancements_panel)
+    # enhancement_lines = [
+    #     "Optional command that you can use for your evaluation [bright_black](improve evaluation quality)[/bright_black]",
+    #     "",
+    #     "○ [cyan]/evalkit.clarify[/] [bright_black](optional)[/bright_black] - Clarify underspecified areas in evaluation design (run before [cyan]/evalkit.plan[/] if used)",
+    # ]
+    # enhancements_panel = Panel(
+    #     "\n".join(enhancement_lines), title="Enhancement Commands", border_style="cyan", padding=(1, 2)
+    # )
+    # console.print()
+    # console.print(enhancements_panel)
 
 
 @app.command()

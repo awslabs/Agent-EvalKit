@@ -79,15 +79,7 @@ Use the **`/evalkit.design`** command to analyze your agent and design a compreh
 /evalkit.design Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
 ```
 
-### 3. Clarify evaluation requirements (optional)
-
-Use the **`/evalkit.clarify`** command to clarify any underspecified areas in your evaluation design.
-
-```bash
-/evalkit.clarify
-```
-
-### 4. Create evaluation implementation plan
+### 3. Create evaluation implementation plan
 
 Use the **`/evalkit.plan`** command to create technical implementation plans for your evaluation infrastructure.
 
@@ -95,7 +87,7 @@ Use the **`/evalkit.plan`** command to create technical implementation plans for
 /evalkit.plan Use DeepEval for metrics computation, implement real-time monitoring, and create interactive dashboards for result visualization
 ```
 
-### 5. Generate evaluation tasks
+### 4. Generate evaluation tasks
 
 Use **`/evalkit.tasks`** to create an actionable task list from your evaluation plan.
 
@@ -103,7 +95,7 @@ Use **`/evalkit.tasks`** to create an actionable task list from your evaluation 
 /evalkit.tasks
 ```
 
-### 6. Implement evaluation pipeline
+### 5. Implement evaluation pipeline
 
 Use **`/evalkit.implement`** to execute all tasks and build your evaluation pipeline according to the plan.
 
@@ -111,7 +103,7 @@ Use **`/evalkit.implement`** to execute all tasks and build your evaluation pipe
 /evalkit.implement
 ```
 
-### 7. Analyze results and get insights
+### 6. Analyze results and get insights
 
 Use **`/evalkit.insights`** to analyze evaluation results and get actionable improvement recommendations.
 
@@ -207,7 +199,6 @@ Essential commands for the Agent Evaluation workflow:
 | Command                  | Description                                                           |
 |--------------------------|-----------------------------------------------------------------------|
 | `/evalkit.design`        | Analyze agent and design evaluation strategy                          |
-| `/evalkit.clarify`       | Clarify underspecified areas (recommended before `/evalkit.plan`)    |
 | `/evalkit.plan`          | Create evaluation implementation plan                                  |
 | `/evalkit.tasks`         | Generate evaluation task lists                                        |
 | `/evalkit.implement`     | Execute evaluation pipeline implementation                             |

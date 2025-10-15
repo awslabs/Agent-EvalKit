@@ -26,33 +26,8 @@ get_current_branch() {
         return
     fi
     
-    # For non-git repos, try to find the latest evaluation directory
-    local repo_root=$(get_repo_root)
-    local evals_dir="$repo_root/evals"
-    
-    if [[ -d "$evals_dir" ]]; then
-        local latest_feature=""
-        local highest=0
-        
-        for dir in "$evals_dir"/*; do
-            if [[ -d "$dir" ]]; then
-                local dirname=$(basename "$dir")
-                if [[ "$dirname" =~ ^([0-9]{3})- ]]; then
-                    local number=${BASH_REMATCH[1]}
-                    number=$((10#$number))
-                    if [[ "$number" -gt "$highest" ]]; then
-                        highest=$number
-                        latest_feature=$dirname
-                    fi
-                fi
-            fi
-        done
-        
-        if [[ -n "$latest_feature" ]]; then
-            echo "$latest_feature"
-            return
-        fi
-    fi
+    # For non-git repos, we can't determine the branch name
+    # Since we now use git branches for organization, fall back to a default
     
     echo "main"  # Final fallback
 }
@@ -72,16 +47,16 @@ check_feature_branch() {
         return 0
     fi
     
-    if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
+    if [[ ! "$branch" =~ ^[0-9]{3}-eval-pipeline$ ]]; then
         echo "ERROR: Not on an evaluation branch. Current branch: $branch" >&2
-        echo "Evaluation branches should be named like: 001-evaluation-name" >&2
+        echo "Evaluation branches should be named like: 001-eval-pipeline" >&2
         return 1
     fi
     
     return 0
 }
 
-get_evaluation_dir() { echo "$1/evals/$2"; }
+get_evaluation_dir() { echo "$1/eval"; }
 
 get_evaluation_paths() {
     local repo_root=$(get_repo_root)
@@ -92,7 +67,7 @@ get_evaluation_paths() {
         has_git_repo="true"
     fi
     
-    local evaluation_dir=$(get_evaluation_dir "$repo_root" "$current_branch")
+    local evaluation_dir=$(get_evaluation_dir "$repo_root")
     
     cat <<EOF
 REPO_ROOT='$repo_root'
