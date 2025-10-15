@@ -11,13 +11,13 @@ This guide will help you get started with Agent Evaluation using EvalKit.
 Initialize your evaluation project depending on the AI assistant you're using:
 
 ```bash
-uvx --from git+https://github.com/github/eval-kit.git evalkit init <PROJECT_NAME>
+uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAME>
 ```
 
 Pick script type explicitly (optional):
 ```bash
-uvx --from git+https://github.com/github/eval-kit.git evalkit init <PROJECT_NAME> --script ps  # Force PowerShell
-uvx --from git+https://github.com/github/eval-kit.git evalkit init <PROJECT_NAME> --script sh  # Force POSIX shell
+uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAME> --script ps  # Force PowerShell
+uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAME> --script sh  # Force POSIX shell
 ```
 
 ### 2. Design Evaluation Strategy
@@ -132,10 +132,3 @@ EvalKit works with these AI coding assistants:
 - **Kilo Code** - Full support for all evaluation commands
 - **Claude Code** - Complete integration with evaluation workflow  
 - **Amazon Q Developer CLI** - Full evaluation pipeline support
-
-## Next Steps
-
-- Read the complete evaluation methodology for in-depth guidance
-- Check out the legacy evaluation agents in `legacy-eval-agent/` directory
-- Explore evaluation examples and templates
-- Review the source code on GitHub
