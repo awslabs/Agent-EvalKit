@@ -44,7 +44,9 @@ If you need to run the CLI directly for debugging, use the script file:
 ```bash
 # Run the script file directly
 uv run python src/evalkit_cli/__init__.py --help
-uv run python src/evalkit_cli/__init__.py init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
+# Create demo project in your preferred location
+cd /path/to/your/projects  # Choose your preferred directory
+uv run python /path/to/eval-kit/src/evalkit_cli/__init__.py init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
 cd demo-evaluation
 # Start a new VS Code window
 code .
@@ -65,6 +67,8 @@ uv pip install -e .
 
 # Now 'evalkit' entrypoint is available
 evalkit --help
+# Create demo project in your preferred location
+cd /path/to/your/projects  # Choose your preferred directory
 evalkit init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
 cd demo-evaluation
 # Start a new VS Code window
@@ -80,23 +84,22 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
 
 ### Testing Changes Locally
 
-1. **Create test projects in temporary directories:**
+1. **Create test projects in your preferred location:**
    ```bash
    # Test your CLI changes in demo projects (uses isolated environment)
+   # Navigate to your preferred directory for demo projects
+   cd /path/to/your/projects  # e.g., ~/projects, /tmp, or same level as eval-kit
    evalkit init demo-evaluation --ai kilocode --ignore-agent-tools
    cd demo-evaluation
    code .
    # Test evalkit commands in your AI assistant (/evalkit.design, etc.)
    ```
 
-2. **Do NOT push demo projects to remote:**
-   - Demo evaluation projects are for local testing only
-   - Add demo projects to `.gitignore` or create them outside the repo
-   - Only commit changes to the EvalKit CLI source code
-
-3. **Testing template/script changes workflow:**
+2. **Testing template/script changes workflow:**
    ```bash
    # 1. Use --local-dev flag to test your current branch changes immediately
+   # Navigate to your preferred directory for demo projects
+   cd /path/to/your/projects
    evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools
    cd demo-evaluation
    
@@ -106,12 +109,14 @@ When developing EvalKit CLI features, follow this workflow to avoid polluting th
    # - Scripts are in: .evalkit/scripts/
    
    # 3. Make changes to templates/scripts in your main repo, then re-init to test
-   cd ../  # Back to main repo
+   cd /path/to/eval-kit  # Back to main repo
    # Edit files in templates/ or scripts/ directories
    # Re-initialize to test changes:
+   cd /path/to/your/projects
    evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools
    
-   # 4. Commit changes when satisfied
+   # 4. Commit changes when satisfied (from eval-kit directory)
+   cd /path/to/eval-kit
    git add templates/ scripts/
    git commit -m "Update templates and scripts"
    ```
