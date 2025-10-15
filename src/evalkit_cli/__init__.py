@@ -88,7 +88,7 @@ AGENT_CONFIG = {
     },
 }
 
-SCRIPT_TYPE_CHOICES = {"sh": "POSIX Shell (bash/zsh)", "ps": "PowerShell"}
+SCRIPT_TYPE_CHOICES = {"sh": "POSIX Shell (bash/zsh)", "ps": "PowerShell (support soon)"}
 
 CLAUDE_LOCAL_PATH = Path.home() / ".claude" / "local" / "claude"
 
@@ -449,8 +449,8 @@ def download_template_from_github(
     debug: bool = False,
     github_token: str = None,
 ) -> Tuple[Path, dict]:
-    repo_owner = "github"
-    repo_name = "eval-kit"
+    repo_owner = "kangISU"  # Replace with your GitHub username
+    repo_name = "eval-kit"  # Your repository name
     if client is None:
         client = httpx.Client(verify=ssl_context)
 
@@ -476,13 +476,16 @@ def download_template_from_github(
         except ValueError as je:
             raise RuntimeError(f"Failed to parse release JSON: {je}\nRaw (truncated 400): {response.text[:400]}")
     except Exception as e:
-        console.print(f"[red]Error fetching release information[/red]")
+        console.print("[red]Error fetching release information[/red]")
         console.print(Panel(str(e), title="Fetch Error", border_style="red"))
         raise typer.Exit(1)
 
     assets = release_data.get("assets", [])
     pattern = f"evalkit-template-{ai_assistant}-{script_type}"
-    matching_assets = [asset for asset in assets if pattern in asset["name"] and asset["name"].endswith(".zip")]
+    # Match assets that start with the pattern and end with .zip, allowing for version suffixes
+    matching_assets = [
+        asset for asset in assets if asset["name"].startswith(pattern) and asset["name"].endswith(".zip")
+    ]
 
     asset = matching_assets[0] if matching_assets else None
 
@@ -494,7 +497,8 @@ def download_template_from_github(
         console.print(Panel("\n".join(asset_names) or "(no assets)", title="Available Assets", border_style="yellow"))
         raise typer.Exit(1)
 
-    download_url = asset["browser_download_url"]
+    browser_download_url = asset["browser_download_url"]
+    api_download_url = asset["url"]
     filename = asset["name"]
     file_size = asset["size"]
 
@@ -507,47 +511,99 @@ def download_template_from_github(
     if verbose:
         console.print("[cyan]Downloading template...[/cyan]")
 
+    # Try browser download URL first (works for public repos), then fall back to API (for private repos)
+    download_attempts = [
+        (browser_download_url, _github_auth_headers(github_token)),
+        (api_download_url, {**_github_auth_headers(github_token), "Accept": "application/octet-stream"}),
+    ]
+
+    last_error = None
     try:
-        with client.stream(
-            "GET",
-            download_url,
-            timeout=60,
-            follow_redirects=True,
-            headers=_github_auth_headers(github_token),
-        ) as response:
-            if response.status_code != 200:
-                body_sample = response.text[:400]
-                raise RuntimeError(
-                    f"Download failed with {response.status_code}\nHeaders: {response.headers}\nBody (truncated): {body_sample}"
-                )
-            total_size = int(response.headers.get("content-length", 0))
-            with open(zip_path, "wb") as f:
-                if total_size == 0:
-                    for chunk in response.iter_bytes(chunk_size=8192):
-                        f.write(chunk)
-                else:
-                    if show_progress:
-                        with Progress(
-                            SpinnerColumn(),
-                            TextColumn("[progress.description]{task.description}"),
-                            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                            console=console,
-                        ) as progress:
-                            task = progress.add_task("Downloading...", total=total_size)
-                            downloaded = 0
+        for attempt_num, (download_url, headers) in enumerate(download_attempts, 1):
+            try:
+                with client.stream(
+                    "GET",
+                    download_url,
+                    timeout=60,
+                    follow_redirects=True,
+                    headers=headers,
+                ) as response:
+                    if response.status_code != 200:
+                        # If first attempt fails, try the second one
+                        if attempt_num == 1:
+                            if debug:
+                                console.print(
+                                    f"[yellow]Browser download failed ({response.status_code}), trying API endpoint...[/yellow]"
+                                )
+                            continue
+
+                        # Read the response content first for error reporting
+                        try:
+                            body_sample = ""
+                            for chunk in response.iter_bytes(chunk_size=400):
+                                body_sample += chunk.decode("utf-8", errors="ignore")
+                                break  # Only read first chunk for error message
+                        except Exception:
+                            body_sample = "(unable to read response body)"
+                        raise RuntimeError(
+                            f"Download failed with {response.status_code}\n"
+                            f"Headers: {response.headers}\nBody (truncated): {body_sample}"
+                        )
+
+                    # Success! Continue with download inside this response context
+                    total_size = int(response.headers.get("content-length", 0))
+                    with open(zip_path, "wb") as f:
+                        if total_size == 0:
                             for chunk in response.iter_bytes(chunk_size=8192):
                                 f.write(chunk)
-                                downloaded += len(chunk)
-                                progress.update(task, completed=downloaded)
-                    else:
-                        for chunk in response.iter_bytes(chunk_size=8192):
-                            f.write(chunk)
+                        else:
+                            if show_progress:
+                                with Progress(
+                                    SpinnerColumn(),
+                                    TextColumn("[progress.description]{task.description}"),
+                                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                                    console=console,
+                                ) as progress:
+                                    task = progress.add_task("Downloading...", total=total_size)
+                                    downloaded = 0
+                                    for chunk in response.iter_bytes(chunk_size=8192):
+                                        f.write(chunk)
+                                        downloaded += len(chunk)
+                                        progress.update(task, completed=downloaded)
+                            else:
+                                for chunk in response.iter_bytes(chunk_size=8192):
+                                    f.write(chunk)
+                    # Download completed successfully, break out of attempt loop
+                    break
+            except Exception as e:
+                last_error = e
+                if attempt_num == 1:
+                    if debug:
+                        console.print(f"[yellow]Browser download failed: {e}, trying API endpoint...[/yellow]")
+                    continue
+                else:
+                    # Both attempts failed, re-raise the last error
+                    if debug:
+                        console.print(f"[red]API endpoint also failed: {e}[/red]")
+                    raise
+        else:
+            # This should not happen, but just in case
+            if last_error:
+                raise last_error
+            raise RuntimeError("All download attempts failed")
     except Exception as e:
-        console.print(f"[red]Error downloading template[/red]")
-        detail = str(e)
+        error_msg = f"Error downloading template: {e}"
+        if debug:
+            console.print(f"[red]{error_msg}[/red]")
+            import traceback
+
+            console.print(f"[red]Traceback:[/red] {traceback.format_exc()}")
+        else:
+            console.print(f"[red]Error downloading template[/red]")
+
         if zip_path.exists():
             zip_path.unlink()
-        console.print(Panel(detail, title="Download Error", border_style="red"))
+        console.print(Panel(str(e), title="Download Error", border_style="red"))
         raise typer.Exit(1)
 
     if verbose:
@@ -596,6 +652,14 @@ def download_and_extract_template(
         else:
             if verbose:
                 console.print(f"[red]Error downloading template:[/red] {e}")
+
+        # Always show detailed error in debug mode
+        if debug:
+            console.print(f"[red]Download/extract error details: {e}[/red]")
+            import traceback
+
+            console.print(f"[red]Traceback:[/red] {traceback.format_exc()}")
+
         raise
 
     if tracker:
@@ -635,7 +699,7 @@ def download_and_extract_template(
                             tracker.add("flatten", "Flatten nested directory")
                             tracker.complete("flatten")
                         elif verbose:
-                            console.print(f"[cyan]Found nested directory structure[/cyan]")
+                            console.print("[cyan]Found nested directory structure[/cyan]")
 
                     for item in source_dir.iterdir():
                         dest_path = project_path / item.name
@@ -656,7 +720,7 @@ def download_and_extract_template(
                                 console.print(f"[yellow]Overwriting file:[/yellow] {item.name}")
                             shutil.copy2(item, dest_path)
                     if verbose and not tracker:
-                        console.print(f"[cyan]Template files merged into current directory[/cyan]")
+                        console.print("[cyan]Template files merged into current directory[/cyan]")
             else:
                 zip_ref.extractall(project_path)
 
@@ -999,6 +1063,12 @@ def init(
             tracker.complete("final", "project ready")
         except Exception as e:
             tracker.error("final", str(e))
+            if debug:
+                console.print(f"[red]Final exception details: {e}[/red]")
+                console.print(f"[red]Exception type: {type(e)}[/red]")
+                import traceback
+
+                console.print(f"[red]Traceback:[/red] {traceback.format_exc()}")
             console.print(Panel(f"Initialization failed: {e}", title="Failure", border_style="red"))
             if debug:
                 _env_pairs = [
