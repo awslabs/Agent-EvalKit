@@ -17,13 +17,11 @@ Since EvalKit is hosted in a private repository, you need to configure Git authe
 
 2. **Configure Git credentials:**
    ```bash
-   # Set up Git credential helper (one-time setup)
-   git config --global credential.helper store
+   # Add to your shell profile (~/.zshrc, ~/.bashrc, or ~/.bash_profile)
+   export GITHUB_TOKEN="your_personal_access_token_here"
    
-   # Clone any private repo to trigger credential prompt
-   git clone https://github.com/kangISU/eval-kit.git temp-repo
-   # Enter your GitHub username and the token as password
-   rm -rf temp-repo
+   # Reload your shell configuration
+   source ~/.zshrc  # or source ~/.bashrc
    ```
 
 ## 1. Clone and Switch Branches
