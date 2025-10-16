@@ -36,271 +36,65 @@ Given that context, do this:
 4. **Results Analysis Process**:
 
    a. **Data Validation and Loading**: Ensure results are from real execution:
-      ```python
-      import json
-      import pandas as pd
-      from pathlib import Path
-      from datetime import datetime
-      
-      def validate_results(results_path: Path) -> dict:
-          """Validate that results are from real agent execution."""
-          
-          # Load results data
-          with open(results_path, 'r') as f:
-              results = json.load(f)
-              
-          # Validation checks for real execution
-          validation_report = {
-              "total_cases": len(results),
-              "real_execution": True,
-              "issues": []
-          }
-          
-          # Check for simulation indicators
-          for i, result in enumerate(results):
-              case_id = result.get("test_case_id", f"case_{i}")
-              
-              # Red flags for simulation
-              if "simulated" in str(result).lower():
-                  validation_report["real_execution"] = False
-                  validation_report["issues"].append(f"{case_id}: Contains 'simulated' keyword")
-                  
-              # Check for realistic variation in metrics
-              if "evaluation" in result:
-                  metrics = result["evaluation"]
-                  if isinstance(metrics, dict):
-                      scores = [m.get("score", 0) for m in metrics.values() if isinstance(m, dict)]
-                      if len(set(scores)) == 1 and len(scores) > 1:
-                          validation_report["issues"].append(f"{case_id}: Identical scores suggest simulation")
-                          
-              # Check for realistic execution times
-              if "agent_response" in result:
-                  exec_time = result["agent_response"].get("execution_time", 0)
-                  if exec_time == 0 or exec_time > 300:  # 0 or >5 minutes suspicious
-                      validation_report["issues"].append(f"{case_id}: Suspicious execution time: {exec_time}s")
-                      
-          if validation_report["issues"]:
-              print("⚠️  WARNING: Potential simulation detected in results:")
-              for issue in validation_report["issues"]:
-                  print(f"   - {issue}")
-                  
-          return validation_report, results
-      ```
+      - Load evaluation results from the specified path
+      - Validate that results come from actual agent execution (not simulation)
+      - Check for red flags: identical metrics, unrealistic execution times, simulation keywords
+      - Verify data completeness and format consistency
 
    b. **Performance Analysis**: Analyze key performance metrics:
-      ```python
-      def analyze_performance(results: list) -> dict:
-          """Analyze agent performance across multiple dimensions."""
-          
-          analysis = {
-              "success_metrics": {},
-              "performance_metrics": {},
-              "quality_metrics": {},
-              "failure_analysis": {}
-          }
-          
-          # Success rate analysis
-          successful_cases = [r for r in results if r.get("agent_response", {}).get("status") == "success"]
-          analysis["success_metrics"] = {
-              "total_cases": len(results),
-              "successful_cases": len(successful_cases),
-              "success_rate": len(successful_cases) / len(results) if results else 0,
-              "failure_rate": (len(results) - len(successful_cases)) / len(results) if results else 0
-          }
-          
-          # Performance metrics (latency, throughput)
-          execution_times = [
-              r.get("agent_response", {}).get("execution_time", 0) 
-              for r in successful_cases
-          ]
-          
-          if execution_times:
-              analysis["performance_metrics"] = {
-                  "avg_latency": sum(execution_times) / len(execution_times),
-                  "min_latency": min(execution_times),
-                  "max_latency": max(execution_times),
-                  "p95_latency": sorted(execution_times)[int(0.95 * len(execution_times))] if execution_times else 0
-              }
-          
-          # Quality metrics from evaluation results
-          quality_scores = []
-          for result in successful_cases:
-              eval_results = result.get("evaluation", {})
-              for metric_name, metric_data in eval_results.items():
-                  if isinstance(metric_data, dict) and "score" in metric_data:
-                      quality_scores.append({
-                          "metric": metric_name,
-                          "score": metric_data["score"],
-                          "success": metric_data.get("success", False)
-                      })
-          
-          if quality_scores:
-              df_quality = pd.DataFrame(quality_scores)
-              analysis["quality_metrics"] = {
-                  "avg_score": df_quality["score"].mean(),
-                  "min_score": df_quality["score"].min(),
-                  "max_score": df_quality["score"].max(),
-                  "pass_rate": df_quality["success"].mean()
-              }
-          
-          return analysis
-      ```
+      - **Success Rate**: Calculate overall success/failure rates
+      - **Latency Metrics**: Average, P95, min/max response times
+      - **Quality Scores**: Evaluation metric performance across test cases
+      - **Throughput**: Cases processed per unit time
+      - **Cost Analysis**: Resource usage and efficiency metrics
 
    c. **Pattern Identification**: Identify trends and patterns in results:
-      ```python
-      def identify_patterns(results: list, analysis: dict) -> dict:
-          """Identify patterns in agent performance and failures."""
-          
-          patterns = {
-              "strengths": [],
-              "weaknesses": [],
-              "failure_modes": [],
-              "performance_trends": []
-          }
-          
-          # Analyze failure patterns
-          failed_cases = [r for r in results if r.get("agent_response", {}).get("status") != "success"]
-          
-          if failed_cases:
-              # Group failures by error type
-              error_types = {}
-              for case in failed_cases:
-                  error = case.get("agent_response", {}).get("error", "Unknown error")
-                  error_type = error.split(":")[0] if ":" in error else error
-                  error_types[error_type] = error_types.get(error_type, 0) + 1
-              
-              patterns["failure_modes"] = [
-                  {"error_type": error, "count": count, "percentage": count/len(failed_cases)*100}
-                  for error, count in sorted(error_types.items(), key=lambda x: x[1], reverse=True)
-              ]
-          
-          # Identify performance strengths
-          if analysis["success_metrics"]["success_rate"] > 0.9:
-              patterns["strengths"].append("High success rate (>90%)")
-              
-          if analysis.get("performance_metrics", {}).get("avg_latency", float('inf')) < 1.0:
-              patterns["strengths"].append("Fast response times (<1s average)")
-              
-          if analysis.get("quality_metrics", {}).get("pass_rate", 0) > 0.8:
-              patterns["strengths"].append("High quality scores (>80% pass rate)")
-          
-          # Identify weaknesses
-          if analysis["success_metrics"]["success_rate"] < 0.7:
-              patterns["weaknesses"].append("Low success rate (<70%)")
-              
-          if analysis.get("performance_metrics", {}).get("p95_latency", 0) > 5.0:
-              patterns["weaknesses"].append("High P95 latency (>5s)")
-              
-          if analysis.get("quality_metrics", {}).get("avg_score", 1) < 0.6:
-              patterns["weaknesses"].append("Low average quality scores (<0.6)")
-          
-          return patterns
-      ```
+      - **Failure Modes**: Common error types and their frequency
+      - **Performance Trends**: Patterns in latency and quality over time
+      - **Strengths**: Areas where agent performs exceptionally well
+      - **Weaknesses**: Consistent problem areas requiring attention
 
    d. **Root Cause Analysis**: Investigate underlying causes of issues:
-      ```python
-      def perform_root_cause_analysis(results: list, patterns: dict) -> dict:
-          """Perform root cause analysis of identified issues."""
-          
-          root_causes = {
-              "performance_issues": [],
-              "quality_issues": [],
-              "reliability_issues": []
-          }
-          
-          # Analyze performance bottlenecks
-          slow_cases = [
-              r for r in results 
-              if r.get("agent_response", {}).get("execution_time", 0) > 3.0
-          ]
-          
-          if slow_cases:
-              # Look for patterns in slow cases
-              slow_inputs = [case.get("test_case_id", "unknown") for case in slow_cases]
-              root_causes["performance_issues"].append({
-                  "issue": "High latency cases detected",
-                  "evidence": f"{len(slow_cases)} cases >3s execution time",
-                  "affected_cases": slow_inputs[:5],  # Show first 5
-                  "recommendation": "Investigate input complexity and processing bottlenecks"
-              })
-          
-          # Analyze quality issues
-          low_quality_cases = []
-          for result in results:
-              eval_results = result.get("evaluation", {})
-              avg_score = 0
-              score_count = 0
-              
-              for metric_data in eval_results.values():
-                  if isinstance(metric_data, dict) and "score" in metric_data:
-                      avg_score += metric_data["score"]
-                      score_count += 1
-              
-              if score_count > 0:
-                  avg_score /= score_count
-                  if avg_score < 0.5:
-                      low_quality_cases.append(result)
-          
-          if low_quality_cases:
-              root_causes["quality_issues"].append({
-                  "issue": "Low quality responses detected",
-                  "evidence": f"{len(low_quality_cases)} cases with avg score <0.5",
-                  "recommendation": "Review agent prompts, training data, or model parameters"
-              })
-          
-          return root_causes
-      ```
+      - **Performance Bottlenecks**: Identify what causes slow responses
+      - **Quality Issues**: Understand why certain metrics underperform
+      - **Reliability Problems**: Analyze failure patterns and triggers
+      - **Resource Constraints**: Identify limiting factors
 
 5. **Improvement Recommendations**: Generate specific, actionable recommendations:
 
-   a. **Prioritized Action Items**: Based on impact and effort:
-      ```markdown
-      ## Priority 1 - Critical Issues (High Impact, Quick Fixes)
+   a. **Prioritized Action Items**: Based on impact and feasibility:
       
-      ### Fix High Failure Rate
-      **Issue**: Success rate is 65% (target: >90%)
-      **Root Cause**: API timeout errors in 23% of cases
-      **Action**: Implement retry logic with exponential backoff
-      **Expected Impact**: Increase success rate to 85-90%
-      **Effort**: 1-2 days
-      **Implementation**: Add retry wrapper in agent connector
+      **Priority 1 - Critical Issues (High Impact, Immediate Attention)**
+      - **High Failure Rate**: If success rate <70%, identify primary failure modes
+      - **Performance Bottlenecks**: If P95 latency >5s, analyze slow cases
+      - **Quality Issues**: If evaluation scores <0.6, examine response quality
       
-      ## Priority 2 - Performance Improvements (Medium Impact, Medium Effort)
+      **Priority 2 - Performance Improvements (Medium Impact, Optimization)**
+      - **Latency Optimization**: Reduce average response time
+      - **Cost Efficiency**: Optimize resource usage and API calls
+      - **Throughput Enhancement**: Improve processing capacity
       
-      ### Reduce P95 Latency
-      **Issue**: P95 latency is 4.2s (target: <2s)
-      **Root Cause**: Sequential API calls for complex queries
-      **Action**: Implement parallel processing for independent operations
-      **Expected Impact**: Reduce P95 latency by 40-50%
-      **Effort**: 3-5 days
-      **Implementation**: Refactor query processing pipeline
-      ```
+      **Priority 3 - Enhancement Opportunities (Lower Impact, Future Improvements)**
+      - **Edge Case Handling**: Address uncommon failure scenarios
+      - **User Experience**: Improve response formatting and clarity
+      - **Monitoring**: Add better observability and tracking
 
    b. **Evidence-Based Recommendations**: All recommendations must cite specific data:
-      ```markdown
-      ### Recommendation: Improve Error Handling
       
-      **Evidence**: 
-      - 15 cases failed with "Connection timeout" (12% of total)
-      - 8 cases failed with "Rate limit exceeded" (6% of total)
-      - Average retry attempts: 0 (no retry logic implemented)
-      
-      **Specific Actions**:
-      1. Add exponential backoff retry (3 attempts, 1s/2s/4s delays)
-      2. Implement rate limiting detection and queuing
-      3. Add circuit breaker for persistent failures
-      
-      **Expected Outcome**:
-      - Reduce timeout failures by 80% (from 15 to ~3 cases)
-      - Improve overall success rate from 65% to 85%
-      ```
+      **Recommendation Structure**:
+      - **Issue**: Clear problem statement with metrics
+      - **Evidence**: Specific data points from evaluation results
+      - **Root Cause**: Analysis of underlying causes
+      - **Recommended Actions**: Specific improvement suggestions
+      - **Expected Impact**: Quantified improvement predictions
+      - **Success Metrics**: How to measure improvement
 
 6. **Insights Report Generation**: Create comprehensive report:
-   - Executive summary with key findings
-   - Detailed performance analysis with charts and metrics
-   - Root cause analysis with evidence
-   - Prioritized improvement recommendations
-   - Implementation roadmap with timelines
+   - Executive summary with key findings and overall assessment
+   - Detailed performance analysis with metrics and trends
+   - Root cause analysis with supporting evidence
+   - Prioritized improvement recommendations with expected impact
+   - Next steps and success metrics for tracking progress
 
 7. **Report Structure**:
    ```markdown
@@ -319,16 +113,19 @@ Given that context, do this:
    - Cost per Query: [$X.XX] (Budget: [$Y.XX])
    
    ## Key Findings
-   [Detailed analysis with evidence and data]
+   [Detailed analysis with evidence and data patterns]
+   
+   ## Root Cause Analysis
+   [Investigation of underlying issues with supporting evidence]
    
    ## Improvement Recommendations
-   [Prioritized list with implementation details]
+   [Prioritized list with expected impact and success metrics]
    
-   ## Next Steps
-   [Immediate actions and timeline]
+   ## Success Metrics & Monitoring
+   [How to track improvement progress and measure success]
    ```
 
-8. Report completion with insights summary, critical recommendations, and suggested next steps.
+8. Report completion with insights summary, critical recommendations, and suggested monitoring approach.
 
 ## General Guidelines
 

@@ -31,17 +31,14 @@ Given that context, do this:
     2. Analyze implementation plan for technical components and phases
     3. Break down each phase into specific, actionable tasks
     4. Define task dependencies, priorities, and acceptance criteria
-    5. Estimate effort and identify required skills for each task
-    6. Create task sequences that enable parallel work where possible
-    7. Generate comprehensive task list with clear ownership and timelines
+    5. Generate comprehensive task list for AI assistant implementation
 
 5. **Task Generation Process**:
 
    a. **Phase Analysis**: For each implementation phase identified in the plan:
       - Extract major deliverables and milestones
       - Identify technical components and dependencies
-      - Determine required skills and expertise areas
-      - Assess complexity and effort requirements
+      - Assess implementation complexity and requirements
 
    b. **Task Breakdown Structure**: Create hierarchical task breakdown:
       
@@ -73,8 +70,6 @@ Given that context, do this:
       
       **Phase**: [Phase Number and Name]
       **Priority**: [High/Medium/Low]
-      **Estimated Effort**: [Hours/Days]
-      **Skills Required**: [Technical skills needed]
       **Dependencies**: [Other tasks that must complete first]
       
       **Description**:
@@ -88,12 +83,7 @@ Given that context, do this:
       **Implementation Notes**:
       - [Technical guidance or considerations]
       - [Recommended approaches or tools]
-      - [Potential challenges and solutions]
-      
-      **Validation Steps**:
-      1. [How to verify the task is complete]
-      2. [Testing or validation procedures]
-      3. [Quality checks to perform]
+      - [File paths and specific implementation details]
       ```
 
    d. **Task Categories and Examples**:
@@ -129,50 +119,27 @@ Given that context, do this:
       - Performance analysis and optimization
 
       **Testing & Validation Tasks**:
-      - Unit tests for core components
-      - Integration tests for end-to-end workflows
+      - End-to-end evaluation workflow testing
       - Performance testing and benchmarking
-      - User acceptance testing and documentation
+      - Validation of evaluation results and metrics
 
    e. **Task Dependencies and Sequencing**: Define clear dependency chains:
       - **Sequential Dependencies**: Tasks that must complete before others can start
-      - **Parallel Opportunities**: Tasks that can be worked on simultaneously
-      - **Critical Path**: Sequence of tasks that determines minimum project duration
-      - **Risk Mitigation**: Alternative approaches if dependencies are blocked
+      - **Implementation Order**: Logical sequence for AI assistant to follow
+      - **Foundation First**: Core infrastructure before evaluation areas
 
-   f. **Effort Estimation Guidelines**:
-      
-      **Simple Tasks** (2-4 hours):
-      - Configuration file creation
-      - Basic data loading scripts
-      - Simple metric implementations
-      - Documentation updates
-      
-      **Medium Tasks** (1-2 days):
-      - Agent integration and testing
-      - Evaluation framework setup
-      - Dashboard component development
-      - Comprehensive testing suites
-      
-      **Complex Tasks** (3-5 days):
-      - Custom evaluation framework development
-      - Advanced analytics and reporting
-      - Performance optimization
-      - Production deployment setup
-
-6. **Task List Organization**: Structure the task list for maximum usability:
+6. **Task List Organization**: Structure the task list for AI assistant implementation:
    - Group tasks by phase and functional area
    - Clearly mark dependencies and prerequisites
-   - Include effort estimates and skill requirements
    - Provide clear acceptance criteria for each task
-   - Add implementation guidance and best practices
+   - Add implementation guidance and file paths
 
 7. **Quality Assurance**: Ensure task list completeness:
    - All plan components are covered by tasks
    - Tasks are specific and actionable
    - Acceptance criteria are measurable
    - Dependencies are clearly defined
-   - Effort estimates are realistic
+   - File paths and implementation details are specified
 
 8. Write the task list to TASKS_FILE using the template structure.
 
@@ -185,32 +152,29 @@ Given that context, do this:
 **Good Tasks**:
 - Have clear, specific objectives
 - Include measurable acceptance criteria
-- Specify required skills and tools
-- Provide implementation guidance
-- Can be completed by a single person
-- Have realistic effort estimates
+- Specify exact file paths and implementation details
+- Provide technical guidance for AI assistants
+- Can be completed independently
+- Have clear validation steps
 
 **Poor Tasks**:
 - Are vague or open-ended
 - Lack clear completion criteria
 - Don't specify dependencies
-- Are too large or complex
-- Require multiple skill sets
-- Have unrealistic timelines
+- Don't include file paths or technical details
+- Have unclear validation criteria
 
 ### Task Sizing Principles
 
 **Right-Sized Tasks**:
-- Can be completed in 0.5-3 days
 - Have single, clear objectives
 - Can be validated independently
-- Don't require multiple people
+- Focus on specific files or components
 - Have minimal external dependencies
 
 **Task Splitting Indicators**:
-- Task takes more than 3 days
 - Has multiple distinct objectives
-- Requires different skill sets
+- Spans multiple files or components
 - Has complex dependency chains
 - Cannot be easily validated
 
@@ -218,30 +182,24 @@ Given that context, do this:
 
 **Types of Dependencies**:
 - **Technical**: One task's output is needed as input for another
-- **Resource**: Same person/tool needed for multiple tasks
-- **Knowledge**: Learning from one task informs another
 - **Sequential**: Logical order of implementation
-- **External**: Dependencies on external systems or approvals
+- **Foundation**: Core infrastructure must complete before evaluation areas
 
 **Dependency Documentation**:
 - Clearly identify what is needed from prerequisite tasks
-- Specify the exact deliverables or outcomes required
-- Note any partial dependencies (task can start but not complete)
-- Identify critical path dependencies that could delay the project
+- Specify the exact deliverables or file outputs required
+- Note which files or components must exist before starting
 
-### Parallel Work Opportunities
+### Implementation Approach for AI Assistants
 
-Identify tasks that can be worked on simultaneously:
-- **Independent Components**: Different parts of the system
-- **Different Skill Sets**: Frontend vs backend vs data tasks
-- **Preparation Work**: Documentation, setup, research tasks
-- **Testing Tasks**: Can often run parallel to development
+**Sequential Implementation**:
+- AI assistants work through tasks one at a time
+- Each task builds on previous completed work
+- Clear file paths and technical specifications guide implementation
+- Validation steps ensure quality before proceeding to next task
 
-### Risk Mitigation in Task Planning
-
-**Common Risks and Mitigation Tasks**:
-- **Agent Integration Issues**: Include early connectivity testing tasks
-- **Framework Compatibility**: Add proof-of-concept validation tasks
-- **Performance Problems**: Include performance testing in each phase
-- **Data Quality Issues**: Add data validation and cleaning tasks
-- **Scope Creep**: Include regular review and validation checkpoints
+**Task Validation**:
+- **File Creation**: Verify required files are created with correct structure
+- **Functionality Testing**: Test that implemented features work as expected
+- **Integration Validation**: Ensure new components integrate with existing code
+- **Quality Checks**: Validate code follows best practices and requirements

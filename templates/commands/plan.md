@@ -1,5 +1,5 @@
 ---
-description: Create technical implementation plans for evaluation infrastructure (tracing libraries, eval SDKs, dashboard visualization libraries, agent simulation libraries, etc.)
+description: Create technical implementation plans for evaluation infrastructure (tracing libraries, eval SDKs, dashboard visualization libraries, etc.)
 scripts:
   sh: scripts/bash/setup-plan.sh --json
 ---
@@ -34,12 +34,20 @@ Given that context, do this:
        - Test data processing and management needs
        - Results storage and analysis requirements
        - Dashboard and visualization needs
-    3. Design technical architecture for evaluation infrastructure
-    4. Select appropriate technology stack and frameworks
-    5. Create detailed implementation plan with phases and tasks
-    6. Define environment setup and dependency requirements
-    7. Specify integration patterns and data flow
-    8. Document configuration and deployment approach
+    3. For unclear technical decisions:
+       - Make informed choices based on evaluation requirements and common patterns
+       - Only mark with [NEEDS CLARIFICATION: specific question] if:
+         - The choice significantly impacts system architecture or performance
+         - Multiple reasonable technology approaches exist with different trade-offs
+         - No reasonable default technology stack exists for the evaluation type
+       - **LIMIT: Maximum 5 [NEEDS CLARIFICATION] markers total**
+       - Prioritize clarifications by impact: core architecture > integration approach > technology stack > deployment strategy
+    4. Design technical architecture for evaluation infrastructure
+    5. Select appropriate technology stack and frameworks
+    6. Create detailed implementation plan with phases and tasks
+    7. Define environment setup and dependency requirements
+    8. Specify integration patterns and data flow
+    9. Document configuration and deployment approach
 
 5. **Technical Planning Process**:
 
@@ -78,32 +86,24 @@ Given that context, do this:
       
       **Visualization & Reporting**:
       - Matplotlib/Plotly for static charts
-      - Streamlit/Gradio for interactive dashboards
+      - Plotly Dash/Streamlit for interactive dashboards
       - HTML reports with embedded visualizations
       - CSV/Excel exports for stakeholder review
 
    c. **Implementation Architecture**: Design the evaluation system with:
       
       ```
-      evaluation/
-      ├── config/
-      │   ├── evaluation.yaml      # Evaluation configuration
-      │   ├── agent.yaml          # Agent connection settings
-      │   └── metrics.yaml        # Metrics and thresholds
-      ├── data/
-      │   ├── test_cases.jsonl    # Test scenarios
-      │   ├── expected_outputs/   # Ground truth data
-      │   └── results/           # Evaluation results
-      ├── src/
-      │   ├── evaluators/        # Metric computation
-      │   ├── agents/           # Agent integration
-      │   ├── data/             # Data processing
-      │   └── reporting/        # Results analysis
-      ├── scripts/
-      │   ├── run_evaluation.py  # Main execution script
-      │   ├── generate_report.py # Report generation
-      │   └── setup_env.sh      # Environment setup
-      └── requirements.txt       # Python dependencies
+      eval/
+      ├── results/                # Evaluation outputs
+      ├── checklists/            # Task checklists and progress tracking
+      ├── config.yaml            # Configuration for evaluation framework AND original agent
+      ├── evaluators.py          # Evaluators
+      ├── run_evaluation.py      # Main entry point with complete integration pattern
+      ├── setup.sh               # Environment setup script (optional)
+      ├── test_cases.json        # Test cases
+      ├── spec.md                # Evaluation specification
+      ├── plan.md                # Implementation plan
+      └── tasks.md               # Task breakdown
       ```
 
    d. **Implementation Phases**: Break down the work into logical phases:
@@ -125,12 +125,6 @@ Given that context, do this:
       - Dashboard and visualization development
       - Report generation and export functionality
       - Performance optimization and scaling
-      
-      **Phase 4: Validation & Deployment**
-      - End-to-end testing and validation
-      - Documentation and user guides
-      - Deployment automation and CI/CD
-      - Monitoring and alerting setup
 
    e. **Configuration Management**: Define configuration approach:
       - YAML-based configuration files for flexibility
@@ -155,7 +149,97 @@ Given that context, do this:
 
 8. Write the implementation plan to PLAN_FILE using the template structure.
 
-9. Report completion with plan file path, architecture summary, and readiness for the next phase (`/evalkit.tasks`).
+9. **Plan Quality Validation**: After writing the initial plan, validate it against quality criteria:
+
+   a. **Create Implementation Plan Quality Checklist**: Generate a checklist file at `EVAL_DIR/checklists/implementation_plan.md` using the checklist template structure with these validation items:
+   
+      ```markdown
+      # Implementation Plan Quality Checklist: [AGENT NAME]
+      
+      **Purpose**: Validate technical implementation plan completeness and quality before proceeding to task breakdown
+      **Created**: [DATE]
+      **Agent**: [Link to spec.md]
+      **Plan**: [Link to plan.md]
+      
+      ## Technical Architecture Quality
+      
+      - [ ] No evaluation design details (metrics, success criteria, test scenarios)
+      - [ ] Focused on technical implementation and technology decisions
+      - [ ] Written for development teams and technical stakeholders
+      - [ ] All technology choices have clear rationale
+      
+      ## Implementation Completeness
+      
+      - [ ] No [NEEDS CLARIFICATION] markers remain
+      - [ ] All major technology decisions are documented with alternatives considered
+      - [ ] Architecture supports all evaluation requirements from spec
+      - [ ] Implementation phases are logical and well-sequenced
+      - [ ] Integration patterns and data flow are specified
+      - [ ] Environment setup and dependencies are defined
+      - [ ] Configuration and deployment approach is documented
+      
+      ## Technology Decision Quality
+      
+      - [ ] Evaluation framework selection is justified (DeepEval, RAGAS, custom)
+      - [ ] Agent integration approach is clearly defined
+      - [ ] Data storage and processing technologies are appropriate for scale
+      - [ ] Visualization and reporting tools match requirements
+      - [ ] Testing strategy and frameworks are specified
+      - [ ] All technology choices consider maintainability and team expertise
+      
+      ## Notes
+      
+      - Items marked incomplete require plan updates before `/evalkit.tasks`
+      ```
+   
+   b. **Run Validation Check**: Review the plan against each checklist item:
+      - For each item, determine if it passes or fails
+      - Document specific issues found (quote relevant plan sections)
+   
+   c. **Handle Validation Results**:
+      
+      - **If all items pass**: Mark checklist complete and proceed to step 10
+      
+      - **If items fail (excluding [NEEDS CLARIFICATION])**:
+        1. List the failing items and specific issues
+        2. Update the plan to address each issue
+        3. Re-run validation until all items pass (max 3 iterations)
+        4. If still failing after 3 iterations, document remaining issues in checklist notes and warn user
+
+   d. **Handle [NEEDS CLARIFICATION] markers** (if any remain):
+      1. Extract all [NEEDS CLARIFICATION: ...] markers from the plan
+      2. **LIMIT CHECK**: If more than 5 markers exist, keep only the 5 most critical (by technical impact) and make informed decisions for the rest
+      3. For each clarification needed (max 5), present options to user in this format:
+      
+         ```markdown
+         ## Technical Question [N]: [Topic]
+         
+         **Context**: [Quote relevant plan section]
+         
+         **What we need to decide**: [Specific question from NEEDS CLARIFICATION marker]
+         
+         **Technology Options**:
+         
+         | Option | Technology Choice | Trade-offs & Implications |
+         |--------|------------------|---------------------------|
+         | A      | [First technology option] | [Performance, complexity, maintenance implications] |
+         | B      | [Second technology option] | [Performance, complexity, maintenance implications] |
+         | C      | [Third technology option] | [Performance, complexity, maintenance implications] |
+         | Custom | Specify your preferred technology | [Explain how to provide custom choice] |
+         
+         **Your choice**: _[Wait for user response]_
+         ```
+      
+      4. **CRITICAL - Table Formatting**: Ensure markdown tables are properly formatted with consistent spacing
+      5. Number questions sequentially (Q1, Q2, Q3 - max 5 total)
+      6. Present all questions together before waiting for responses
+      7. Wait for user to respond with their choices for all questions
+      8. Update the plan by replacing each [NEEDS CLARIFICATION] marker with the user's selected or provided answer
+      9. Re-run validation after all clarifications are resolved
+
+   e. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
+
+10. Report completion with plan file path, architecture summary, checklist results, and readiness for the next phase (`/evalkit.tasks`).
 
 ## General Guidelines
 
@@ -177,6 +261,34 @@ When choosing technologies, prioritize:
 4. **Maintainability**: Prefer well-documented, actively maintained libraries
 5. **Team Expertise**: Consider available skills and learning curve
 
+### For AI Generation
+
+When creating technical plans from evaluation specifications:
+
+1. **Make informed technology choices**: Use evaluation requirements, agent type patterns, and technical best practices to select appropriate technologies
+2. **Document technology rationale**: Record reasoning for each major technology decision in the alternatives table
+3. **Limit clarifications**: Maximum 5 [NEEDS CLARIFICATION] markers - use only for critical technical decisions that:
+   - Significantly impact system architecture, performance, or maintainability
+   - Have multiple reasonable technology approaches with different trade-offs
+   - Lack any reasonable default technology stack for the evaluation type
+4. **Prioritize clarifications**: core architecture > integration approach > technology stack > deployment strategy
+5. **Think like a technical architect**: Every technology choice should have clear rationale and trade-off analysis
+
+**Examples of reasonable defaults** (don't ask about these):
+
+- **Evaluation frameworks**: DeepEval for LLM agents, RAGAS for RAG systems, pytest for testing
+- **Data processing**: Pandas for data manipulation, JSON for simple storage, SQLite for structured queries
+- **Agent integration**: HTTP API calls for web services, direct imports for Python agents
+- **Visualization**: Matplotlib for static reports, Streamlit for interactive dashboards
+- **Configuration**: YAML files for flexibility, environment variables for deployment
+
+**Common areas needing clarification** (only if no reasonable default exists):
+
+- **Architecture approach**: When multiple valid patterns exist (microservices vs monolithic, sync vs async)
+- **Storage strategy**: When evaluation scale or data complexity requirements are unclear
+- **Integration method**: When agent architecture supports multiple integration approaches
+- **Deployment target**: When production requirements vs local development needs are unclear
+
 ### Architecture Patterns
 
 **Recommended Patterns**:
@@ -193,16 +305,3 @@ When choosing technologies, prioritize:
 - **Framework Lock-in**: Tight coupling to specific evaluation tools
 - **Silent Failures**: Poor error handling and reporting
 
-### Implementation Estimates
-
-Provide realistic time estimates based on:
-- **Simple Agent Evaluation**: 1-2 weeks (basic metrics, small test set)
-- **Comprehensive Evaluation**: 3-4 weeks (multiple metrics, large test set, dashboard)
-- **Complex Multi-Agent**: 4-6 weeks (multiple agents, comparative analysis, advanced reporting)
-- **Production-Ready System**: 6-8 weeks (full automation, monitoring, deployment)
-
-Include buffer time for:
-- Agent integration challenges (20-30% additional time)
-- Custom metric development (varies widely)
-- Dashboard and visualization polish (15-25% additional time)
-- Testing and validation (20-30% additional time)

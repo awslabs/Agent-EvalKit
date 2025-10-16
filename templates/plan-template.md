@@ -1,13 +1,13 @@
 # Evaluation Implementation Plan: [AGENT NAME]
 
-**Branch**: `[###-agent-evaluation]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Agent evaluation specification from `/specs/[###-agent-evaluation]/spec.md`
+**Branch**: `[###-eval-pipeline]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Agent evaluation specification from `/eval/spec.md`
 
-**Note**: This template is filled in by the `/evalkit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+**Note**: This template is filled in by the `/evalkit.plan` command. See `.evalkit/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-[Extract from evaluation spec: primary evaluation objectives + technical approach from research]
+[Extract from evaluation spec: primary evaluation objectives + technical approach]
 
 ## Technical Context
 
@@ -29,103 +29,57 @@
 **Constraints**: [evaluation-specific, e.g., <1GB memory, real-time processing, no simulation or NEEDS CLARIFICATION]  
 **Scale/Scope**: [evaluation-specific, e.g., 1000 test cases, 5 evaluation metrics, 3 agent variants or NEEDS CLARIFICATION]
 
-## Constitution Check
+## Technology Decisions
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+### Core Technology Stack
 
-[Gates determined based on constitution file]
+**Programming Language**: [e.g., Python 3.11+ - rationale for choice]
+**Evaluation Framework**: [e.g., DeepEval for LLM metrics - why selected over alternatives]
+**Agent Integration**: [e.g., HTTP API calls - integration approach and rationale]
+**Data Processing**: [e.g., Pandas for data manipulation - why chosen]
+**Storage**: [e.g., JSON files for simplicity vs SQLite for complex queries]
+**Visualization**: [e.g., Matplotlib for static reports vs Streamlit for interactive dashboards]
+**Testing**: [e.g., pytest for unit testing - testing strategy]
 
-## Project Structure
+### Architecture Decisions
 
-### Documentation (this evaluation)
+**Evaluation Pipeline**: [e.g., Sequential processing vs parallel execution - trade-offs considered]
+**Configuration Management**: [e.g., YAML files for flexibility - configuration approach]
+**Error Handling**: [e.g., Graceful degradation vs fail-fast - error strategy]
+**Logging & Monitoring**: [e.g., Structured JSON logging - observability approach]
+**Deployment**: [e.g., Local execution vs containerized deployment - deployment strategy]
 
-```
-specs/[###-agent-evaluation]/
-├── plan.md              # This file (/evalkit.plan command output)
-├── research.md          # Phase 0 output (/evalkit.plan command)
-├── evaluation-design.md # Phase 1 output (/evalkit.plan command)
-├── metrics-spec.md      # Phase 1 output (/evalkit.plan command)
-├── test-scenarios/      # Phase 1 output (/evalkit.plan command)
-└── tasks.md             # Phase 2 output (/evalkit.tasks command - NOT created by /evalkit.plan)
-```
+### Alternative Technologies Considered
 
-### Evaluation Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this evaluation. Delete unused options and expand the chosen structure with
-  real paths (e.g., eval/agents, eval/metrics). The delivered plan must
-  not include Option labels.
--->
+| Decision | Chosen | Alternative | Rationale |
+|----------|--------|-------------|-----------|
+| Evaluation Framework | [e.g., DeepEval] | [e.g., RAGAS, Custom] | [why chosen over alternatives] |
+| Data Storage | [e.g., JSON] | [e.g., SQLite, PostgreSQL] | [trade-offs and decision factors] |
+| Visualization | [e.g., Matplotlib] | [e.g., Plotly, Streamlit] | [requirements that drove choice] |
+| Agent Integration | [e.g., HTTP API] | [e.g., Direct import, Docker] | [integration constraints and benefits] |
 
-```
-# [REMOVE IF UNUSED] Option 1: Simple evaluation (DEFAULT)
-eval/
-├── config/
-│   ├── evaluation.yaml
-│   ├── agent.yaml
-│   └── metrics.yaml
-├── data/
-│   ├── test_cases.jsonl
-│   ├── expected_outputs/
-│   └── results/
-├── src/
-│   ├── evaluators/
-│   ├── agents/
-│   ├── data/
-│   └── reporting/
-└── scripts/
-    ├── run_evaluation.py
-    ├── generate_report.py
-    └── setup_env.sh
+## Implementation Phases
 
-# [REMOVE IF UNUSED] Option 2: Multi-agent evaluation (when multiple agents detected)
-eval/
-├── config/
-│   ├── evaluation.yaml
-│   └── agents/
-│       ├── agent1.yaml
-│       ├── agent2.yaml
-│       └── agent3.yaml
-├── data/
-│   ├── shared/
-│   │   └── test_cases.jsonl
-│   └── results/
-│       ├── agent1/
-│       ├── agent2/
-│       └── comparative/
-└── src/
-    ├── evaluators/
-    ├── agents/
-    ├── comparative/
-    └── reporting/
+### Phase 1: Foundation
+- Environment setup and dependency management
+- Agent connectivity and basic integration testing
+- Core evaluation framework integration
+- Basic logging and error handling
 
-# [REMOVE IF UNUSED] Option 3: Production evaluation system (when "production" + "monitoring" detected)
-eval/
-├── config/
-├── data/
-├── src/
-├── monitoring/
-│   ├── dashboards/
-│   ├── alerts/
-│   └── metrics/
-├── deployment/
-│   ├── docker/
-│   ├── k8s/
-│   └── ci-cd/
-└── docs/
-    ├── setup.md
-    ├── usage.md
-    └── troubleshooting.md
-```
+### Phase 2: Core Evaluation
+- Test case loading and validation
+- Evaluation metrics implementation
+- Results collection and storage
+- Basic reporting functionality
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+### Phase 3: Analysis & Reporting
+- Results analysis and insights generation
+- Visualization and dashboard development
+- Report generation and export
+- Performance optimization
 
-## Complexity Tracking
-
-*Fill ONLY if Constitution Check has violations that must be justified*
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., Custom evaluation framework] | [specific need] | [why DeepEval/RAGAS insufficient] |
-| [e.g., Multiple storage systems] | [specific problem] | [why single storage insufficient] |
+### Phase 4: Validation & Documentation
+- End-to-end testing and validation
+- Documentation and usage guides
+- Deployment preparation
+- Final testing and quality assurance

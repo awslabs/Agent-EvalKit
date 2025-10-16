@@ -45,54 +45,50 @@ Given that context, do this:
    b. **Phase-by-Phase Implementation**:
 
       **Phase 1: Foundation Setup**
-      ```python
+      ```bash
       # Environment setup and basic infrastructure
       
-      # 1. Create virtual environment and install dependencies
-      import subprocess
-      import sys
-      from pathlib import Path
+      # 1. Create setup.sh script for environment setup
+      cat > eval/setup.sh << 'EOF'
+      #!/bin/bash
+      set -e
       
-      def setup_environment():
-          """Set up Python environment with required dependencies."""
-          # Create virtual environment using uv
-          subprocess.run([sys.executable, "-m", "uv", "venv", "eval-env"], check=True)
-          
-          # Install core dependencies
-          requirements = [
-              "deepeval>=0.21.0",  # For LLM evaluation metrics
-              "pandas>=2.0.0",     # For data processing
-              "pyyaml>=6.0",       # For configuration management
-              "rich>=13.0.0",      # For beautiful console output
-              "typer>=0.9.0",      # For CLI interface
-              "httpx>=0.24.0",     # For HTTP requests
-              "plotly>=5.15.0",    # For visualizations
-              "streamlit>=1.25.0", # For dashboard (optional)
-          ]
-          
-          for req in requirements:
-              subprocess.run([
-                  "eval-env/bin/pip", "install", req
-              ], check=True)
+      echo "Setting up evaluation environment..."
+      
+      # Create virtual environment using uv
+      uv venv eval-env
+      source eval-env/bin/activate
+      
+      # Install core dependencies
+      uv pip install \
+          "deepeval>=0.21.0" \
+          "pandas>=2.0.0" \
+          "pyyaml>=6.0" \
+          "rich>=13.0.0" \
+          "httpx>=0.24.0" \
+          "plotly>=5.15.0"
+      
+      echo "Environment setup complete!"
+      EOF
+      
+      chmod +x eval/setup.sh
+      
+      # Run the setup script
+      ./eval/setup.sh
       
       # 2. Create directory structure
-      def create_directory_structure():
-          """Create the evaluation project directory structure."""
-          dirs = [
-              "eval/config",
-              "eval/data/test_cases",
-              "eval/data/results", 
-              "eval/src/evaluators",
-              "eval/src/agents",
-              "eval/src/data",
-              "eval/src/reporting",
-              "eval/scripts",
-              "eval/logs",
-              "eval/reports"
-          ]
-          
-          for dir_path in dirs:
-              Path(dir_path).mkdir(parents=True, exist_ok=True)
+      mkdir -p eval/results eval/checklists
+      
+      # Create core files
+      touch eval/config.yaml
+      touch eval/evaluators.py
+      touch eval/run_evaluation.py
+      touch eval/test_cases.json
+      touch eval/spec.md
+      touch eval/plan.md
+      touch eval/tasks.md
+      
+      echo "Project structure created successfully!"
       ```
 
       **Phase 2: Agent Integration**
@@ -217,27 +213,32 @@ Given that context, do this:
       class DataManager:
           """Manage test data and results."""
           
-          def __init__(self, data_dir: Path):
-              self.data_dir = Path(data_dir)
-              self.test_cases_file = self.data_dir / "test_cases.jsonl"
-              self.results_dir = self.data_dir / "results"
+          def __init__(self, eval_dir: Path):
+              self.eval_dir = Path(eval_dir)
+              self.test_cases_file = self.eval_dir / "test_cases.json"
+              self.results_dir = self.eval_dir / "results"
               
           def load_test_cases(self) -> list:
-              """Load test cases from JSONL file."""
-              test_cases = []
-              
+              """Load test cases from JSON file."""
               if not self.test_cases_file.exists():
                   raise FileNotFoundError(f"Test cases file not found: {self.test_cases_file}")
                   
               with open(self.test_cases_file, 'r') as f:
-                  for line_num, line in enumerate(f, 1):
-                      try:
-                          case = json.loads(line.strip())
-                          case["id"] = case.get("id", f"case_{line_num}")
-                          test_cases.append(case)
-                      except json.JSONDecodeError as e:
-                          print(f"Warning: Invalid JSON on line {line_num}: {e}")
-                          
+                  data = json.load(f)
+                  
+              # Handle both array format and object format
+              if isinstance(data, list):
+                  test_cases = data
+              elif isinstance(data, dict) and "test_cases" in data:
+                  test_cases = data["test_cases"]
+              else:
+                  raise ValueError("Invalid test cases format. Expected array or object with 'test_cases' key.")
+                  
+              # Ensure each case has an ID
+              for i, case in enumerate(test_cases):
+                  if "id" not in case:
+                      case["id"] = f"case_{i+1}"
+                      
               return test_cases
               
           def save_results(self, results: list, run_id: str):
@@ -271,7 +272,7 @@ Given that context, do this:
           # Initialize components
           agent_connector = AgentConnector(config["agent"])
           evaluation_engine = EvaluationEngine(config["evaluation"])
-          data_manager = DataManager(config["data"]["directory"])
+          data_manager = DataManager(Path("eval"))
           
           # Connect to agent
           agent_connector.connect()
@@ -356,7 +357,7 @@ Given that context, do this:
 - Logging at appropriate levels (DEBUG, INFO, WARNING, ERROR)
 - Type hints for function parameters and return values
 - Docstrings for all classes and public methods
-- Unit tests for core functionality
+- End-to-end evaluation testing
 
 **Code Organization**:
 - Separate concerns into focused modules
@@ -368,7 +369,6 @@ Given that context, do this:
 ### Testing Strategy
 
 **Component Testing**:
-- Unit tests for individual functions and classes
 - Integration tests for component interactions
 - Mock external dependencies (but never the agent under test)
 - Test error conditions and edge cases

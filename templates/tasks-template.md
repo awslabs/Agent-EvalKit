@@ -4,23 +4,23 @@ description: "Task list template for evaluation implementation"
 
 # Tasks: [AGENT NAME] Evaluation
 
-**Input**: Design documents from `/specs/[###-agent-evaluation]/`
-**Prerequisites**: plan.md (required), spec.md (required for evaluation areas), research.md, evaluation-design.md, metrics-spec.md
+**Input**: Design documents from `eval/`  
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the evaluation specification.
+**Prerequisites**: plan.md (required), spec.md (required for evaluation areas)
+
+**Focus**: Agent evaluation implementation - no unit testing required for evaluation pipelines.
 
 **Organization**: Tasks are grouped by evaluation area to enable independent implementation and testing of each area.
 
-## Format: `[ID] [P?] [Area] Description`
-- **[P]**: Can run in parallel (different files, no dependencies)
+## Format: `[ID] [Area] Description`
 - **[Area]**: Which evaluation area this task belongs to (e.g., EA1, EA2, EA3)
 - Include exact file paths in descriptions
 
 ## Path Conventions
-- **Simple evaluation**: `eval/`, `eval/tests/` at repository root
-- **Multi-agent**: `eval/agents/`, `eval/comparative/`
-- **Production**: `eval/src/`, `eval/monitoring/`, `eval/deployment/`
-- Paths shown below assume simple evaluation - adjust based on plan.md structure
+- **Evaluation structure**: `eval/` at repository root with flat structure
+- **Core files**: `eval/config.yaml`, `eval/evaluators.py`, `eval/run_evaluation.py`, `eval/test_cases.json`
+- **Results**: `eval/results/` for evaluation outputs
+- Paths shown below assume flat evaluation structure from plan.md
 
 <!-- 
   ============================================================================
@@ -29,8 +29,6 @@ description: "Task list template for evaluation implementation"
   The /evalkit.tasks command MUST replace these with actual tasks based on:
   - Evaluation areas from spec.md (with their priorities P1, P2, P3...)
   - Technical requirements from plan.md
-  - Metrics from evaluation-design.md
-  - Test scenarios from test-scenarios/
   
   Tasks MUST be organized by evaluation area so each area can be:
   - Implemented independently
@@ -47,8 +45,8 @@ description: "Task list template for evaluation implementation"
 
 - [ ] T001 Create evaluation project structure per implementation plan
 - [ ] T002 Initialize Python project with evaluation framework dependencies
-- [ ] T003 [P] Configure linting and formatting tools
-- [ ] T004 [P] Set up logging and monitoring infrastructure
+- [ ] T003 Configure linting and formatting tools
+- [ ] T004 Set up logging and monitoring infrastructure
 
 ---
 
@@ -61,12 +59,12 @@ description: "Task list template for evaluation implementation"
 Examples of foundational tasks (adjust based on your project):
 
 - [ ] T005 Setup agent integration and connection framework
-- [ ] T006 [P] Implement data loading and validation pipeline
-- [ ] T007 [P] Setup evaluation framework integration (DeepEval/RAGAS/Custom)
+- [ ] T006 Implement data loading and validation pipeline
+- [ ] T007 Setup evaluation framework integration (DeepEval/RAGAS/Custom)
 - [ ] T008 Create base evaluation classes and interfaces
 - [ ] T009 Configure result storage and aggregation system
 - [ ] T010 Setup configuration management system
-- [ ] T011 [P] Implement basic reporting and visualization framework
+- [ ] T011 Implement basic reporting and visualization framework
 
 **Checkpoint**: Foundation ready - evaluation area implementation can now begin in parallel
 
@@ -78,21 +76,14 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this area works on its own]
 
-### Tests for Evaluation Area 1 (OPTIONAL - only if tests requested) ⚠️
-
-**NOTE: Write these tests FIRST, ensure they FAIL before implementation**
-
-- [ ] T012 [P] [EA1] Unit test for [metric] in eval/tests/unit/test_[metric].py
-- [ ] T013 [P] [EA1] Integration test for [evaluation flow] in eval/tests/integration/test_[area].py
-
 ### Implementation for Evaluation Area 1
 
-- [ ] T014 [P] [EA1] Create [Metric1] evaluator in eval/src/evaluators/[metric1].py
-- [ ] T015 [P] [EA1] Create [Metric2] evaluator in eval/src/evaluators/[metric2].py
-- [ ] T016 [EA1] Implement [EvaluationArea1] orchestrator in eval/src/evaluators/[area1].py (depends on T014, T015)
-- [ ] T017 [EA1] Create test scenarios for [area1] in eval/data/test_cases/[area1].jsonl
-- [ ] T018 [EA1] Add validation and error handling for [area1]
-- [ ] T019 [EA1] Add logging and monitoring for evaluation area 1
+- [ ] T012 [EA1] Create [Metric1] evaluator in eval/evaluators.py
+- [ ] T013 [EA1] Create [Metric2] evaluator in eval/evaluators.py
+- [ ] T014 [EA1] Implement [EvaluationArea1] orchestrator in eval/run_evaluation.py
+- [ ] T015 [EA1] Create test scenarios for [area1] in eval/test_cases.json
+- [ ] T016 [EA1] Add validation and error handling for [area1]
+- [ ] T017 [EA1] Add logging and monitoring for evaluation area 1
 
 **Checkpoint**: At this point, Evaluation Area 1 should be fully functional and testable independently
 
@@ -104,17 +95,12 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this area works on its own]
 
-### Tests for Evaluation Area 2 (OPTIONAL - only if tests requested) ⚠️
-
-- [ ] T020 [P] [EA2] Unit test for [metric] in eval/tests/unit/test_[metric].py
-- [ ] T021 [P] [EA2] Integration test for [evaluation flow] in eval/tests/integration/test_[area].py
-
 ### Implementation for Evaluation Area 2
 
-- [ ] T022 [P] [EA2] Create [Metric] evaluator in eval/src/evaluators/[metric].py
-- [ ] T023 [EA2] Implement [EvaluationArea2] orchestrator in eval/src/evaluators/[area2].py
-- [ ] T024 [EA2] Create test scenarios for [area2] in eval/data/test_cases/[area2].jsonl
-- [ ] T025 [EA2] Integrate with Evaluation Area 1 components (if needed)
+- [ ] T018 [EA2] Create [Metric] evaluator in eval/evaluators.py
+- [ ] T019 [EA2] Implement [EvaluationArea2] orchestrator in eval/run_evaluation.py
+- [ ] T020 [EA2] Create test scenarios for [area2] in eval/test_cases.json
+- [ ] T021 [EA2] Integrate with Evaluation Area 1 components (if needed)
 
 **Checkpoint**: At this point, Evaluation Areas 1 AND 2 should both work independently
 
@@ -126,16 +112,11 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this area works on its own]
 
-### Tests for Evaluation Area 3 (OPTIONAL - only if tests requested) ⚠️
-
-- [ ] T026 [P] [EA3] Unit test for [metric] in eval/tests/unit/test_[metric].py
-- [ ] T027 [P] [EA3] Integration test for [evaluation flow] in eval/tests/integration/test_[area].py
-
 ### Implementation for Evaluation Area 3
 
-- [ ] T028 [P] [EA3] Create [Metric] evaluator in eval/src/evaluators/[metric].py
-- [ ] T029 [EA3] Implement [EvaluationArea3] orchestrator in eval/src/evaluators/[area3].py
-- [ ] T030 [EA3] Create test scenarios for [area3] in eval/data/test_cases/[area3].jsonl
+- [ ] T022 [EA3] Create [Metric] evaluator in eval/evaluators.py
+- [ ] T023 [EA3] Implement [EvaluationArea3] orchestrator in eval/run_evaluation.py
+- [ ] T024 [EA3] Create test scenarios for [area3] in eval/test_cases.json
 
 **Checkpoint**: All evaluation areas should now be independently functional
 
@@ -149,64 +130,31 @@ Examples of foundational tasks (adjust based on your project):
 
 **Purpose**: Results analysis and insights generation that affects multiple evaluation areas
 
-- [ ] TXXX [P] Implement results aggregation and statistical analysis
-- [ ] TXXX [P] Create comparative analysis between evaluation areas
+- [ ] TXXX Implement results aggregation and statistical analysis
+- [ ] TXXX Create comparative analysis between evaluation areas
 - [ ] TXXX Build interactive dashboard and visualizations
-- [ ] TXXX [P] Generate comprehensive evaluation reports
+- [ ] TXXX Generate comprehensive evaluation reports
 - [ ] TXXX Performance optimization across all areas
-- [ ] TXXX [P] Additional unit tests (if requested) in eval/tests/unit/
 - [ ] TXXX Security and data privacy validation
 - [ ] TXXX Run end-to-end evaluation validation
 
 ---
 
-## Dependencies & Execution Order
+## Execution Order
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: No dependencies - can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all evaluation areas
-- **Evaluation Areas (Phase 3+)**: All depend on Foundational phase completion
-  - Evaluation areas can then proceed in parallel (if staffed)
-  - Or sequentially in priority order (P1 → P2 → P3)
-- **Analysis & Reporting (Final Phase)**: Depends on all desired evaluation areas being complete
-
-### Evaluation Area Dependencies
-
-- **Evaluation Area 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other areas
-- **Evaluation Area 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with EA1 but should be independently testable
-- **Evaluation Area 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with EA1/EA2 but should be independently testable
+- **Setup (Phase 1)**: Project initialization and basic structure
+- **Foundational (Phase 2)**: Core infrastructure - must complete before evaluation areas
+- **Evaluation Areas (Phase 3+)**: Implement evaluation areas sequentially by priority (P1 → P2 → P3)
+- **Analysis & Reporting (Final Phase)**: Results analysis after evaluation areas complete
 
 ### Within Each Evaluation Area
 
-- Tests (if included) MUST be written and FAIL before implementation
 - Evaluators before orchestrators
 - Test scenarios before integration
 - Core implementation before cross-area integration
-- Area complete before moving to next priority
-
-### Parallel Opportunities
-
-- All Setup tasks marked [P] can run in parallel
-- All Foundational tasks marked [P] can run in parallel (within Phase 2)
-- Once Foundational phase completes, all evaluation areas can start in parallel (if team capacity allows)
-- All tests for an evaluation area marked [P] can run in parallel
-- Evaluators within an area marked [P] can run in parallel
-- Different evaluation areas can be worked on in parallel by different team members
-
----
-
-## Parallel Example: Evaluation Area 1
-
-```bash
-# Launch all tests for Evaluation Area 1 together (if tests requested):
-Task: "Unit test for [metric] in eval/tests/unit/test_[metric].py"
-Task: "Integration test for [evaluation flow] in eval/tests/integration/test_[area].py"
-
-# Launch all evaluators for Evaluation Area 1 together:
-Task: "Create [Metric1] evaluator in eval/src/evaluators/[metric1].py"
-Task: "Create [Metric2] evaluator in eval/src/evaluators/[metric2].py"
-```
+- Complete area before moving to next priority
 
 ---
 
@@ -228,25 +176,11 @@ Task: "Create [Metric2] evaluator in eval/src/evaluators/[metric2].py"
 4. Add Evaluation Area 3 → Test independently → Generate comprehensive insights
 5. Each area adds evaluation depth without breaking previous areas
 
-### Parallel Team Strategy
-
-With multiple developers:
-
-1. Team completes Setup + Foundational together
-2. Once Foundational is done:
-   - Developer A: Evaluation Area 1
-   - Developer B: Evaluation Area 2
-   - Developer C: Evaluation Area 3
-3. Areas complete and integrate independently
-
----
 
 ## Notes
 
-- [P] tasks = different files, no dependencies
 - [Area] label maps task to specific evaluation area for traceability
 - Each evaluation area should be independently completable and testable
-- Verify tests fail before implementing
 - Commit after each task or logical group
 - Stop at any checkpoint to validate area independently
-- Avoid: vague tasks, same file conflicts, cross-area dependencies that break independence
+- Avoid: vague tasks, cross-area dependencies that break independence
