@@ -1,9 +1,7 @@
 {
     "chat.promptFilesRecommendations": {
         "evalkit.design": true,
-        "evalkit.clarify": true,
         "evalkit.plan": true,
-        "evalkit.tasks": true,
         "evalkit.implement": true,
         "evalkit.insights": true
     },

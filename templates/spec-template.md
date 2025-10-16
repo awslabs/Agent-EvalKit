@@ -1,9 +1,11 @@
 # Agent Evaluation Specification: [AGENT NAME]
 
-**Evaluation Branch**: `[###-agent-evaluation]`  
-**Created**: [DATE]  
-**Status**: Draft  
-**Input**: Agent description: "$ARGUMENTS"
+**Branch**: `[###-eval-pipeline]` | **Date**: [DATE]  
+**Agent Path**: [Path to agent code/repository]  
+**User Query**: "$ARGUMENTS" *(designing context if provided)*
+**Spec Path**: `eval/spec.md`
+
+**Note**: This template is filled in by the `/evalkit.design` command. See `.evalkit/templates/commands/design.md` for the execution workflow.
 
 ## Agent Analysis & Overview *(mandatory)*
 
@@ -26,7 +28,24 @@
 **Input/Output Formats**: [Describe data types and interaction patterns]  
 **Key Functions**: [List primary capabilities and decision points]  
 **Available Tools**: [If applicable, list tools the agent can use]  
-**Technology Stack**: [Languages, frameworks, dependencies]
+**Technology Stack**: [Languages, frameworks, dependencies] 
+
+**Agent Workflow Diagram**:
+```mermaid
+flowchart TD
+    A[User Input] --> B[Agent Processing]
+    B --> C[Decision Point]
+    C --> D[Tool Usage/Action]
+    D --> E[Response Generation]
+    E --> F[User Output]
+    
+    %% Add specific nodes for your agent:
+    %% Example: C --> G[RAG Retrieval]
+    %% Example: C --> H[Code Generation]
+    %% Example: G --> I[Context Processing]
+```
+
+*Note: Replace the generic workflow above with your agent's specific flow, showing key decision points, tool usage, and data transformations.*
 
 ### Evaluation Area 1 - [Brief Title] (Priority: P1)
 
@@ -36,10 +55,10 @@
 
 **Independent Test**: [Describe how this can be evaluated independently - e.g., "Can be fully tested by [specific scenarios] and delivers [specific insights]"]
 
-**Success Criteria**:
+**Metrics**:
 
-1. **Metric**: [specific measurement], **Target**: [threshold], **Method**: [how to measure]
-2. **Metric**: [specific measurement], **Target**: [threshold], **Method**: [how to measure]
+1. **Metric**: [specific measurement], **Method**: [how to measure]
+2. **Metric**: [specific measurement], **Method**: [how to measure]
 
 ---
 
@@ -51,9 +70,10 @@
 
 **Independent Test**: [Describe how this can be evaluated independently]
 
-**Success Criteria**:
+**Metrics**:
 
-1. **Metric**: [specific measurement], **Target**: [threshold], **Method**: [how to measure]
+1. **Metric**: [specific measurement], **Method**: [how to measure]
+2. **Metric**: [specific measurement], **Method**: [how to measure]
 
 ---
 
@@ -65,9 +85,10 @@
 
 **Independent Test**: [Describe how this can be evaluated independently]
 
-**Success Criteria**:
+**Metrics**:
 
-1. **Metric**: [specific measurement], **Target**: [threshold], **Method**: [how to measure]
+1. **Metric**: [specific measurement], **Method**: [how to measure]
+2. **Metric**: [specific measurement], **Method**: [how to measure]
 
 ---
 
@@ -109,16 +130,3 @@
 - **[Scenario Type 1]**: [What it tests, key characteristics without implementation]
 - **[Scenario Type 2]**: [What it tests, relationships to other scenarios]
 
-## Success Criteria *(mandatory)*
-
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be framework-agnostic and measurable.
--->
-
-### Measurable Outcomes
-
-- **SC-001**: [Measurable metric, e.g., "Agent achieves >90% accuracy on customer service queries"]
-- **SC-002**: [Measurable metric, e.g., "Average response time <2 seconds for standard queries"]
-- **SC-003**: [Quality metric, e.g., "95% of responses are factually correct and relevant"]
-- **SC-004**: [Performance metric, e.g., "Tool selection accuracy >85% for multi-tool scenarios"]

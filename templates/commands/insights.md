@@ -89,12 +89,11 @@ Given that context, do this:
       - **Expected Impact**: Quantified improvement predictions
       - **Success Metrics**: How to measure improvement
 
-6. **Insights Report Generation**: Create comprehensive report:
-   - Executive summary with key findings and overall assessment
-   - Detailed performance analysis with metrics and trends
-   - Root cause analysis with supporting evidence
-   - Prioritized improvement recommendations with expected impact
-   - Next steps and success metrics for tracking progress
+6. **Insights Report Generation**: Create focused report with:
+   - Executive summary with key findings
+   - Performance analysis with core metrics
+   - Prioritized improvement recommendations with evidence
+   - Success metrics for tracking progress
 
 7. **Report Structure**:
    ```markdown
@@ -102,30 +101,23 @@ Given that context, do this:
    
    ## Executive Summary
    - Overall Performance: [Rating and key metrics]
-   - Critical Issues: [Top 3 issues requiring immediate attention]
-   - Strengths: [What the agent does well]
-   - Improvement Potential: [Expected gains from recommendations]
+   - Critical Issues: [Top issues requiring attention]
+   - Key Strengths: [What works well]
    
    ## Performance Analysis
-   - Success Rate: [X%] (Target: [Y%])
-   - Average Latency: [Xms] (Target: [Yms])
-   - Quality Score: [X.X/5.0] (Target: [Y.X])
-   - Cost per Query: [$X.XX] (Budget: [$Y.XX])
-   
-   ## Key Findings
-   [Detailed analysis with evidence and data patterns]
-   
-   ## Root Cause Analysis
-   [Investigation of underlying issues with supporting evidence]
+   - Success Rate: [X%]
+   - Average Latency: [Xms]
+   - Quality Score: [X.X/5.0]
+   - Cost per Query: [$X.XX]
    
    ## Improvement Recommendations
-   [Prioritized list with expected impact and success metrics]
+   [Prioritized list with evidence and expected impact]
    
-   ## Success Metrics & Monitoring
-   [How to track improvement progress and measure success]
+   ## Success Metrics
+   [How to measure improvement progress]
    ```
 
-8. Report completion with insights summary, critical recommendations, and suggested monitoring approach.
+8. Report completion with insights summary and critical recommendations.
 
 ## General Guidelines
 
@@ -162,13 +154,10 @@ Always check for these indicators of simulated results:
 - Are too generic or theoretical
 - Ignore practical implementation challenges
 
-### Report Quality Checklist
+### Report Quality Standards
 
-- [ ] All data verified as from real agent execution
-- [ ] Performance metrics clearly documented with evidence
-- [ ] Root causes identified and supported by data
-- [ ] Recommendations are specific and actionable
-- [ ] Expected outcomes are quantified
-- [ ] Implementation effort is estimated
-- [ ] Priorities are based on impact and feasibility
-- [ ] Report is accessible to non-technical stakeholders
+Ensure your insights report:
+- Uses data from real agent execution (never simulation)
+- Provides specific, actionable recommendations with evidence
+- Quantifies expected improvements and success metrics
+- Prioritizes recommendations by impact and feasibility

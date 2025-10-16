@@ -76,10 +76,6 @@ HAS_GIT='$has_git_repo'
 EVALUATION_DIR='$evaluation_dir'
 EVALUATION_SPEC='$evaluation_dir/spec.md'
 IMPL_PLAN='$evaluation_dir/plan.md'
-TASKS='$evaluation_dir/tasks.md'
-RESEARCH='$evaluation_dir/research.md'
-DATA_MODEL='$evaluation_dir/data-model.md'
-QUICKSTART='$evaluation_dir/quickstart.md'
 RESULTS_DIR='$evaluation_dir/results'
 EOF
 }

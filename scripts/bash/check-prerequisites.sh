@@ -9,8 +9,8 @@
 #
 # OPTIONS:
 #   --json              Output in JSON format
-#   --require-tasks     Require tasks.md to exist (for implementation phase)
-#   --include-tasks     Include tasks.md in AVAILABLE_DOCS list
+#   --require-plan      Require plan.md to exist (for implementation phase)
+#   --include-plan      Include plan.md in AVAILABLE_DOCS list
 #   --paths-only        Only output path variables (no validation)
 #   --help, -h          Show help message
 #
@@ -23,8 +23,8 @@ set -e
 
 # Parse command line arguments
 JSON_MODE=false
-REQUIRE_TASKS=false
-INCLUDE_TASKS=false
+REQUIRE_PLAN=false
+INCLUDE_PLAN=false
 PATHS_ONLY=false
 
 for arg in "$@"; do
@@ -32,11 +32,11 @@ for arg in "$@"; do
         --json)
             JSON_MODE=true
             ;;
-        --require-tasks)
-            REQUIRE_TASKS=true
+        --require-plan)
+            REQUIRE_PLAN=true
             ;;
-        --include-tasks)
-            INCLUDE_TASKS=true
+        --include-plan)
+            INCLUDE_PLAN=true
             ;;
         --paths-only)
             PATHS_ONLY=true
@@ -49,17 +49,17 @@ Consolidated prerequisite checking for Agent Evaluation workflow.
 
 OPTIONS:
   --json              Output in JSON format
-  --require-tasks     Require tasks.md to exist (for implementation phase)
-  --include-tasks     Include tasks.md in AVAILABLE_DOCS list
+  --require-plan      Require plan.md to exist (for implementation phase)
+  --include-plan      Include plan.md in AVAILABLE_DOCS list
   --paths-only        Only output path variables (no prerequisite validation)
   --help, -h          Show this help message
 
 EXAMPLES:
-  # Check task prerequisites (plan.md required)
+  # Check design prerequisites (spec.md required)
   ./check-prerequisites.sh --json
   
-  # Check implementation prerequisites (plan.md + tasks.md required)
-  ./check-prerequisites.sh --json --require-tasks --include-tasks
+  # Check implementation prerequisites (plan.md required)
+  ./check-prerequisites.sh --json --require-plan --include-plan
   
   # Get evaluation paths only (no validation)
   ./check-prerequisites.sh --paths-only
@@ -86,15 +86,14 @@ check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
 if $PATHS_ONLY; then
     if $JSON_MODE; then
         # Minimal JSON paths payload (no validation performed)
-        printf '{"REPO_ROOT":"%s","BRANCH":"%s","EVALUATION_DIR":"%s","EVALUATION_SPEC":"%s","IMPL_PLAN":"%s","TASKS":"%s"}\n' \
-            "$REPO_ROOT" "$CURRENT_BRANCH" "$EVALUATION_DIR" "$EVALUATION_SPEC" "$IMPL_PLAN" "$TASKS"
+        printf '{"REPO_ROOT":"%s","BRANCH":"%s","EVALUATION_DIR":"%s","EVALUATION_SPEC":"%s","IMPL_PLAN":"%s"}\n' \
+            "$REPO_ROOT" "$CURRENT_BRANCH" "$EVALUATION_DIR" "$EVALUATION_SPEC" "$IMPL_PLAN"
     else
         echo "REPO_ROOT: $REPO_ROOT"
         echo "BRANCH: $CURRENT_BRANCH"
         echo "EVALUATION_DIR: $EVALUATION_DIR"
         echo "EVALUATION_SPEC: $EVALUATION_SPEC"
         echo "IMPL_PLAN: $IMPL_PLAN"
-        echo "TASKS: $TASKS"
     fi
     exit 0
 fi
@@ -106,36 +105,24 @@ if [[ ! -d "$EVALUATION_DIR" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$IMPL_PLAN" ]]; then
+# Check for plan.md if required (for implementation phase)
+if $REQUIRE_PLAN && [[ ! -f "$IMPL_PLAN" ]]; then
     echo "ERROR: plan.md not found in $EVALUATION_DIR" >&2
     echo "Run /evalkit.plan first to create the implementation plan." >&2
-    exit 1
-fi
-
-# Check for tasks.md if required
-if $REQUIRE_TASKS && [[ ! -f "$TASKS" ]]; then
-    echo "ERROR: tasks.md not found in $EVALUATION_DIR" >&2
-    echo "Run /evalkit.tasks first to create the task list." >&2
     exit 1
 fi
 
 # Build list of available documents
 docs=()
 
-# Always check these optional docs
-[[ -f "$RESEARCH" ]] && docs+=("research.md")
-[[ -f "$DATA_MODEL" ]] && docs+=("data-model.md")
-
 # Check results directory (only if it exists and has files)
 if [[ -d "$RESULTS_DIR" ]] && [[ -n "$(ls -A "$RESULTS_DIR" 2>/dev/null)" ]]; then
     docs+=("results/")
 fi
 
-[[ -f "$QUICKSTART" ]] && docs+=("quickstart.md")
-
-# Include tasks.md if requested and it exists
-if $INCLUDE_TASKS && [[ -f "$TASKS" ]]; then
-    docs+=("tasks.md")
+# Include plan.md if requested and it exists
+if $INCLUDE_PLAN && [[ -f "$IMPL_PLAN" ]]; then
+    docs+=("plan.md")
 fi
 
 # Output results
@@ -155,12 +142,9 @@ else
     echo "AVAILABLE_DOCS:"
     
     # Show status of each potential document
-    check_file "$RESEARCH" "research.md"
-    check_file "$DATA_MODEL" "data-model.md"
     check_dir "$RESULTS_DIR" "results/"
-    check_file "$QUICKSTART" "quickstart.md"
     
-    if $INCLUDE_TASKS; then
-        check_file "$TASKS" "tasks.md"
+    if $INCLUDE_PLAN; then
+        check_file "$IMPL_PLAN" "plan.md"
     fi
 fi
