@@ -3,20 +3,13 @@
 set -e
 
 JSON_MODE=false
-ARGS=()
 for arg in "$@"; do
     case "$arg" in
         --json) JSON_MODE=true ;;
-        --help|-h) echo "Usage: $0 [--json] <evaluation_description>"; exit 0 ;;
-        *) ARGS+=("$arg") ;;
+        --help|-h) echo "Usage: $0 [--json]"; exit 0 ;;
+        *) echo "Error: Unknown argument '$arg'. Use --help for usage information." >&2; exit 1 ;;
     esac
 done
-
-EVALUATION_DESCRIPTION="${ARGS[*]}"
-if [ -z "$EVALUATION_DESCRIPTION" ]; then
-    echo "Usage: $0 [--json] <evaluation_description>" >&2
-    exit 1
-fi
 
 # Function to find the repository root by searching for existing project markers
 find_repo_root() {

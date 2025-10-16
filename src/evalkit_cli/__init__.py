@@ -1317,9 +1317,8 @@ def init(
 
     steps_lines.append("   2.1 [cyan]/evalkit.design[/] - Analyze agent and design evaluation strategy")
     steps_lines.append("   2.2 [cyan]/evalkit.plan[/] - Create evaluation implementation plan")
-    steps_lines.append("   2.3 [cyan]/evalkit.tasks[/] - Generate evaluation task lists")
-    steps_lines.append("   2.4 [cyan]/evalkit.implement[/] - Execute evaluation pipeline implementation")
-    steps_lines.append("   2.5 [cyan]/evalkit.insights[/] - Analyze results and provide improvement suggestions")
+    steps_lines.append("   2.3 [cyan]/evalkit.implement[/] - Execute evaluation pipeline implementation")
+    steps_lines.append("   2.4 [cyan]/evalkit.insights[/] - Analyze results and provide improvement suggestions")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()

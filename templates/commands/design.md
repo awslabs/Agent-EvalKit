@@ -1,7 +1,7 @@
 ---
 description: Analyze user agent source code and design comprehensive evaluation strategy
 scripts:
-  sh: scripts/bash/create-new-evaluation.sh --json "{ARGS}"
+  sh: scripts/bash/create-new-evaluation.sh --json
 ---
 
 ## User Input
@@ -14,9 +14,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.design` in the triggering message **is** the agent description or path to agent code. Assume you always have it available in this conversation even if `{ARGS}` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/evalkit.design` in the triggering message **is** the user evaluation requests or agent description. Assume you always have it available in this conversation even if it appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
-Given that agent description or code path, do this:
+Given that user evaluation requests or agent description, do this:
 
 1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and EVAL_SPEC_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. For single quotes in args like "I'm analyzing", use escape syntax: e.g 'I'\''m analyzing' (or double-quote if possible: "I'm analyzing").
@@ -25,8 +25,8 @@ Given that agent description or code path, do this:
 
 3. Follow this execution flow:
 
-    1. Parse agent description/path from Input
-       If empty: ERROR "No agent description or path provided"
+    1. Parse user evaluation requests from Input
+       If empty: ERROR "No agent description or evaluation requsts provided"
     2. Analyze agent code and capabilities
        Identify: architecture, input/output formats, key functions, tools available
     3. For unclear evaluation aspects:
