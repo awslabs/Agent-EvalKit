@@ -4,7 +4,7 @@ This guide will help you get started with Agent Evaluation using EvalKit.
 
 > NEW: All automation scripts now provide both Bash (`.sh`) and PowerShell (`.ps1`) variants. The `evalkit` CLI auto-selects based on OS unless you pass `--script sh|ps`.
 
-## The 5-Step Evaluation Process
+## The 4-Step Evaluation Process
 
 ### 1. Install EvalKit
 
@@ -36,16 +36,14 @@ Use the `/evalkit.plan` command to create technical implementation plans for you
 /evalkit.plan Use DeepEval for LLM-based metrics, implement real-time monitoring with custom dashboards, store results in JSON format, and create automated reporting pipeline.
 ```
 
-### 4. Generate and Execute Tasks
+### 4. Implement and Analyze
 
-Use `/evalkit.tasks` to create an actionable task list, then `/evalkit.implement` to build the evaluation pipeline.
+Use `/evalkit.implement` to build the evaluation pipeline, then `/evalkit.insights` to analyze results.
 
 ```bash
-/evalkit.tasks
 /evalkit.implement
+/evalkit.insights
 ```
-
-### 5. Analyze Results and Get Insights
 
 Use `/evalkit.insights` to analyze evaluation results and get actionable improvement recommendations.
 
@@ -78,21 +76,15 @@ Set up monitoring dashboard with real-time results. Store evaluation data in str
 for analysis and reporting.
 ```
 
-### Step 3: Generate Tasks and Implement
+### Step 3: Implement and Analyze
 
-Generate the evaluation task breakdown:
-
-```text
-/evalkit.tasks
-```
-
-Then implement the evaluation pipeline:
+Implement the evaluation pipeline:
 
 ```text
 /evalkit.implement
 ```
 
-### Step 4: Analyze Results
+Then analyze the results:
 
 After running evaluations, analyze the results:
 

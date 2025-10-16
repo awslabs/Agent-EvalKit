@@ -87,23 +87,15 @@ Use the **`/evalkit.plan`** command to create technical implementation plans for
 /evalkit.plan Use DeepEval for metrics computation, implement real-time monitoring, and create interactive dashboards for result visualization
 ```
 
-### 4. Generate evaluation tasks
+### 4. Implement evaluation pipeline
 
-Use **`/evalkit.tasks`** to create an actionable task list from your evaluation plan.
-
-```bash
-/evalkit.tasks
-```
-
-### 5. Implement evaluation pipeline
-
-Use **`/evalkit.implement`** to execute all tasks and build your evaluation pipeline according to the plan.
+Use **`/evalkit.implement`** to build your evaluation pipeline according to the plan.
 
 ```bash
 /evalkit.implement
 ```
 
-### 6. Analyze results and get insights
+### 5. Analyze results and get insights
 
 Use **`/evalkit.insights`** to analyze evaluation results and get actionable improvement recommendations.
 
@@ -200,7 +192,6 @@ Essential commands for the Agent Evaluation workflow:
 |--------------------------|-----------------------------------------------------------------------|
 | `/evalkit.design`        | Analyze agent and design evaluation strategy                          |
 | `/evalkit.plan`          | Create evaluation implementation plan                                  |
-| `/evalkit.tasks`         | Generate evaluation task lists                                        |
 | `/evalkit.implement`     | Execute evaluation pipeline implementation                             |
 | `/evalkit.insights`      | Analyze results and provide improvement suggestions                    |
 
