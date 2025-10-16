@@ -31,7 +31,7 @@ source "$SCRIPT_DIR/common.sh"
 eval $(get_evaluation_paths)
 
 # Check if we're on a proper evaluation branch (only for git repos)
-check_evaluation_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
+check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
 
 # Ensure the evaluation directory exists
 mkdir -p "$EVALUATION_DIR"
