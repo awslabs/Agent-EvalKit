@@ -10,8 +10,42 @@
 
 ---
 
+## ✨ Key Design Features
+
+EvalKit stands out with thoughtfully designed architectural features that ensure reliable, consistent, and cutting-edge agent evaluation:
+
+### 🔌 Built-in MCP Server Support
+
+**Universal MCP Integration Across All AI Assistants**
+- **Context7 MCP Server**: Automatically deployed with every project for accessing the latest library documentation and usage patterns
+- **Always Current**: Ensures you're implementing with the latest library functionalities and best practices
+- **Zero Configuration**: MCP servers are automatically configured and ready to use
+
+**Why This Matters**: Instead of relying on potentially outdated training data, you get real-time access to current library documentation, API changes, and implementation patterns. This dramatically reduces implementation errors and ensures your evaluations use modern approaches.
+
+### 🛠️ Built-in Bash Scripts for Deterministic Operations
+
+**Reliable, Consistent Automation**
+- **Prerequisite Checking**: Automated validation of project requirements and dependencies
+- **Branch Management**: Consistent Git workflow management across all evaluation projects
+- **Environment Setup**: Standardized project initialization and configuration
+
+**Why This Matters**: Rather than asking AI assistants to perform these operations ad-hoc (which can be inconsistent), EvalKit provides battle-tested scripts that ensure reliable, repeatable results every time. This eliminates variability in project setup and management.
+
+### 🎯 The Perfect Balance
+
+EvalKit combines the **creativity and intelligence of AI assistants** for evaluation design and implementation with **deterministic, reliable automation** for infrastructure operations. This hybrid approach delivers:
+
+- **Consistent Infrastructure**: Reliable project setup and management
+- **Current Best Practices**: Always up-to-date library usage through MCP integration
+- **Reduced Errors**: Automated validation and standardized workflows
+- **Enhanced Productivity**: Focus on evaluation logic, not infrastructure concerns
+
+---
+
 ## Table of Contents
 
+- [✨ Key Design Features](#-key-design-features)
 - [👨‍💻 For Developers](#-for-developers)
 - [⚡ Get started (Users)](#-get-started-users)
 - [🤖 Supported AI Assistants](#-supported-ai-assistants)

@@ -45,6 +45,23 @@ Follow the established plan structure systematically:
 - Validate each component before proceeding
 - Use actual agent execution, never simulation
 
+### Leveraging Context7 MCP for Latest Library Information
+
+**IMPORTANT**: EvalKit projects include Context7 MCP server for accessing the latest documentation and usage patterns. Use this built-in capability to ensure you're implementing with current best practices:
+
+- **Before implementing evaluation libraries**: Ask Context7 for the latest usage patterns, API changes, and best practices for libraries like DeepEval, LangSmith, or custom evaluation frameworks
+- **For dependency management**: Get current version recommendations and compatibility information
+- **For integration patterns**: Access up-to-date examples and implementation guides
+- **For troubleshooting**: Get current solutions for common integration issues
+
+Example Context7 queries:
+- "What's the latest DeepEval API for custom metrics?"
+- "Show me current best practices for LangSmith evaluation setup"
+- "What are the latest pandas methods for evaluation data processing?"
+- "How to properly configure evaluation environments with current dependency versions?"
+
+This ensures your implementation uses the most current approaches and avoids deprecated patterns.
+
 ### Key Implementation Examples
 
 #### Agent Integration Pattern
@@ -174,6 +191,7 @@ For each implemented component:
 
 - **Follow the Plan**: Implement according to the established plan structure
 - **Real Agent Focus**: Always integrate with actual agent, never simulate
+- **Use Context7 MCP**: Leverage built-in Context7 MCP server for latest library documentation and best practices
 - **Configuration-Driven**: Use `config.yaml` for all settings
 - **Error Resilience**: Handle failures gracefully with clear error messages
 - **Simple Structure**: Follow the flat `eval/` directory structure
