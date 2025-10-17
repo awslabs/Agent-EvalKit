@@ -29,7 +29,28 @@ If you want to contribute to EvalKit or modify templates/scripts, see the [Local
 - Template/script modification workflow
 - Release process and best practices
 
-## ⚡ Get started (Users)
+## ⚡ Get started
+
+### 0. Authentication Setup (Private Repository Only)
+
+**Note:** This step is only required when EvalKit is hosted in a private repository. 
+
+#### GitHub Personal Access Token Setup
+
+1. **Create a Personal Access Token:**
+   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Click "Generate new token (classic)"
+   - Select scopes: `repo` (full control of private repositories)
+   - Copy the generated token
+
+2. **Configure Git credentials:**
+   ```bash
+   # Add to your shell profile (~/.zshrc, ~/.bashrc, or ~/.bash_profile)
+   export GITHUB_TOKEN="your_personal_access_token_here"
+   
+   # Reload your shell configuration
+   source ~/.zshrc  # or source ~/.bashrc
+   ```
 
 ### 1. Install EvalKit
 
