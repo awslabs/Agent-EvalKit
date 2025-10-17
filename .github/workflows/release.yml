@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'memory/**'
+      - 'mcps/**'
       - 'scripts/**'
       - 'templates/**'
       - '.github/workflows/**'
