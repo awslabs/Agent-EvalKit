@@ -739,6 +739,9 @@ def copy_local_template(
     if tracker:
         tracker.complete("local-copy", "templates ready")
 
+    # Copy MCP configuration (local development only)
+    copy_mcp_config_local_dev(project_path, ai_assistant, tracker=tracker, verbose=verbose)
+
     return project_path
 
 
@@ -921,6 +924,62 @@ def download_and_extract_template(
                 console.print(f"Cleaned up: {zip_path.name}")
 
     return project_path
+
+
+def copy_mcp_config_local_dev(
+    project_path: Path, ai_assistant: str, tracker: StepTracker | None = None, verbose: bool = True
+) -> None:
+    """Copy MCP configuration file to the assistant-specific location (local development only)."""
+    # Get repo root directory (where this CLI script is located)
+    repo_root = Path(__file__).parent.parent.parent
+    mcp_source = repo_root / "mcps" / "mcp.json"
+
+    if not mcp_source.exists():
+        if tracker:
+            tracker.skip("mcp-config", "no MCP config found")
+        elif verbose:
+            console.print("[yellow]No MCP configuration found, skipping[/yellow]")
+        return
+
+    # Determine destination path based on AI assistant
+    if ai_assistant == "claude":
+        mcp_dest = project_path / ".mcp.json"
+        location_desc = ".mcp.json (Claude Code)"
+    elif ai_assistant == "kilocode":
+        mcp_dest = project_path / ".kilocode" / "mcp.json"
+        location_desc = ".kilocode/mcp.json (Kilo Code)"
+    elif ai_assistant == "q":
+        mcp_dest = project_path / ".amazonq" / "mcp.json"
+        location_desc = ".amazonq/mcp.json (Amazon Q)"
+    else:
+        if tracker:
+            tracker.skip("mcp-config", f"unsupported assistant: {ai_assistant}")
+        elif verbose:
+            console.print(f"[yellow]MCP config not supported for {ai_assistant}, skipping[/yellow]")
+        return
+
+    try:
+        if tracker:
+            tracker.add("mcp-config", "Copy MCP configuration")
+            tracker.start("mcp-config")
+        elif verbose:
+            console.print("[cyan]Copying MCP configuration...[/cyan]")
+
+        # Create parent directory if needed
+        mcp_dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(mcp_source, mcp_dest)
+
+        if tracker:
+            tracker.complete("mcp-config", location_desc)
+        elif verbose:
+            console.print(f"[green]✓[/green] MCP configuration copied to {location_desc}")
+
+    except Exception as e:
+        error_msg = f"Failed to copy MCP config: {e}"
+        if tracker:
+            tracker.error("mcp-config", error_msg)
+        elif verbose:
+            console.print(f"[red]Error copying MCP config:[/red] {e}")
 
 
 def ensure_executable_scripts(project_path: Path, tracker: StepTracker | None = None) -> None:
@@ -1173,6 +1232,7 @@ def init(
             ("local-build", "Build local templates"),
             ("local-copy", "Copy processed templates"),
             ("chmod", "Ensure scripts executable"),
+            ("mcp-config", "Copy MCP configuration"),
             ("git", "Initialize git repository"),
             ("final", "Finalize"),
         ]:

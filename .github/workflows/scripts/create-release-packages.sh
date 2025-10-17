@@ -132,6 +132,23 @@ build_variant() {
   
   [[ -d templates ]] && { mkdir -p "$EVALKIT_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$EVALKIT_DIR"/ \; ; echo "Copied templates -> .evalkit/templates"; }
   
+  # Copy MCP configuration to assistant-specific location if it exists
+  if [[ -f mcps/mcp.json ]]; then
+    case $agent in
+      claude)
+        cp mcps/mcp.json "$base_dir/.mcp.json"
+        echo "Copied mcps/mcp.json -> .mcp.json (Claude Code)" ;;
+      kilocode)
+        mkdir -p "$base_dir/.kilocode"
+        cp mcps/mcp.json "$base_dir/.kilocode/mcp.json"
+        echo "Copied mcps/mcp.json -> .kilocode/mcp.json (Kilo Code)" ;;
+      q)
+        mkdir -p "$base_dir/.amazonq"
+        cp mcps/mcp.json "$base_dir/.amazonq/mcp.json"
+        echo "Copied mcps/mcp.json -> .amazonq/mcp.json (Amazon Q)" ;;
+    esac
+  fi
+  
   # NOTE: We substitute {ARGS} internally. Outward tokens differ intentionally:
   #   * Markdown/prompt (claude, copilot, cursor-agent, opencode): $ARGUMENTS
   #   * TOML (gemini, qwen): {{args}}
