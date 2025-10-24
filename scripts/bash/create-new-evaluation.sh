@@ -73,18 +73,18 @@ else
 fi
 
 # Use flat structure - files go directly in eval/ directory
-TEMPLATE="$REPO_ROOT/.evalkit/templates/spec-template.md"
-SPEC_FILE="$EVAL_DIR/spec.md"
-if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
+TEMPLATE="$REPO_ROOT/.evalkit/templates/eval-design-template.md"
+DESIGN_FILE="$EVAL_DIR/eval-design.md"
+if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$DESIGN_FILE"; else touch "$DESIGN_FILE"; fi
 
 # Set the EVALKIT_FEATURE environment variable for the current session
 export EVALKIT_FEATURE="$BRANCH_NAME"
 
 if $JSON_MODE; then
-    printf '{"BRANCH_NAME":"%s","SPEC_FILE":"%s","EVALUATION_NUM":"%s"}\n' "$BRANCH_NAME" "$SPEC_FILE" "$EVALUATION_NUM"
+    printf '{"BRANCH_NAME":"%s","DESIGN_FILE":"%s","EVALUATION_NUM":"%s"}\n' "$BRANCH_NAME" "$DESIGN_FILE" "$EVALUATION_NUM"
 else
     echo "BRANCH_NAME: $BRANCH_NAME"
-    echo "SPEC_FILE: $SPEC_FILE"
+    echo "DESIGN_FILE: $DESIGN_FILE"
     echo "EVALUATION_NUM: $EVALUATION_NUM"
     echo "EVALKIT_FEATURE environment variable set to: $BRANCH_NAME"
 fi

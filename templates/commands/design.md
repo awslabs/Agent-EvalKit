@@ -1,5 +1,5 @@
 ---
-description: Analyze user agent source code and design comprehensive evaluation strategy
+description: Analyze user agent source code and design comprehensive evaluation specification with implementation plan
 scripts:
   sh: scripts/bash/create-new-evaluation.sh --json
 ---
@@ -18,36 +18,39 @@ The text the user typed after `/evalkit.design` in the triggering message **is**
 
 Given that user evaluation requests or agent description, do this:
 
-1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and EVAL_SPEC_FILE. All file paths must be absolute.
+1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and DESIGN_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. For single quotes in args like "I'm analyzing", use escape syntax: e.g 'I'\''m analyzing' (or double-quote if possible: "I'm analyzing").
 
-2. Load `templates/spec-template.md` to understand required sections.
+2. Load `templates/eval-design-template.md` to understand required sections for both specification and implementation plan.
 
 3. Follow this execution flow:
 
     1. Parse user evaluation requests from Input
-       If empty: ERROR "No agent description or evaluation requsts provided"
+       If empty: ERROR "No agent description or evaluation requests provided"
     2. Analyze agent code and capabilities
        Identify: architecture, input/output formats, key functions, tools available
-    3. For unclear evaluation aspects:
-       - Make informed guesses based on agent type and common evaluation patterns
-       - Only mark with [NEEDS CLARIFICATION: specific question] if:
-         - The choice significantly impacts evaluation scope or metrics
-         - Multiple reasonable evaluation approaches exist with different implications
-         - No reasonable default evaluation strategy exists
-       - **LIMIT: Maximum 5 [NEEDS CLARIFICATION] markers total**
-       - Prioritize clarifications by impact: evaluation scope > metrics > test data > implementation details
-    4. Design evaluation strategy and metrics
+    3. Design evaluation strategy and metrics
        If no clear evaluation approach: ERROR "Cannot determine evaluation strategy"
-    5. Generate evaluation requirements
+    4. Generate evaluation requirements
        Each requirement must be measurable and testable
-       Use reasonable defaults for unspecified details (document assumptions in Assumptions section)
-    6. Identify test scenarios and data requirements
-    7. Return: SUCCESS (evaluation design ready for planning)
+    5. Identify test scenarios and data requirements
+    6. Design technical implementation plan:
+       - Select appropriate technology stack based on evaluation requirements and agent architecture
+       - Design evaluation pipeline architecture (test case generation, trace collection, core evaluation pipeline)
+       - Define file structure and implementation tasks
+       - Choose integration patterns and configuration approach
+    7. **For any unclear aspects during design**: Mark with [NEEDS CLARIFICATION: specific question] if:
+       - The choice significantly impacts evaluation scope, metrics, or technical architecture
+       - Multiple reasonable evaluation approaches exist with different implications
+       - No reasonable default evaluation strategy or technology stack exists
+       - **LIMIT: Maximum 5 [NEEDS CLARIFICATION] markers total**
+       - Prioritize clarifications by impact: evaluation scope > metrics > technical architecture > implementation details
+    8. Return: SUCCESS (evaluation design and implementation plan ready for implementation)
 
-4. Write the evaluation specification to EVAL_SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the agent analysis while preserving section order and headings.
+4. Write the complete evaluation specification AND implementation plan to DESIGN_FILE (eval-design.md) using the template structure, replacing placeholders with concrete details derived from the agent analysis while preserving section order and headings.
 
 5. **Handle [NEEDS CLARIFICATION] markers** (if any remain):
+   
    1. Extract all [NEEDS CLARIFICATION: ...] markers from the spec
    2. **LIMIT CHECK**: If more than 5 markers exist, keep only the 5 most critical (by evaluation impact) and make informed guesses for the rest
    3. For each clarification needed (max 5), present options to user in this format:
@@ -75,71 +78,68 @@ Given that user evaluation requests or agent description, do this:
    5. Number questions sequentially (Q1, Q2, Q3 - max 5 total)
    6. Present all questions together before waiting for responses
    7. Wait for user to respond with their choices for all questions
-   8. Update the spec by replacing each [NEEDS CLARIFICATION] marker with the user's answer
+   8. Update the eval-design.md by replacing each [NEEDS CLARIFICATION] marker with the user's answer
    9. If no clarifications needed, proceed directly to step 6
 
-6. Report completion with branch name, evaluation spec file path, and readiness for the next phase (`/evalkit.plan`).
+6. Report completion with branch name, evaluation design file path, and readiness for implementation (`/evalkit.implement`).
 
-**NOTE:** The script creates and checks out the new branch and initializes the evaluation spec file before writing.
 
 ## General Guidelines
 
-### Quick Guidelines
+### Design Decision Guidelines
 
-- Focus on **WHAT** to evaluate and **WHY** it matters for the agent.
-- Avoid HOW to implement evaluation (no specific frameworks, file structures, code architecture).
-- Written for evaluation stakeholders, not just developers.
-- DO NOT create any checklists that are embedded in the spec. That will be a separate command.
+When creating evaluation specifications and implementation plans from a user prompt:
+
+1. **Think like an evaluator and architect**: Every requirement should be measurable and every technology choice should have clear rationale
+2. **Make informed guesses**: Use context, agent type patterns, and evaluation best practices to fill gaps
+3. **Ask clarification questions**: Use [NEEDS CLARIFICATION: specific question] markers sparingly (max 5 total) for critical decisions that significantly impact evaluation scope or technical architecture
 
 ### Section Requirements
 
 - **Mandatory sections**: Must be completed for every agent evaluation
-- **Optional sections**: Include only when relevant to the agent type
+- **Optional sections**: Include only when relevant to the agent type or user input
 - When a section doesn't apply, remove it entirely (don't leave as "N/A")
 
-### For AI Generation
 
-When creating this evaluation design from a user prompt:
+## Evaluation Specification Phase Guidelines
 
-1. **Make informed guesses**: Use context, agent type patterns, and evaluation best practices to fill gaps
-2. **Document assumptions**: Record reasonable defaults in the Assumptions section
-3. **Limit clarifications**: Maximum 5 [NEEDS CLARIFICATION] markers - use only for critical decisions that:
-   - Significantly impact evaluation scope or approach
-   - Have multiple reasonable interpretations with different implications
-   - Lack any reasonable default evaluation strategy
-4. **Prioritize clarifications**: evaluation scope > metrics selection > test data strategy > implementation details
-5. **Think like an evaluator**: Every vague requirement should fail the "measurable and well-defined" checklist item
-6. **Common areas needing clarification** (only if no reasonable default exists):
-   - Evaluation scope and focus areas (accuracy vs efficiency vs robustness)
-   - Metrics selection and measurement methods (when evaluation approach unclear)
-   - Test data strategy (when agent domain is highly specialized)
-   
-**Examples of reasonable defaults** (don't ask about these):
+### Design Principles
 
-- Evaluation metrics: Standard accuracy, latency, cost metrics for the agent type
-- Test data size: Industry-standard sample sizes for the evaluation type
-- Evaluation framework: DeepEval or RAGAS for LLM agents unless specified otherwise
-- Test scenarios: Standard user flows and edge cases for the agent domain
+- Focus on **WHAT** to evaluate and **WHY** it matters for the agent.
+- Avoid HOW to implement evaluation (no specific frameworks, file structures, code architecture).
+- DO NOT create any checklists that are embedded in this phase.
 
 ### Metrics Guidelines
 
 Metrics must be:
 
-1. **Measurable**: Define what will be measured and how
+1. **Measurable**: Define what will be measured
 2. **Framework-agnostic**: No mention of specific evaluation tools, libraries, or implementations
-3. **Agent-focused**: Describe measurements from agent performance perspective, not system internals
-4. **Verifiable**: Can be measured through actual agent execution
+3. **Verifiable**: Can be measured through actual agent execution
 
-**Good examples**:
 
-- "Agent accuracy on test scenarios" with "Manual review of responses"
-- "Response time for typical queries" with "Automated timing measurement"
-- "Tool selection accuracy" with "Comparison against expected tool choices"
-- "Edge case handling" with "Success rate on boundary conditions"
+## Implementation Planning Phase Guidelines
 
-**Bad examples** (implementation-focused):
+### Architecture Principles
 
-- "DeepEval metrics show good performance" (tool-specific)
-- "Evaluation pipeline runs efficiently" (implementation detail, use agent-facing metric)
-- "Test framework validates correctly" (framework-specific)
-- "Database queries are optimized" (implementation detail)
+**Key Principles**:
+- **Simple Structure**: Use the flat `eval/` directory structure
+- **Configuration-Driven**: Externalize parameters in `config.yaml`
+- **Real Agent Focus**: Always use actual agent execution, never simulation
+- **Focused Implementation**: Avoid over-engineering, focus on core evaluation logic
+- **Minimal Viable Implementation**: Start with essential components, add complexity incrementally
+- **Framework-First**: Leverage existing evaluation frameworks before building custom solutions
+- **Modular Design**: Create reusable components that can be easily tested and maintained
+
+### Technology Selection Defaults
+
+**Examples of reasonable defaults** (don't ask about these):
+
+- **Tracing instrumentation**: Langfuse library
+- **Evaluation frameworks**: DeepEval library
+- **LLM calling service**: LiteLLM library
+- **LLM provider**: Amazon Bedrock
+- **Data processing**: JSON or JSONL
+- **Agent integration**: Direct imports for Python agents
+- **Visualization**: Streamlit for interactive dashboards
+- **Configuration**: YAML files

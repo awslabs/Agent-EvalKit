@@ -55,7 +55,7 @@ OPTIONS:
   --help, -h          Show this help message
 
 EXAMPLES:
-  # Check design prerequisites (spec.md required)
+  # Check design prerequisites (eval-design.md required)
   ./check-prerequisites.sh --json
   
   # Check implementation prerequisites (plan.md required)

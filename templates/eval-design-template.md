@@ -2,8 +2,9 @@
 
 **Branch**: `[###-eval-pipeline]` | **Date**: [DATE]  
 **Agent Path**: [Path to agent code/repository]  
+**Trace Path**: [Path to execution trace] *(if already provided)*
 **User Query**: "$ARGUMENTS" *(designing context if provided)*
-**Spec Path**: `eval/spec.md`
+**Design Path**: [Path to evaluation design document]
 
 **Note**: This template is filled in by the `/evalkit.design` command. See `.evalkit/templates/commands/design.md` for the execution workflow.
 
@@ -57,8 +58,8 @@ flowchart TD
 
 **Metrics**:
 
-1. **Metric**: [specific measurement], **Method**: [how to measure]
-2. **Metric**: [specific measurement], **Method**: [how to measure]
+1. **Metric**: [specific measurement] 
+2. **Metric**: [specific measurement]
 
 ---
 
@@ -72,23 +73,8 @@ flowchart TD
 
 **Metrics**:
 
-1. **Metric**: [specific measurement], **Method**: [how to measure]
-2. **Metric**: [specific measurement], **Method**: [how to measure]
-
----
-
-### Evaluation Area 3 - [Brief Title] (Priority: P3)
-
-[Describe this evaluation focus in plain language]
-
-**Why this priority**: [Explain the value and why it has this priority level]
-
-**Independent Test**: [Describe how this can be evaluated independently]
-
-**Metrics**:
-
-1. **Metric**: [specific measurement], **Method**: [how to measure]
-2. **Metric**: [specific measurement], **Method**: [how to measure]
+1. **Metric**: [specific measurement]
+2. **Metric**: [specific measurement]
 
 ---
 
@@ -129,4 +115,63 @@ flowchart TD
 
 - **[Scenario Type 1]**: [What it tests, key characteristics without implementation]
 - **[Scenario Type 2]**: [What it tests, relationships to other scenarios]
+
+## Implementation Plan *(mandatory)*
+
+<!--
+  This section defines the technical implementation approach for the evaluation infrastructure.
+  Focus on practical decisions that enable trace-based evaluation of the agent.
+-->
+
+### Technical Stack
+
+**Language/Version**: [e.g., Python 3.11, Node.js 18+ or NEEDS CLARIFICATION]
+**Evaluation Libraries**: [e.g., DeepEval, Langfuse, RAGAS, Custom or NEEDS CLARIFICATION]
+**Agent Integration**: [e.g., Direct import, Wrapper, HTTP API, Docker container or NEEDS CLARIFICATION]
+**Data Storage**: [e.g., JSON files, SQLite, PostgreSQL or NEEDS CLARIFICATION]
+**Visualization**: [e.g., Plotly Dash, Streamlit dashboard or NEEDS CLARIFICATION]
+
+### Core Architecture
+
+**Evaluation Pipeline**: [e.g., Sequential processing vs parallel execution - approach and rationale]
+**Configuration**: [e.g., YAML files for flexibility - configuration approach]
+**Error Handling**: [e.g., Graceful degradation vs fail-fast - error strategy]
+**Results Storage**: [e.g., JSON files for simplicity vs SQLite for queries - storage approach]
+
+### File Structure
+
+```
+eval/
+├── config.yaml              # Evaluation configuration
+├── evaluators.py            # All evaluation logic
+├── run_evaluation.py        # Main execution script
+├── test_cases.json          # Test scenarios
+├── results/                 # Evaluation outputs
+└── eval-design.md           # This evaluation specification and plan
+```
+
+### Implementation Tasks
+
+#### Setup Project Structure
+- [ ] Create evaluation project structure based on the decided file structure
+
+#### Core Evaluation Logic
+- [ ] Implement all evaluation area evaluators in `eval/evaluators.py`
+- [ ] Create test scenarios in `eval/test_cases.json`
+- [ ] Build main evaluation orchestration in `eval/run_evaluation.py`
+- [ ] Add configuration management in `eval/config.yaml`
+
+#### Results & Analysis
+- [ ] Implement results aggregation and analysis
+- [ ] Create visualization and reporting
+
+#### Code Review & Environment Setup
+- [ ] Conduct a code review to identify critical issues and fix
+- [ ] Set up Python environment with dependencies (using uv by default)
+
+### Important Notes
+
+- Focus on core evaluation logic, avoid over-engineering
+- Each evaluation area should be testable independently within the unified implementation
+- All evaluation uses actual agent execution, no simulation
 
