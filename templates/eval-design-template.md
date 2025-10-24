@@ -3,15 +3,14 @@
 **Branch**: `[###-eval-pipeline]` | **Date**: [DATE]    
 **User Input**: "$ARGUMENTS"    
 **User Evaluation Requests**: [Parsed from user input - highest priority, or NA]    
-**Agent Path**: [Path to agent code/repository, or NA]  
-**Test Case Path**: [Path to existing agent test cases, or NA]  
-**Trace Path**: [Path to existing agent execution traces, or NA]    
-**Design Path**: [Path to evaluation design document]   
+**Agent Path**: `[Path to agent code/repository, or No agent source code found]`    
+**Test Case Path**: `[Path to existing agent test cases, or No existing test cases found]`    
+**Trace Path**: `[Path to existing agent execution traces, or No existing traces found]`    
+**Design Path**: `[Path to evaluation design document]`   
 
 **Note**: This template is filled in by the `/evalkit.design` command. See `.evalkit/templates/commands/design.md` for the execution workflow.
 
-## Agent Analysis & Overview *(mandatory)*
-
+## Agent Analysis & Overview
 <!--
   IMPORTANT: Agent analysis should be PRIORITIZED as evaluation areas ordered by importance.
   Each evaluation area must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
@@ -22,29 +21,31 @@
   - Evaluated independently
   - Tested independently
   - Reported independently
-  - Demonstrated to stakeholders independently
 -->
 
 ### Agent Architecture & Capabilities
 
-**Agent Type**: [e.g., Conversational, RAG, Tool-using, Code generation]  
+**Agent Type**: [e.g., Conversational, RAG, Tool-using, Code generation]    
 **Input/Output Formats**: [Describe data types and interaction patterns]  
 **Key Functions**: [List primary capabilities and decision points]  
 **Available Tools**: [If applicable, list tools the agent can use]  
 **Technology Stack**: [Languages, frameworks, dependencies]
 
+
 ### Tracing Instrumentation and Assets Analysis
 
-**Detected Instrumentation Status**: [Fully/Partially/Not Instrumented - tracing libraries found]
-**Available Assets**: [Existing traces/test cases/source code only]
-**Default Implementation Scenario**: [Select and mark with ★]
-- [ ] Instrumented agent + existing traces → Core evaluation pipeline only
-- [ ] Instrumented agent + test cases → Trace collection + core evaluation pipeline
-- [ ] Instrumented agent only → Test generation + trace collection + core evaluation pipeline
-- [ ] Agent without instrumentation → Instrumentation guidance + full pipeline
-- [ ] Traces only → Trace analysis + core evaluation pipeline
-
-**Note**: The module selection in Implementation Plan represents default suggestions based on detected agent state. If these don't match your evaluation goals, you can refine your evaluation by running `/evalkit.design` again with more specific requests or directly modify this document.
+**Detected Instrumentation Status**: [Fully/Partially/Not Instrumented - tracing libraries found]   
+**Available Assets**: [Existing traces/test cases/source code only]   
+**Default Implementation Scenario**:
+Based on the target agent's current state and available assets, the marked option is suggested as the most appropriate evaluation approach. Each scenario determines which implementation modules will be included in your evaluation pipeline:
+<!--
+  ACTION REQUIRED: Select and mark with x
+-->
+- [ ] **Instrumented agent + existing traces** → Core evaluation pipeline only (fastest setup - analyze existing trace data)
+- [ ] **Instrumented agent + test cases** → Trace collection + core evaluation pipeline (run tests to generate new traces, then evaluate)
+- [ ] **Instrumented agent only** → Test generation + trace collection + core evaluation pipeline (full pipeline - create tests, collect traces, evaluate)
+- [ ] **Agent without instrumentation** → Instrumentation guidance + full pipeline (complete setup - add tracing, create tests, collect traces, evaluate)
+- [ ] **Traces only** → Trace analysis + core evaluation pipeline (analyze existing traces without agent access)
 
 **Agent Workflow Diagram**:
 ```mermaid
@@ -60,8 +61,19 @@ flowchart TD
     %% Example: C --> H[Code Generation]
     %% Example: G --> I[Context Processing]
 ```
+<!--
+  ACTION REQUIRED: Replace the generic workflow above with your agent's specific flow, showing key decision points, tool usage, and data transformations.
+-->
 
-*Note: Replace the generic workflow above with your agent's specific flow, showing key decision points, tool usage, and data transformations.*
+## Evaluation Areas
+<!--
+  IMPORTANT: Focus on user evaluation requests. Do not over-complicate.
+  - Prioritize what the user specifically asked for in their evaluation requests
+  - Propose minimal evaluation areas that satisfy their needs
+  - Avoid suggesting too many evaluation areas - keep it focused and achievable
+  - Each area must be independently testable and deliver clear value
+-->
+
 
 ### Evaluation Area 1 - [Brief Title] (Priority: P1)
 
@@ -72,75 +84,49 @@ flowchart TD
 **Independent Test**: [Describe how this can be evaluated independently - e.g., "Can be fully tested by [specific scenarios] and delivers [specific insights]"]
 
 **Metrics**:
-
-1. **Metric**: [specific measurement] 
-2. **Metric**: [specific measurement]
-
----
-
-### Evaluation Area 2 - [Brief Title] (Priority: P2)
-
-[Describe this evaluation focus in plain language]
-
-**Why this priority**: [Explain the value and why it has this priority level]
-
-**Independent Test**: [Describe how this can be evaluated independently]
-
-**Metrics**:
-
+<!--
+  IMPORTANT: Keep metrics minimal - 1-2 focused metrics maximum.
+  Do not propose many metrics. Focus on what directly measures the evaluation area's core value.
+-->
 1. **Metric**: [specific measurement]
 2. **Metric**: [specific measurement]
 
 ---
+<!--
+  IMPORTANT: Add more evaluation areas as needed, each with an assigned priority. Remember to keep minimal - only add if truly necessary for user's evaluation requests.
+-->
 
-[Add more evaluation areas as needed, each with an assigned priority]
+### Key Test Scenarios
+<!--
+  ACTION REQUIRED: Fill out key test scenarios if evaluation involves specific test cases (content below represents placeholders), or remove this entire "Key Test Scenarios" section as scenarios if existing test cases or traces are found.
+-->
+
+- **[Scenario Type 1]**: [What it tests, key characteristics without implementation]
+- **[Scenario Type 2]**: [What it tests, relationships to other scenarios]
 
 ### Edge Cases & Failure Modes
-
 <!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases for agent evaluation.
+  ACTION REQUIRED: Fill out the edge cases for agent evaluation (content below represents placeholders), or remove this entire "Edge Cases & Failure Modes" section if existing test cases or traces are found.
 -->
 
 - What happens when [agent receives ambiguous input]?
 - How does agent handle [out-of-scope requests]?
 - What occurs during [API failures or timeouts]?
 
-## Evaluation Requirements *(mandatory)*
 
+
+## Implementation Plan
 <!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right evaluation requirements.
--->
-
-### Functional Requirements
-
-- **ER-001**: Evaluation MUST [specific capability, e.g., "measure response accuracy on test scenarios"]
-- **ER-002**: Evaluation MUST [specific capability, e.g., "track execution time for all queries"]  
-- **ER-003**: System MUST be able to [key measurement, e.g., "detect tool usage patterns"]
-- **ER-004**: Evaluation MUST [data requirement, e.g., "store results for comparative analysis"]
-- **ER-005**: System MUST [behavior, e.g., "log all agent interactions and responses"]
-
-*Example of marking unclear requirements:*
-
-- **ER-006**: Evaluation MUST measure quality via [NEEDS CLARIFICATION: quality metric not specified - accuracy, relevance, faithfulness?]
-- **ER-007**: System MUST retain evaluation data for [NEEDS CLARIFICATION: retention period not specified]
-
-### Key Test Scenarios *(include if evaluation involves specific test cases)*
-
-- **[Scenario Type 1]**: [What it tests, key characteristics without implementation]
-- **[Scenario Type 2]**: [What it tests, relationships to other scenarios]
-
-## Implementation Plan *(mandatory)*
-
-<!--
-  This section defines the technical implementation approach for the evaluation infrastructure.
+  IMPORTANT: This section defines the technical implementation approach for the evaluation infrastructure.
   Focus on practical decisions that enable trace-based evaluation of the agent.
 -->
 
-### Required Implementation Modules *(conditional)*
+### Required Implementation Modules
 
-Based on user requests and agent state analysis: [Select and mark with ★]
+Based on user evaluation requests, tracing instrumentation status, and available assets, the following marked modules are suggested as required:
+<!--
+  ACTION REQUIRED: Select and mark with x
+-->
 - [ ] Instrumentation Guidance (if agent lacks tracing)
 - [ ] Test Case Generation Module (if no test cases available/requested)
 - [ ] Trace Collection Module (if instrumented but no traces available/requested)
@@ -148,20 +134,24 @@ Based on user requests and agent state analysis: [Select and mark with ★]
 
 ### Technical Stack
 
-**Language/Version**: [e.g., Python 3.11, Node.js 18+ or NEEDS CLARIFICATION]
-**Evaluation Libraries**: [e.g., DeepEval, RAGAS, Custom or NEEDS CLARIFICATION]
-**Agent Integration**: [e.g., Direct import or NEEDS CLARIFICATION]
-**Data Storage**: [e.g., JSON/JSONL files or NEEDS CLARIFICATION]
-**Visualization**: [e.g., Streamlit dashboard or NEEDS CLARIFICATION]
+**Language/Version**: [e.g., Python 3.11, Node.js 18+]   
+**Tracing Libraries**: [e.g., Langfuse, OpenTelemetry]  
+**Evaluation Libraries**: [e.g., DeepEval, RAGAS, Custom]   
+**Agent Integration**: [e.g., Direct import, API]   
+**Data Storage**: [e.g., JSONL/JSON files]  
+**Visualization**: [e.g., Streamlit dashboard]  
 
 ### Core Architecture
 
-**Evaluation Pipeline**: [e.g., Sequential processing vs parallel execution - approach and rationale]
-**Configuration**: [e.g., YAML files for flexibility - configuration approach]
-**Error Handling**: [e.g., Graceful degradation vs fail-fast - error strategy]
+**Evaluation Pipeline**: [e.g., Sequential processing vs parallel execution - approach and rationale]   
+**Configuration**: [e.g., YAML files for flexibility - configuration approach]  
+**Error Handling**: [e.g., Graceful degradation vs fail-fast - error strategy]  
 **Results Storage**: [e.g., JSON files for simplicity vs SQLite for queries - storage approach]
 
-### File Structure *(scenario-specific)*
+### File Structure
+<!--
+  ACTION REQUIRED: Adjust based on Required Implementation Modules
+-->
 
 ```
 eval/
@@ -178,35 +168,59 @@ eval/
 ```
 
 ### Implementation Tasks *(conditional based on selected modules)*
+<!--
+  ACTION REQUIRED: Adjust based on tracing instrumentation and available assets analysis
+-->
 
-#### Setup Project Structure (Always Required)
+#### Setup Project Structure
+<!--
+  ACTION REQUIRED: Keep - always required
+-->
 - [ ] Create evaluation project structure based on the decided file structure
 - [ ] Set up Python environment with dependencies (using uv by default)
 
-#### Instrumentation Setup (If Required)
+#### Instrumentation Setup
+<!--
+  ACTION REQUIRED: Keep or remove - only if agent lacks tracing instrumentation
+-->
 - [ ] Create instrumentation guide documentation in `eval/instrumentation_guide.md`
 - [ ] Enable tracing in agent code using selected instrumentation library
 
-#### Test Case Generation (If Required)
+#### Test Case Generation
+<!--
+  ACTION REQUIRED: Keep or remove - only if no test cases available/requested
+-->
 - [ ] Implement test case generator in `eval/test_generator.py`
 - [ ] Generate comprehensive test scenarios covering all evaluation areas
 
-#### Trace Collection (If Required)
+#### Trace Collection
+<!--
+  ACTION REQUIRED: Keep or remove - only if instrumented but no traces available/requested
+-->
 - [ ] Implement trace collector in `eval/trace_collector.py`
 - [ ] Set up trace storage and management in `eval/traces/`
-- [ ] Configure trace collection pipeline with agent integration
 
-#### Core Evaluation Logic (Always Required)
+#### Core Evaluation Logic
+<!--
+  ACTION REQUIRED: Keep - always required
+-->
 - [ ] Implement all evaluation area evaluators in `eval/evaluators.py`
+- [ ] Build helper functions to extract required input-output pair for each evaluator
 - [ ] Build main evaluation orchestration in `eval/run_evaluation.py`
 - [ ] Add configuration management in `eval/config.yaml`
 
-#### Results & Analysis (Always Required)
+#### Results & Analysis
+<!--
+  ACTION REQUIRED: Keep - always required
+-->
 - [ ] Implement results aggregation and analysis
 - [ ] Create visualization and reporting
 - [ ] Set up results storage in `eval/results/`
 
-#### Code Review & Testing (Always Required)
+#### Code Review & Testing
+<!--
+  ACTION REQUIRED: Keep - always required
+-->
 - [ ] Conduct code review to identify critical issues and fix
 - [ ] Test end-to-end evaluation pipeline
 - [ ] Validate all selected modules work together correctly
@@ -217,7 +231,7 @@ eval/
 - Each evaluation area should be testable independently within the unified implementation
 - All evaluation uses actual agent execution (either existing traces or collected traces from trace collector), no simulation
 
-## Evaluation Design Iteration Guide *(always included)*
+## Evaluation Design Iteration Guide
 
 If the suggested modules don't match your evaluation needs, try these scenario-specific requests:
 

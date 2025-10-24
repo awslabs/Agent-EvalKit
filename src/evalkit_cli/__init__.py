@@ -68,20 +68,20 @@ def _github_auth_headers(cli_token: str | None = None) -> dict:
 
 # Agent configuration with name, folder, install URL, and CLI tool requirement
 AGENT_CONFIG = {
-    "kilocode": {
-        "name": "Kilo Code",
-        "folder": ".kilocode/",
-        "install_url": None,  # IDE-based
-        "requires_cli": False,
-    },
     "claude": {
         "name": "Claude Code",
         "folder": ".claude/",
         "install_url": "https://docs.anthropic.com/en/docs/claude-code/setup",
         "requires_cli": True,
     },
+    "kilocode": {
+        "name": "Kilo Code (support soon)",
+        "folder": ".kilocode/",
+        "install_url": None,  # IDE-based
+        "requires_cli": False,
+    },
     "q": {
-        "name": "Amazon Q Developer CLI",
+        "name": "Amazon Q Developer CLI (support soon)",
         "folder": ".amazonq/",
         "install_url": "https://aws.amazon.com/developer/learning/q-developer-cli/",
         "requires_cli": True,
@@ -203,7 +203,8 @@ def get_key():
     if key == readchar.key.ENTER:
         return "enter"
 
-    if key == readchar.key.ESC:
+    # Handle escape key - works with double escape press
+    if key == readchar.key.ESC or key == "\x1b\x1b":
         return "escape"
 
     if key == readchar.key.CTRL_C:
@@ -240,12 +241,12 @@ def select_with_arrows(options: dict, prompt_text: str = "Select an option", def
 
         for i, key in enumerate(option_keys):
             if i == selected_index:
-                table.add_row("▶", f"[cyan]{key}[/cyan] [dim]({options[key]})[/dim]")
+                table.add_row("▶", f"[cyan]{key}[/cyan] [dim]- {options[key]}[/dim]")
             else:
-                table.add_row(" ", f"[cyan]{key}[/cyan] [dim]({options[key]})[/dim]")
+                table.add_row(" ", f"[cyan]{key}[/cyan] [dim]- {options[key]}[/dim]")
 
         table.add_row("", "")
-        table.add_row("", "[dim]Use ↑/↓ to navigate, Enter to select, Esc to cancel[/dim]")
+        table.add_row("", "[dim]Use ↑/↓ to navigate, Enter to select, Ctrl+C to cancel[/dim]")
 
         return Panel(table, title=f"[bold]{prompt_text}[/bold]", border_style="cyan", padding=(1, 2))
 
@@ -1175,7 +1176,7 @@ def init(
     else:
         # Create options dict for selection (agent_key: display_name)
         ai_choices = {key: config["name"] for key, config in AGENT_CONFIG.items()}
-        selected_ai = select_with_arrows(ai_choices, "Choose your AI assistant:", "kilocode")
+        selected_ai = select_with_arrows(ai_choices, "Choose your AI assistant", "claude")
 
     if not ignore_agent_tools:
         agent_config = AGENT_CONFIG.get(selected_ai)
@@ -1206,9 +1207,7 @@ def init(
         default_script = "ps" if os.name == "nt" else "sh"
 
         if sys.stdin.isatty():
-            selected_script = select_with_arrows(
-                SCRIPT_TYPE_CHOICES, "Choose script type (or press Enter)", default_script
-            )
+            selected_script = select_with_arrows(SCRIPT_TYPE_CHOICES, "Choose script type", default_script)
         else:
             selected_script = default_script
 
