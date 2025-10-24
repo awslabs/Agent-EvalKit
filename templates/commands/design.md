@@ -27,9 +27,20 @@ Given that user evaluation requests or agent description, do this:
 
     1. Parse user evaluation requests from Input
        If empty: ERROR "No agent description or evaluation requests provided"
-    2. Analyze agent code and capabilities
-       Identify: architecture, input/output formats, key functions, tools available
-    3. Design evaluation strategy and metrics
+    2. Analyze agent state and user evaluation requests:
+       a. **Priority 1 - User Input Analysis**: Parse specific evaluation requests, scenarios, and constraints from user input
+       b. **Priority 2 - Agent State Detection**:
+          - Scan codebase for tracing instrumentation patterns (Langfuse, OpenTelemetry, custom tracing, agent SDK native tracing support, etc)
+          - Check for existing trace files/directories in project
+          - Identify existing test case files and formats
+          - Determine default implementation scenario:
+            • Instrumented agent + existing traces → Core evaluation pipeline only
+            • Instrumented agent + test cases → Trace collection + core evaluation pipeline
+            • Instrumented agent only → Test generation + trace collection + core evaluation pipeline
+            • Agent without instrumentation → Instrumentation guidance + full pipeline
+            • Traces only → Trace analysis + core evaluation pipeline
+       c. **Priority 3 - Module Selection**: Choose required modules based on user requests OR default scenario
+    3. Design evaluation strategy and metrics (user-request-driven with agent-state-aware defaults)
        If no clear evaluation approach: ERROR "Cannot determine evaluation strategy"
     4. Generate evaluation requirements
        Each requirement must be measurable and testable
@@ -90,9 +101,12 @@ Given that user evaluation requests or agent description, do this:
 
 When creating evaluation specifications and implementation plans from a user prompt:
 
-1. **Think like an evaluator and architect**: Every requirement should be measurable and every technology choice should have clear rationale
-2. **Make informed guesses**: Use context, agent type patterns, and evaluation best practices to fill gaps
-3. **Ask clarification questions**: Use [NEEDS CLARIFICATION: specific question] markers sparingly (max 5 total) for critical decisions that significantly impact evaluation scope or technical architecture
+1. **Prioritize user evaluation requests**: User input takes precedence over detected agent state - always honor specific user requirements and constraints
+2. **Provide intelligent defaults**: When user input is minimal, use agent state analysis to suggest appropriate modules and implementation strategy
+3. **Make informed guesses**: Use context, agent type patterns, and evaluation best practices to fill remaining gaps
+4. **Enable design iteration**: Always include guidance for refining evaluation requests when defaults don't match user needs
+5. **Think like an evaluator and architect**: Every requirement should be measurable and every technology choice should have clear rationale
+6. **Ask clarification questions**: Use [NEEDS CLARIFICATION: specific question] markers sparingly (max 5 total) for critical decisions that significantly impact evaluation scope or technical architecture
 
 ### Section Requirements
 

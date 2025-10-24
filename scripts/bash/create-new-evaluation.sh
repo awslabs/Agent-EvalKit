@@ -44,6 +44,12 @@ fi
 cd "$REPO_ROOT"
 
 EVAL_DIR="$REPO_ROOT/eval"
+
+# Clean up existing eval directory to ensure fresh start
+if [ -d "$EVAL_DIR" ]; then
+    rm -rf "$EVAL_DIR"
+fi
+
 mkdir -p "$EVAL_DIR"
 
 # Find the highest evaluation number from existing git branches
