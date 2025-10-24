@@ -9,8 +9,8 @@
 #
 # OPTIONS:
 #   --json              Output in JSON format
-#   --require-plan      Require plan.md to exist (for implementation phase)
-#   --include-plan      Include plan.md in AVAILABLE_DOCS list
+#   --require-design    Require eval-design.md to exist (for implementation phase)
+#   --include-design    Include eval-design.md in AVAILABLE_DOCS list
 #   --paths-only        Only output path variables (no validation)
 #   --help, -h          Show help message
 #
@@ -23,8 +23,8 @@ set -e
 
 # Parse command line arguments
 JSON_MODE=false
-REQUIRE_PLAN=false
-INCLUDE_PLAN=false
+REQUIRE_DESIGN=false
+INCLUDE_DESIGN=false
 PATHS_ONLY=false
 
 for arg in "$@"; do
@@ -32,11 +32,11 @@ for arg in "$@"; do
         --json)
             JSON_MODE=true
             ;;
-        --require-plan)
-            REQUIRE_PLAN=true
+        --require-design)
+            REQUIRE_DESIGN=true
             ;;
-        --include-plan)
-            INCLUDE_PLAN=true
+        --include-design)
+            INCLUDE_DESIGN=true
             ;;
         --paths-only)
             PATHS_ONLY=true
@@ -49,8 +49,8 @@ Consolidated prerequisite checking for Agent Evaluation workflow.
 
 OPTIONS:
   --json              Output in JSON format
-  --require-plan      Require plan.md to exist (for implementation phase)
-  --include-plan      Include plan.md in AVAILABLE_DOCS list
+  --require-design    Require eval-design.md to exist (for implementation phase)
+  --include-design    Include eval-design.md in AVAILABLE_DOCS list
   --paths-only        Only output path variables (no prerequisite validation)
   --help, -h          Show this help message
 
@@ -58,8 +58,8 @@ EXAMPLES:
   # Check design prerequisites (eval-design.md required)
   ./check-prerequisites.sh --json
   
-  # Check implementation prerequisites (plan.md required)
-  ./check-prerequisites.sh --json --require-plan --include-plan
+  # Check implementation prerequisites (eval-design.md required)
+  ./check-prerequisites.sh --json --require-design --include-design
   
   # Get evaluation paths only (no validation)
   ./check-prerequisites.sh --paths-only
@@ -105,10 +105,10 @@ if [[ ! -d "$EVALUATION_DIR" ]]; then
     exit 1
 fi
 
-# Check for plan.md if required (for implementation phase)
-if $REQUIRE_PLAN && [[ ! -f "$IMPL_PLAN" ]]; then
-    echo "ERROR: plan.md not found in $EVALUATION_DIR" >&2
-    echo "Run /evalkit.plan first to create the implementation plan." >&2
+# Check for eval-design.md if required (for implementation phase)
+if $REQUIRE_DESIGN && [[ ! -f "$EVALUATION_SPEC" ]]; then
+    echo "ERROR: eval-design.md not found in $EVALUATION_DIR" >&2
+    echo "Run /evalkit.design first to create the evaluation design." >&2
     exit 1
 fi
 
@@ -120,9 +120,9 @@ if [[ -d "$RESULTS_DIR" ]] && [[ -n "$(ls -A "$RESULTS_DIR" 2>/dev/null)" ]]; th
     docs+=("results/")
 fi
 
-# Include plan.md if requested and it exists
-if $INCLUDE_PLAN && [[ -f "$IMPL_PLAN" ]]; then
-    docs+=("plan.md")
+# Include eval-design.md if requested and it exists
+if $INCLUDE_DESIGN && [[ -f "$EVALUATION_SPEC" ]]; then
+    docs+=("eval-design.md")
 fi
 
 # Output results
@@ -144,7 +144,7 @@ else
     # Show status of each potential document
     check_dir "$RESULTS_DIR" "results/"
     
-    if $INCLUDE_PLAN; then
-        check_file "$IMPL_PLAN" "plan.md"
+    if $INCLUDE_DESIGN; then
+        check_file "$EVALUATION_SPEC" "eval-design.md"
     fi
 fi

@@ -1,7 +1,7 @@
 ---
 description: Execute implementation tasks according to the established plan
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-plan --include-plan
+  sh: scripts/bash/check-prerequisites.sh --json --require-design --include-design
 ---
 
 ## User Input
@@ -21,43 +21,44 @@ Given that context, do this:
 1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and IMPLEMENTATION_STATUS. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
-2. Load the current implementation plan (`eval/plan.md`) to understand the task structure and requirements.
+2. Load the current evaluation design (`eval/eval-design.md`) to understand the task structure and requirements.
 
 3. Follow this execution flow:
 
     1. Parse user context from Input (if provided)
-    2. Review implementation plan and identify task groups
-    3. Execute tasks according to the plan structure:
-       - Setup Project Structure
-       - Core Evaluation Logic
-       - Results & Analysis
-       - Code Review & Environment Setup
+    2. Review evaluation design and identify task groups
+    3. Execute tasks according to the design structure (based on selected modules):
+       - Setup Project Structure (always required)
+       - Instrumentation Setup (if agent lacks tracing)
+       - Test Case Generation (if no existing test cases available)
+       - Trace Collection (if no exsiting traces available)
+       - Core Evaluation Pipeline Module (always required)
+       - Results & Analysis (always required)
+       - Code Review & Testing (always required)
     4. Test and validate each component as it's built
-    5. Ensure all evaluation uses actual agent execution, no simulation
+    5. Ensure all evaluation uses actual agent execution, no mocking
 
 ## Implementation Process
 
 ### Task Execution Strategy
 
-Follow the established plan structure systematically:
-- Execute tasks in the order specified in `eval/plan.md`
-- Focus on core evaluation logic first
+Follow the established design structure systematically:
+- Execute only the modules marked as required in `eval/eval-design.md`
 - Validate each component before proceeding
-- Use actual agent execution, never simulation
+- Use actual agent execution, never mock
 
 ### Leveraging Context7 MCP for Latest Library Information
 
 **IMPORTANT**: EvalKit projects include Context7 MCP server for accessing the latest documentation and usage patterns. Use this built-in capability to ensure you're implementing with current best practices:
 
-- **Before implementing evaluation libraries**: Ask Context7 for the latest usage patterns, API changes, and best practices for libraries like DeepEval, LangSmith, or custom evaluation frameworks
+- **Before implementing evaluation libraries**: Ask Context7 for the latest usage patterns, API changes, and best practices for libraries like Langfuse, DeepEval, LiteLLM, or other open source frameworks
 - **For dependency management**: Get current version recommendations and compatibility information
 - **For integration patterns**: Access up-to-date examples and implementation guides
 - **For troubleshooting**: Get current solutions for common integration issues
 
 Example Context7 queries:
 - "What's the latest DeepEval API for custom metrics?"
-- "Show me current best practices for LangSmith evaluation setup"
-- "What are the latest pandas methods for evaluation data processing?"
+- "Show me current best practices for Langfuse trace fetch setup"
 - "How to properly configure evaluation environments with current dependency versions?"
 
 This ensures your implementation uses the most current approaches and avoids deprecated patterns.
@@ -75,7 +76,7 @@ class AgentConnector:
         
     def execute(self, input_data: dict) -> dict:
         """Execute agent with input data and return results."""
-        # CRITICAL: Must use real agent, never simulate
+        # CRITICAL: Must use real agent, never mock
         if not self.agent:
             raise RuntimeError("Agent not connected")
             
@@ -179,7 +180,7 @@ For each implemented component:
 
 ## Quality Checklist
 
-- [ ] All tasks from implementation plan are completed
+- [ ] All tasks from evaluation design are completed
 - [ ] Agent integration uses real agent (no simulation)
 - [ ] Evaluation metrics are computed from actual execution
 - [ ] Error handling is robust and informative
@@ -189,8 +190,8 @@ For each implemented component:
 
 ## Implementation Principles
 
-- **Follow the Plan**: Implement according to the established plan structure
-- **Real Agent Focus**: Always integrate with actual agent, never simulate
+- **Follow the Design**: Implement according to the established design structure
+- **Real Agent Focus**: Always integrate with actual agent, never mock
 - **Use Context7 MCP**: Leverage built-in Context7 MCP server for latest library documentation and best practices
 - **Configuration-Driven**: Use `config.yaml` for all settings
 - **Error Resilience**: Handle failures gracefully with clear error messages
@@ -201,6 +202,6 @@ For each implemented component:
 - **Agent Simulation**: Never mock or simulate the agent being evaluated
 - **Hardcoded Values**: Use configuration files instead of embedding values in code
 - **Silent Failures**: Always log errors and provide clear error messages
-- **Ignoring the Plan**: Follow the established task structure and file organization
+- **Ignoring the Design**: Follow the established task structure and file organization
 
 Report completion with implementation status and readiness for the next phase (`/evalkit.insights`).

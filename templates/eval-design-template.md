@@ -167,7 +167,7 @@ eval/
 └── traces/                  # When trace collection needed
 ```
 
-### Implementation Tasks *(conditional based on selected modules)*
+### Implementation Tasks
 <!--
   ACTION REQUIRED: Adjust based on tracing instrumentation and available assets analysis
 -->
@@ -181,21 +181,21 @@ eval/
 
 #### Instrumentation Setup
 <!--
-  ACTION REQUIRED: Keep or remove - only if agent lacks tracing instrumentation
+  ACTION REQUIRED: Keep - only if agent lacks tracing instrumentation, otherwise remove
 -->
 - [ ] Create instrumentation guide documentation in `eval/instrumentation_guide.md`
 - [ ] Enable tracing in agent code using selected instrumentation library
 
 #### Test Case Generation
 <!--
-  ACTION REQUIRED: Keep or remove - only if no test cases available/requested
+  ACTION REQUIRED: Keep - only if no existing test cases available, otherwise remove
 -->
 - [ ] Implement test case generator in `eval/test_generator.py`
 - [ ] Generate comprehensive test scenarios covering all evaluation areas
 
 #### Trace Collection
 <!--
-  ACTION REQUIRED: Keep or remove - only if instrumented but no traces available/requested
+  ACTION REQUIRED: Keep - only if no existing traces available, otherwise remove
 -->
 - [ ] Implement trace collector in `eval/trace_collector.py`
 - [ ] Set up trace storage and management in `eval/traces/`
