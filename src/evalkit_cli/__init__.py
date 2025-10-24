@@ -1375,10 +1375,11 @@ def init(
 
     steps_lines.append(f"{step_num}. Start using slash commands with your AI agent:")
 
-    steps_lines.append("   2.1 [cyan]/evalkit.design[/] - Analyze agent and design evaluation strategy")
-    steps_lines.append("   2.2 [cyan]/evalkit.plan[/] - Create evaluation implementation plan")
-    steps_lines.append("   2.3 [cyan]/evalkit.implement[/] - Execute evaluation pipeline implementation")
-    steps_lines.append("   2.4 [cyan]/evalkit.insights[/] - Analyze results and provide improvement suggestions")
+    steps_lines.append(
+        "   2.1 [cyan]/evalkit.design[/] - Analyze agent and design comprehensive evaluation specification with implementation plan"
+    )
+    steps_lines.append("   2.2 [cyan]/evalkit.implement[/] - Execute evaluation pipeline implementation")
+    steps_lines.append("   2.3 [cyan]/evalkit.insights[/] - Analyze results and provide improvement suggestions")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()
