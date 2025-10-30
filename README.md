@@ -5,7 +5,7 @@
 </div>
 
 <p align="center">
-    <strong>A comprehensive framework for evaluating AI agents across multiple dimensions including quality, performance, robustness, and user experience.</strong>
+    <strong>A comprehensive framework for evaluating AI agents with trace-based evaluation across multiple dimensions including quality, performance, robustness, and user experience.</strong>
 </p>
 
 ---
@@ -128,31 +128,49 @@ uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAM
 
 ### 2. Design evaluation strategy
 
-Use the **`/evalkit.design`** command to analyze your agent and design a comprehensive evaluation strategy.
+Use the **`/evalkit.design`** command to analyze your agent and design a comprehensive evaluation strategy with trace-based evaluation architecture. **User input is required** to specify your evaluation goals.
 
 ```bash
 /evalkit.design Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
 ```
 
-### 3. Create evaluation implementation plan
+### 3. Set up tracing instrumentation (if needed)
 
-Use the **`/evalkit.plan`** command to create technical implementation plans for your evaluation infrastructure.
+Use **`/evalkit.trace`** to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
 
 ```bash
-/evalkit.plan Use DeepEval for metrics computation, implement real-time monitoring, and create interactive dashboards for result visualization
+/evalkit.trace Add Traceloop instrumentation to capture agent execution traces
 ```
 
-### 4. Implement evaluation pipeline
+Or simply:
+```bash
+/evalkit.trace
+```
 
-Use **`/evalkit.implement`** to build your evaluation pipeline according to the plan.
+### 4. Generate test cases (if needed)
+
+Use **`/evalkit.data`** to generate comprehensive test cases for your evaluation scenarios. **User input is optional** - the command will use design specifications if no input provided.
+
+```bash
+/evalkit.data Generate test cases covering customer service scenarios including edge cases
+```
+
+Or simply:
+```bash
+/evalkit.data
+```
+
+### 5. Implement evaluation pipeline
+
+Use **`/evalkit.implement`** to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
 
 ```bash
 /evalkit.implement
 ```
 
-### 5. Analyze results and get insights
+### 6. Analyze results and get insights
 
-Use **`/evalkit.insights`** to analyze evaluation results and get actionable improvement recommendations.
+Use **`/evalkit.insights`** to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
 
 ```bash
 /evalkit.insights
@@ -241,14 +259,15 @@ After running `evalkit init`, your AI coding assistant will have access to these
 
 #### Core Commands
 
-Essential commands for the Agent Evaluation workflow:
+Essential commands for the trace-based Agent Evaluation workflow:
 
 | Command                  | Description                                                           |
 |--------------------------|-----------------------------------------------------------------------|
-| `/evalkit.design`        | Analyze agent and design evaluation strategy                          |
-| `/evalkit.plan`          | Create evaluation implementation plan                                  |
-| `/evalkit.implement`     | Execute evaluation pipeline implementation                             |
-| `/evalkit.insights`      | Analyze results and provide improvement suggestions                    |
+| `/evalkit.design`        | Analyze agent and design trace-based evaluation strategy             |
+| `/evalkit.trace`         | Add tracing instrumentation to agent for trace-based evaluation      |
+| `/evalkit.data`          | Generate comprehensive test cases for evaluation scenarios            |
+| `/evalkit.implement`     | Execute trace-based evaluation pipeline implementation                |
+| `/evalkit.insights`      | Analyze results and provide improvement suggestions                   |
 
 ### Environment Variables
 

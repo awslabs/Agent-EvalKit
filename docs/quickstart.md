@@ -1,10 +1,10 @@
 # Quick Start Guide
 
-This guide will help you get started with Agent Evaluation using EvalKit.
+This guide will help you get started with trace-based Agent Evaluation using EvalKit.
 
 > NEW: All automation scripts now provide both Bash (`.sh`) and PowerShell (`.ps1`) variants. The `evalkit` CLI auto-selects based on OS unless you pass `--script sh|ps`.
 
-## The 4-Step Evaluation Process
+## The 5-Command Evaluation Process
 
 ### 1. Install EvalKit
 
@@ -22,30 +22,49 @@ uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAM
 
 ### 2. Design Evaluation Strategy
 
-Use the `/evalkit.design` command to analyze your agent and design a comprehensive evaluation strategy.
+Use the `/evalkit.design` command to analyze your agent and design a comprehensive trace-based evaluation strategy. **User input is required** for this command to specify your evaluation goals.
 
 ```bash
-/evalkit.design Analyze my customer service chatbot agent located in ./src/chatbot.py and design evaluation strategy focusing on response accuracy, conversation flow, and user satisfaction metrics.
+/evalkit.design Analyze my customer service chatbot agent located in ./src/chatbot.py and design evaluation strategy focusing on response accuracy, conversation flow, and user satisfaction metrics using trace-based evaluation.
 ```
 
-### 3. Create Evaluation Implementation Plan
+### 3. Set Up Tracing Instrumentation (if needed)
 
-Use the `/evalkit.plan` command to create technical implementation plans for your evaluation infrastructure.
+Use the `/evalkit.trace` command to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
 
 ```bash
-/evalkit.plan Use DeepEval for LLM-based metrics, implement real-time monitoring with custom dashboards, store results in JSON format, and create automated reporting pipeline.
+/evalkit.trace Add Traceloop instrumentation to capture agent execution traces including LLM calls, tool usage, and workflow steps.
 ```
 
-### 4. Implement and Analyze
+Or simply:
+```bash
+/evalkit.trace
+```
 
-Use `/evalkit.implement` to build the evaluation pipeline, then `/evalkit.insights` to analyze results.
+### 4. Generate Test Cases (if needed)
+
+Use the `/evalkit.data` command to generate comprehensive test cases for your evaluation scenarios. **User input is optional** - the command will use design specifications if no input provided.
+
+```bash
+/evalkit.data Generate test cases covering customer service scenarios including edge cases, tool usage patterns, and conversation flows.
+```
+
+Or simply:
+```bash
+/evalkit.data
+```
+
+### 5. Implement Evaluation Pipeline
+
+Use `/evalkit.implement` to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
 
 ```bash
 /evalkit.implement
-/evalkit.insights
 ```
 
-Use `/evalkit.insights` to analyze evaluation results and get actionable improvement recommendations.
+### 6. Analyze Results and Get Insights
+
+Use `/evalkit.insights` to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
 
 ```bash
 /evalkit.insights
@@ -58,38 +77,48 @@ Here's a complete example of evaluating a customer service chatbot:
 ### Step 1: Design Evaluation Strategy with `/evalkit.design`
 
 ```text
-Analyze my customer service chatbot agent that handles customer inquiries, processes refund requests, 
-and provides product information. The agent uses RAG with a knowledge base and has access to order 
-lookup tools. I want to evaluate response accuracy, conversation flow quality, tool usage effectiveness, 
-and customer satisfaction. Focus on real-world scenarios including edge cases like unclear requests 
-and system errors.
+Analyze my customer service chatbot agent that handles customer inquiries, processes refund requests,
+and provides product information. The agent uses RAG with a knowledge base and has access to order
+lookup tools. I want to evaluate response accuracy, conversation flow quality, tool usage effectiveness,
+and customer satisfaction using trace-based evaluation. Focus on real-world scenarios including edge cases
+like unclear requests and system errors.
 ```
 
-### Step 2: Create Implementation Plan with `/evalkit.plan`
+### Step 2: Set Up Tracing with `/evalkit.trace` (if needed)
 
-Be specific about your evaluation infrastructure and technical requirements:
+Add tracing instrumentation to capture agent execution data:
 
 ```text
-Use DeepEval for response quality metrics (relevance, faithfulness, coherence). Implement custom metrics 
-for tool usage accuracy and conversation flow. Create test scenarios with synthetic customer data. 
-Set up monitoring dashboard with real-time results. Store evaluation data in structured JSON format 
-for analysis and reporting.
+/evalkit.trace Add Traceloop instrumentation to capture LLM calls, RAG retrieval steps, tool usage,
+and conversation flow for comprehensive trace-based evaluation.
 ```
 
-### Step 3: Implement and Analyze
+### Step 3: Generate Test Cases with `/evalkit.data` (if needed)
 
-Implement the evaluation pipeline:
+Create comprehensive test scenarios:
 
 ```text
-/evalkit.implement
+/evalkit.data Generate test cases covering customer service scenarios: product inquiries, refund requests,
+order lookups, edge cases with unclear requests, and system error handling scenarios.
 ```
 
-Then analyze the results:
+### Step 4: Implement Evaluation Pipeline with `/evalkit.implement`
+
+Build the trace-based evaluation pipeline:
+
+```text
+/evalkit.implement Use DeepEval for response quality metrics (relevance, faithfulness, coherence) with
+trace-extracted data. Implement custom metrics for tool usage accuracy and conversation flow analysis.
+Process normalized traces for comprehensive evaluation.
+```
+
+### Step 5: Analyze Results with `/evalkit.insights`
 
 After running evaluations, analyze the results:
 
 ```text
-/evalkit.insights
+/evalkit.insights Analyze trace-based evaluation results and provide actionable improvement recommendations
+for response accuracy, tool usage optimization, and conversation flow enhancement.
 ```
 
 ## Key Principles

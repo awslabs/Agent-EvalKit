@@ -1,152 +1,119 @@
 # Local Development Guide
 
-This guide shows how to iterate on the `evalkit` CLI locally without publishing a release or committing to `main` first.
+This guide shows how to develop and test EvalKit changes locally without publishing releases.
 
+## 0. Authentication Setup
 
-## 0. Authentication Setup for Private Repository
+Since EvalKit is in a private repository, configure Git authentication first.
 
-Since EvalKit is hosted in a private repository, you need to configure Git authentication before installation.
+### GitHub Personal Access Token
 
-### GitHub Personal Access Token Setup
-
-1. **Create a Personal Access Token:**
-   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-   - Click "Generate new token (classic)"
-   - Select scopes: `repo` (full control of private repositories)
+1. **Create token**: GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Select scope: `repo` (full control of private repositories)
    - Copy the generated token
 
-2. **Configure Git credentials:**
+2. **Configure credentials**:
    ```bash
-   # Add to your shell profile (~/.zshrc, ~/.bashrc, or ~/.bash_profile)
+   # Add to shell profile (~/.zshrc, ~/.bashrc, or ~/.bash_profile)
    export GITHUB_TOKEN="your_personal_access_token_here"
    
-   # Reload your shell configuration
+   # Reload configuration
    source ~/.zshrc  # or source ~/.bashrc
    ```
 
-## 1. Clone and Switch Branches
+## 1. Setup Development Environment
 
 ```bash
+# Clone and create feature branch
 git clone https://github.com/kangISU/eval-kit.git
 cd eval-kit
-# Work on a feature branch
 git checkout -b your-feature-branch
-```
 
-## 2. Run the CLI Directly (Recommended: Use Editable Install)
-
-For the best development experience, use the editable install method (see section 3 below). The CLI is configured as a script entry point, so you can't run it as a module with `python -m`.
-
-If you need to run the CLI directly for debugging, use the script file:
-
-```bash
-# Run the script file directly
-uv run python src/evalkit_cli/__init__.py --help
-# Create demo project in your preferred location
-cd /path/to/your/projects  # Choose your preferred directory
-uv run python /path/to/eval-kit/src/evalkit_cli/__init__.py init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
-cd demo-evaluation
-# Start a new VS Code window
-code .
-# evalkit commands will be available in Kilo Code (by typing /evalkit.design.md)
-```
-
-## 3. Use Editable Install (Isolated Environment)
-
-Create an isolated environment using `uv` so dependencies resolve exactly like end users get them:
-
-```bash
-# Create & activate virtual env (uv auto-manages .venv)
+# Create isolated environment
 uv venv
-source .venv/bin/activate  # or on Windows PowerShell: .venv\Scripts\Activate.ps1
+source .venv/bin/activate
 
-# Install project in editable mode
+# Install in editable mode
 uv pip install -e .
 
-# Now 'evalkit' entrypoint is available
+# Verify installation
 evalkit --help
-# Create demo project in your preferred location
-cd /path/to/your/projects  # Choose your preferred directory
-evalkit init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
-cd demo-evaluation
-# Start a new VS Code window
-code .
-# evalkit commands will be available in Kilo Code (by typing /evalkit.design.md)
 ```
 
-Re-running after code edits requires no reinstall because of editable mode.
+## 2. Claude Code Setup
 
-## Development Workflow
+Configure Claude Code for testing EvalKit commands:
 
-When developing EvalKit CLI features, follow this workflow to avoid polluting the main repository:
+**~/.claude/settings.json**:
+```json
+{
+  "env": {
+    "AWS_PROFILE": "claude",
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "DISABLE_PROMPT_CACHING": "1",
+    "DISABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "model": "us.anthropic.claude-sonnet-4-20250514-v1:0"
+}
+```
 
-### Testing Changes Locally
+**~/.aws/config**:
+```ini
+[profile claude]
+credential_process=/Users/<username>/.toolbox/bin/ada credentials print --profile=claude
+region=us-west-2
+account=<aws-account-number>
+role=Admin
+```
 
-1. **Create test projects in your preferred location:**
+**Authentication**: Run `mwinit` then type `claude` in terminal to start Claude Code.
+
+## 3. Development Workflow
+
+### Test Changes Locally
+
+1. **Create test project**:
    ```bash
-   # Test your CLI changes in demo projects (uses isolated environment)
-   # Navigate to your preferred directory for demo projects
-   cd /path/to/your/projects  # e.g., ~/projects, /tmp, or same level as eval-kit
-   evalkit init demo-evaluation --ai kilocode --ignore-agent-tools --script sh
+   cd /path/to/your/workspace
+   evalkit init demo-evaluation --ai claude --ignore-agent-tools --script sh --local-dev
    cd demo-evaluation
    code .
-   # Test evalkit commands in your AI assistant (/evalkit.design, etc.)
    ```
 
-2. **Testing template/script changes workflow:**
+2. **Add your test agent**: Copy your agent folder to the demo project root directory.
+
+3. **Test EvalKit commands**: Use `/evalkit.design`, `/evalkit.trace`, etc. in Claude Code terminal.
+
+### Iterate on Changes
+
+1. **Make changes** to templates or scripts in your eval-kit repository
+2. **Re-initialize** to test changes:
    ```bash
-   # 1. Use --local-dev flag to test your current branch changes immediately
-   # Navigate to your preferred directory for demo projects
-   cd /path/to/your/projects
-   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools --script sh
-   cd demo-evaluation
-   
-   # 2. Test your changes - templates and scripts reflect your current branch
-   # - Commands are in: .claude/commands/ or .kilocode/workflows/ or .amazonq/prompts/
-   # - Templates are in: .evalkit/templates/
-   # - Scripts are in: .evalkit/scripts/
-   
-   # 3. Make changes to templates/scripts in your main repo, then re-init to test
-   cd /path/to/eval-kit  # Back to main repo
-   # Edit files in templates/ or scripts/ directories
-   # Re-initialize to test changes:
-   cd /path/to/your/projects
-   evalkit init demo-evaluation --ai kilocode --local-dev --ignore-agent-tools --script sh
-   
-   # 4. Commit changes when satisfied (from eval-kit directory)
+   cd /path/to/your/workspace
+   evalkit init demo-evaluation --ai claude --ignore-agent-tools --script sh --local-dev
+   # Or create new project:
+   evalkit init demo-evaluation-2 --ai claude --ignore-agent-tools --script sh --local-dev
+   ```
+3. **Test updated commands** in VS Code with Claude Code
+
+### Local Development Mode
+
+The `--local-dev` flag:
+- Uses your current branch's templates and scripts
+- Processes templates with the same logic as GitHub releases  
+- Updates `.claude/`, `.evalkit/`, and `.mcp.json` files
+- Enables immediate testing of changes
+
+## 4. Commit Process
+
+1. **Test thoroughly** in demo projects
+2. **Commit changes**:
+   ```bash
    cd /path/to/eval-kit
    git add templates/ scripts/
    git commit -m "Update templates and scripts"
    ```
+3. **Push to feature branch**, then merge to main
 
-   **Alternative: Test build script directly**
-   ```bash
-   # You can also test the build process directly without creating a project
-   .github/workflows/scripts/build-local-dev.sh kilocode sh
-   # This creates processed templates in .genlocal/ directory for inspection
-   ```
-
-   **Key Benefits of Local Development Mode:**
-   - ✅ **Immediate reflection**: Changes to `templates/` and `scripts/` are used instantly
-   - ✅ **Proper processing**: Templates are processed with the same logic as GitHub releases
-   - ✅ **Branch-aware**: Uses whatever templates/scripts are in your current working branch
-   - ✅ **Faster iteration**: No need to manually copy files back and forth
-   - ✅ **Consistent**: Identical transformation logic as production releases
-
-   **How Local Development Mode Works:**
-   The `--local-dev` flag triggers a local build process that:
-   1. Runs [`.github/workflows/scripts/build-local-dev.sh`](../.github/workflows/scripts/build-local-dev.sh)
-   2. Uses the same template processing logic as GitHub releases
-   3. Processes templates (replaces `{SCRIPT}`, `{ARGS}`, etc. placeholders)
-   4. Creates proper directory structure for your AI assistant
-   5. Copies processed templates to your project directory
-
-### Committing Changes
-
-1. **Test thoroughly in demo projects first**
-2. **Only commit CLI source code changes** (not demo projects)
-3. **Push to feature branch, then merge to main**
-4. **⚠️ IMPORTANT: Pushing to main triggers automatic release**
-   - Changes to `templates/`, `scripts/`, `.github/workflows/` trigger release workflow
-   - Template changes become available immediately after release completes
-   - Test thoroughly before merging to main
+⚠️ **Important**: Pushing to main triggers automatic release. Test thoroughly before merging.
