@@ -1,7 +1,7 @@
 ---
 description: Generate test cases based on evaluation design and scenarios
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-design --require-test-scenarios
+  sh: scripts/bash/check-prerequisites.sh --json --require-design --require-test-scenarios --include-design 
 ---
 
 ## User Input

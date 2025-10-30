@@ -23,6 +23,8 @@ echo "📁 Configuration: ./otel-config.yaml"
 echo "📊 Traces will be written to: ./otel-traces.jsonl"
 echo "🌐 OTLP endpoint: http://localhost:4318"
 echo ""
+echo "ℹ️  Note: Run this script from the eval/tracing/ directory"
+echo ""
 
 # Create traces file if it doesn't exist
 touch ./otel-traces.jsonl

@@ -48,3 +48,7 @@ transformation-plan.md
 strategic_pivot.md
 trace-based-eval-support.md
 trace-based-eval-support-2.md
+test_trace_normalization.py
+otel-traces.jsonl
+normalized-traces.jsonl
+test_env/

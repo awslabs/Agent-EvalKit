@@ -30,7 +30,8 @@ Given that context, do this:
     3. Verify tracing setup and test case availability
     4. Execute core evaluation pipeline implementation:
        - Setup Project Structure (always required)
-       - Core Evaluation Pipeline Module (always required)
+       - **Trace Extraction Layer (critical first step - always required)**
+       - Core Evaluation Pipeline Module (always required, using extracted trace data)
        - Results & Analysis (always required)
        - Code Review & Testing (always required)
     5. Test and validate each component as it's built
@@ -43,21 +44,77 @@ Given that context, do this:
 Follow the established design structure systematically:
 - **Prerequisites**: Ensure tracing is enabled and test cases are available
 - **Core Focus**: Implement evaluation pipeline, metrics, and analysis only
-- **Validation**: Validate each component before proceeding
-- **Real Execution**: Use actual agent execution, never mock
 
 ### Prerequisites Validation
 
 Before implementation, verify:
 - `eval/eval-design.md` exists and contains complete specifications
-- **Tracing Setup**: Agent is instrumented and traces can be collected
-  - OTEL collector is configured (`eval/otel-config.yaml`)
-  - Agent has tracing enabled (via `/evalkit.trace` command)
-  - Test trace collection works (`eval/otel-traces.jsonl` can be generated)
-- **Test Cases**: Comprehensive test cases are available
-  - Test cases file exists (`eval/test-cases.jsonl`)
-  - Test cases cover all evaluation areas (via `/evalkit.data` command)
-  - Test case format is valid and complete
+- **Trace Data Availability**: Evaluation input data is accessible
+  - **Option A - Existing Traces**: Pre-existing trace files (`eval/tracing/otel-traces.jsonl` or similar)
+  - **Option B - Live Tracing**: Agent is instrumented and traces can be collected
+    - OTEL collector is configured (`eval/tracing/otel-config.yaml`)
+    - Agent has tracing enabled (via `/evalkit.trace` command)
+    - Test trace collection works (`eval/tracing/otel-traces.jsonl` can be generated)
+- **Test Cases**: Comprehensive test cases are available (if needed for trace generation)
+  - Test cases file exists (`eval/test-cases.jsonl`) OR existing traces contain sufficient test scenarios
+  - Test cases cover all evaluation areas (via `/evalkit.data` command) OR traces represent desired evaluation scope
+  - Test case format is valid and complete OR trace extraction can derive test scenarios
+
+### Python Environment & Dependency Management
+
+**Strategy**: Set up environment first to support both agent execution and evaluation framework dependencies.
+
+#### Environment Setup Process (First Step)
+
+1. **Detect Existing Dependencies**: Check for existing dependency files in agent directory and repository root
+   ```bash
+   # Check for existing dependency files (in order of priority)
+   find . -name "requirements.txt" -o -name "pyproject.toml" -o -name "setup.py" -o -name "Pipfile" -o -name "environment.yml"
+   ```
+
+2. **Consolidate Requirements**: Create unified `requirements.txt` at repository root
+   ```bash
+   # Merge agent dependencies with evaluation framework dependencies
+   # Include agent's existing requirements if found
+   # Add evaluation framework dependencies
+   ```
+
+3. **Create Virtual Environment**: Use `uv` to create `.venv` at repository root
+   ```bash
+   # Create virtual environment at repository root (not in eval/ directory)
+   uv venv .venv
+   source .venv/bin/activate  # Linux/Mac
+   # or .venv\Scripts\activate  # Windows
+   ```
+
+4. **Install Dependencies**: Use `uv pip install` for consistent dependency resolution
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+
+#### Dependency Detection Priority
+
+Check for existing dependency files in this order:
+- `requirements.txt` (standard Python)
+- `pyproject.toml` (modern Python projects)
+- `setup.py` (legacy Python packages)
+- `Pipfile` (pipenv projects)
+- `environment.yml` (conda environments)
+
+#### Evaluation Framework Dependencies
+
+Add these to consolidated `requirements.txt`:
+```txt
+# Core evaluation dependencies
+boto3>=1.35.0
+deepeval>=0.21.0
+traceloop-sdk>=0.0.75
+opentelemetry-sdk>=1.26.0
+opentelemetry-exporter-otlp>=1.26.0
+pydantic>=2.0.0
+pyyaml>=6.0
+jsonlines>=3.0.0
+```
 
 ### Leveraging Context7 MCP for Latest Library Information
 
@@ -75,150 +132,341 @@ Example Context7 queries:
 
 This ensures your implementation uses the most current approaches and avoids deprecated patterns.
 
-### Key Implementation Examples
-
-#### Agent Integration Pattern
-```python
-class AgentConnector:
-    """Base class for agent integration."""
-    
-    def __init__(self, config: dict):
-        self.config = config
-        self.agent = None
-        
-    def execute(self, input_data: dict) -> dict:
-        """Execute agent with input data and return results."""
-        # CRITICAL: Must use real agent, never mock
-        if not self.agent:
-            raise RuntimeError("Agent not connected")
-            
-        import time
-        start_time = time.time()
-        
-        try:
-            result = self.agent.process(input_data)
-            execution_time = time.time() - start_time
-            
-            return {
-                "output": result,
-                "execution_time": execution_time,
-                "status": "success",
-                "timestamp": time.time()
-            }
-        except Exception as e:
-            execution_time = time.time() - start_time
-            return {
-                "output": None,
-                "execution_time": execution_time,
-                "status": "error",
-                "error": str(e),
-                "timestamp": time.time()
-            }
-```
-
-#### Evaluation Engine Pattern
-```python
-from deepeval.metrics import AnswerRelevancyMetric, FaithfulnessMetric
-from deepeval.test_case import LLMTestCase
-
-class EvaluationEngine:
-    """Core evaluation engine using DeepEval framework."""
-    
-    def __init__(self, config: dict):
-        self.config = config
-        self.metrics = self._initialize_metrics()
-        
-    def evaluate_response(self, test_case: dict, agent_response: dict) -> dict:
-        """Evaluate a single agent response."""
-        results = {}
-        
-        # Create DeepEval test case
-        eval_case = LLMTestCase(
-            input=test_case["input"],
-            actual_output=agent_response["output"],
-            retrieval_context=test_case.get("context", [])
-        )
-        
-        # Run each metric
-        for metric_name, metric in self.metrics.items():
-            try:
-                metric.measure(eval_case)
-                results[metric_name] = {
-                    "score": metric.score,
-                    "success": metric.success,
-                    "reason": metric.reason
-                }
-            except Exception as e:
-                results[metric_name] = {
-                    "score": 0.0,
-                    "success": False,
-                    "reason": f"Evaluation error: {str(e)}"
-                }
-                
-        return results
-```
-
-#### Environment Setup Script
-```bash
-#!/bin/bash
-set -e
-
-echo "Setting up evaluation environment..."
-
-# Create virtual environment using uv
-uv venv eval-env
-source eval-env/bin/activate
-
-# Install core dependencies
-uv pip install \
-    "deepeval>=0.21.0" \
-    "pandas>=2.0.0" \
-    "pyyaml>=6.0" \
-    "rich>=13.0.0" \
-    "httpx>=0.24.0" \
-    "plotly>=5.15.0"
-
-echo "Environment setup complete!"
-```
-
-## Implementation Validation
-
-For each implemented component:
-- Verify it meets the requirements from the plan
-- Test with sample data to ensure functionality
-- Check integration with other components
-- Ensure no simulation or mocking is present
-- Validate error handling
-
-## Quality Checklist
-
-- [ ] Prerequisites validated (tracing enabled, test cases available)
-- [ ] All core evaluation tasks from design are completed
-- [ ] Agent integration uses real agent (no simulation)
-- [ ] Evaluation metrics are computed from actual execution
-- [ ] Tracing integration works with evaluation pipeline
-- [ ] Test cases are properly loaded and executed
-- [ ] Error handling is robust and informative
-- [ ] Configuration is externalized in `config.yaml`
-- [ ] Results are stored in `results/` directory
-- [ ] End-to-end pipeline executes successfully
-
 ## Implementation Principles
 
+**CRITICAL: Always Create Minimal Working Version**: Implement the most basic version that works
+
+**Core Implementation Guidelines**:
 - **Follow the Design**: Implement according to the established design structure
-- **Real Agent Focus**: Always integrate with actual agent, never mock
+- **Trace-First Evaluation**: Prioritize trace-based evaluation over direct agent integration
 - **Use Context7 MCP**: Leverage built-in Context7 MCP server for latest library documentation and best practices
 - **Configuration-Driven**: Use `config.yaml` for all settings
 - **Error Resilience**: Handle failures gracefully with clear error messages
-- **Simple Structure**: Follow the flat `eval/` directory structure
+
+## Trace-Based Evaluation Architecture
+
+**CRITICAL PRINCIPLE**: The core evaluation module should be **decoupled** from direct agent execution and work with OTEL traces as the primary input source.
+### Architecture Flow: `agent execution → otel-json traces → extraction → evaluation`
+
+This decoupled architecture provides:
+- **Flexibility**: Evaluate agents without source code access
+- **Scalability**: Process large trace datasets offline
+- **Reliability**: Evaluation doesn't depend on agent availability
+- **Reproducibility**: Consistent results from stored traces
+
+### Standard Trace Normalization Utilities
+
+**CRITICAL**: Always implement these standard utility functions to ensure consistent OTLP-JSON trace processing across all evaluation code.
+
+#### Core Trace Processing Functions
+
+Create `eval/trace_extractor.py` with these standard utilities:
+
+```python
+"""
+Standard OTLP-JSON trace normalization utilities for consistent evaluation processing.
+Implements single-phase normalization: OTLP-JSON → NormalizedTrace data class.
+"""
+import json
+import jsonlines
+from typing import Dict, List, Optional, Any, Union
+from datetime import datetime
+from pathlib import Path
+from dataclasses import dataclass
+
+@dataclass
+class NormalizedSpan:
+    """Standardized span structure extracted from OTLP format"""
+    trace_id: str
+    span_id: str
+    parent_span_id: Optional[str]
+    name: str
+    kind: int
+    start_time: int  # nanoseconds
+    end_time: int    # nanoseconds
+    duration_ns: int
+    attributes: Dict[str, Any]
+    resource_attributes: Dict[str, str]
+    scope: str
+    status: Dict[str, Any]
+
+@dataclass
+class TraceMetadata:
+    """Computed metadata for a complete trace"""
+    service_name: str
+    total_duration_ns: int
+    span_count: int
+    start_time: int
+    end_time: int
+
+@dataclass
+class NormalizedTrace:
+    """Complete normalized trace with helper methods for dynamic extraction"""
+    trace_id: str
+    spans: List[NormalizedSpan]
+    metadata: TraceMetadata
+    
+    def find_spans(self,
+                   name_contains: Optional[str] = None,
+                   scope_contains: Optional[str] = None,
+                   attribute_filter: Optional[Dict[str, Any]] = None,
+                   custom_filter: Optional[callable] = None) -> List[NormalizedSpan]:
+        """Find spans matching specified criteria"""
+        filtered_spans = self.spans
+        
+        if name_contains:
+            filtered_spans = [s for s in filtered_spans if name_contains.lower() in s.name.lower()]
+        
+        if scope_contains:
+            filtered_spans = [s for s in filtered_spans if scope_contains.lower() in s.scope.lower()]
+        
+        if attribute_filter:
+            for key, value in attribute_filter.items():
+                filtered_spans = [s for s in filtered_spans if s.attributes.get(key) == value]
+        
+        if custom_filter:
+            filtered_spans = [s for s in filtered_spans if custom_filter(s)]
+        
+        return filtered_spans
+    
+    def extract_attributes(self, attribute_names: List[str], spans: Optional[List[NormalizedSpan]] = None) -> List[Dict[str, Any]]:
+        """Extract specified attributes from spans"""
+        target_spans = spans if spans is not None else self.spans
+        
+        results = []
+        for span in target_spans:
+            span_data = {
+                "span_name": span.name,
+                "duration_ms": span.duration_ns / 1_000_000
+            }
+            for attr_name in attribute_names:
+                span_data[attr_name] = span.attributes.get(attr_name)
+            results.append(span_data)
+        
+        return results
+    
+    def get_execution_flow(self) -> List[NormalizedSpan]:
+        """Get spans sorted by execution order (start time)"""
+        return sorted(self.spans, key=lambda s: s.start_time)
+    
+    def has_errors(self) -> bool:
+        """Check if trace contains any error spans"""
+        return any(span.status.get("code") == 2 for span in self.spans)
+    
+    def get_error_spans(self) -> List[NormalizedSpan]:
+        """Get all spans with error status"""
+        return [span for span in self.spans if span.status.get("code") == 2]
+
+class TraceExtractor:
+    """Standard utilities for OTLP-JSON trace normalization"""
+    
+    def __init__(self, traces_path: str = "eval/tracing/otel-traces.jsonl"):
+        self.traces_path = Path(traces_path)
+    
+    def load_and_normalize_traces(self) -> Dict[str, NormalizedTrace]:
+        """Load OTLP-JSON traces and normalize to NormalizedTrace objects"""
+        raw_spans = self._load_otlp_spans()
+        normalized_spans = [self._extract_span_from_otlp(span) for span in raw_spans]
+        return self._group_spans_by_trace_id(normalized_spans)
+    
+    def _load_otlp_spans(self) -> List[Dict]:
+        """Load raw OTLP-JSON spans from jsonl file"""
+        spans = []
+        with jsonlines.open(self.traces_path) as reader:
+            for line in reader:
+                # Extract spans from nested OTLP structure
+                for resource_span in line.get("resourceSpans", []):
+                    for scope_span in resource_span.get("scopeSpans", []):
+                        for span in scope_span.get("spans", []):
+                            # Attach resource and scope metadata
+                            span["_resource"] = resource_span.get("resource", {})
+                            span["_scope"] = scope_span.get("scope", {})
+                            spans.append(span)
+        return spans
+    
+    def _extract_span_from_otlp(self, otlp_span: Dict) -> NormalizedSpan:
+        """Extract NormalizedSpan from nested OTLP format"""
+        # Convert OTLP attributes to simple dict
+        attributes = {}
+        for attr in otlp_span.get("attributes", []):
+            key = attr["key"]
+            value_obj = attr["value"]
+            # Extract value based on type
+            if "stringValue" in value_obj:
+                attributes[key] = value_obj["stringValue"]
+            elif "intValue" in value_obj:
+                attributes[key] = int(value_obj["intValue"])
+            elif "doubleValue" in value_obj:
+                attributes[key] = float(value_obj["doubleValue"])
+            elif "boolValue" in value_obj:
+                attributes[key] = value_obj["boolValue"]
+        
+        # Extract resource attributes
+        resource_attrs = {}
+        for attr in otlp_span.get("_resource", {}).get("attributes", []):
+            key = attr["key"]
+            value_obj = attr["value"]
+            if "stringValue" in value_obj:
+                resource_attrs[key] = value_obj["stringValue"]
+        
+        return NormalizedSpan(
+            trace_id=otlp_span.get("traceId"),
+            span_id=otlp_span.get("spanId"),
+            parent_span_id=otlp_span.get("parentSpanId"),
+            name=otlp_span.get("name"),
+            kind=otlp_span.get("kind", 0),
+            start_time=int(otlp_span.get("startTimeUnixNano", 0)),
+            end_time=int(otlp_span.get("endTimeUnixNano", 0)),
+            duration_ns=int(otlp_span.get("endTimeUnixNano", 0)) - int(otlp_span.get("startTimeUnixNano", 0)),
+            attributes=attributes,
+            resource_attributes=resource_attrs,
+            scope=otlp_span.get("_scope", {}).get("name", "unknown"),
+            status=otlp_span.get("status", {})
+        )
+    
+    def _group_spans_by_trace_id(self, spans: List[NormalizedSpan]) -> Dict[str, NormalizedTrace]:
+        """Group spans into complete NormalizedTrace objects by traceId"""
+        trace_spans = {}
+        for span in spans:
+            trace_id = span.trace_id
+            if trace_id not in trace_spans:
+                trace_spans[trace_id] = []
+            trace_spans[trace_id].append(span)
+        
+        # Create NormalizedTrace objects with metadata
+        traces = {}
+        for trace_id, spans in trace_spans.items():
+            if spans:
+                metadata = TraceMetadata(
+                    service_name=spans[0].resource_attributes.get("service.name", "unknown"),
+                    total_duration_ns=max(s.end_time for s in spans) - min(s.start_time for s in spans),
+                    span_count=len(spans),
+                    start_time=min(s.start_time for s in spans),
+                    end_time=max(s.end_time for s in spans)
+                )
+                traces[trace_id] = NormalizedTrace(
+                    trace_id=trace_id,
+                    spans=spans,
+                    metadata=metadata
+                )
+        
+        return traces
+
+# Usage Example Functions
+
+def load_traces_for_evaluation(traces_path: str = "eval/tracing/otel-traces.jsonl") -> Dict[str, NormalizedTrace]:
+    """Standard function to load and normalize traces for evaluation"""
+    extractor = TraceExtractor(traces_path)
+    return extractor.load_and_normalize_traces()
+```
+
+#### Integration with Evaluation Pipeline
+
+**Standard pattern: Normalize traces → Extract test cases → Run DeepEval metrics**:
+
+**IMPORTANT**: Each metric requires specific data extractions. Implement helper functions based on your evaluation needs:
+
+```python
+# In your main evaluation script
+from deepeval import evaluate
+from deepeval.test_case import LLMTestCase
+from deepeval.metrics import FaithfulnessMetric, AnswerRelevancyMetric
+from trace_extractor import load_traces_for_evaluation
+
+# Generic extraction helpers (customize based on your agent's trace structure)
+def extract_input(trace: NormalizedTrace) -> str:
+    """Extract user input from trace - customize for your agent"""
+    workflow_spans = trace.find_spans(name_contains="workflow")
+    if workflow_spans:
+        main_workflow = workflow_spans[0]
+        return main_workflow.attributes.get("traceloop.entity.input", "")
+    return ""
+
+def extract_output(trace: NormalizedTrace) -> str:
+    """Extract final agent output from trace - customize for your agent"""
+    agent_spans = trace.find_spans(name_contains="agent")
+    if agent_spans:
+        # Get the last agent span's output as final answer
+        final_span = max(agent_spans, key=lambda s: s.end_time)
+        return final_span.attributes.get("traceloop.entity.output", "")
+    return ""
+
+# Metric-specific extraction helpers
+def extract_retrieval_context_for_faithfulness(trace: NormalizedTrace) -> list:
+    """Extract RAG context specifically for FaithfulnessMetric"""
+    retrieval_spans = trace.find_spans(name_contains="retrieval")
+    context = []
+    for span in retrieval_spans:
+        docs = span.attributes.get("traceloop.entity.output", "")
+        if docs:
+            context.append(docs)
+    return context
+
+def extract_tool_calls_for_custom_metric(trace: NormalizedTrace) -> list:
+    """Extract tool call data for custom tool evaluation metrics"""
+    tool_spans = trace.find_spans(name_contains="tool")
+    tool_calls = []
+    for span in tool_spans:
+        tool_calls.append({
+            "tool_name": span.attributes.get("tool.name", ""),
+            "input": span.attributes.get("traceloop.entity.input", ""),
+            "output": span.attributes.get("traceloop.entity.output", "")
+        })
+    return tool_calls
+
+# Load normalized traces
+traces = load_traces_for_evaluation("eval/tracing/otel-traces.jsonl")
+
+# Define evaluation metrics (each may need different LLMTestCase fields)
+metrics = [
+    FaithfulnessMetric(threshold=0.7),      # Needs: input, actual_output, retrieval_context
+    AnswerRelevancyMetric(threshold=0.8),   # Needs: input, actual_output
+    # CorrectnessMetric(threshold=0.9),     # Needs: input, actual_output, expected_output
+    # CustomToolMetric(threshold=0.85),     # Needs: custom extraction for tool calls
+]
+
+# Convert traces to DeepEval test cases
+test_cases = []
+for trace_id, trace in traces.items():
+    test_case = LLMTestCase(
+        input=extract_input(trace),
+        actual_output=extract_output(trace),
+        retrieval_context=extract_retrieval_context_for_faithfulness(trace),
+        # expected_output=extract_expected_output_for_correctness(trace),  # Add if needed
+        # Add other fields as required by your specific metrics
+    )
+    test_cases.append(test_case)
+
+# Run evaluation using DeepEval
+results = evaluate(test_cases, metrics)
+```
+
+**Key Points**:
+- **Metric-Specific Extraction**: Each metric type requires different data from traces
+- **Customize Helper Functions**: Adapt extraction logic to your agent's specific trace structure
+- **LLMTestCase Fields**: Only populate fields needed by your chosen metrics
+- **Dynamic Extraction**: Use `NormalizedTrace` helper methods to find and extract relevant spans/attributes
+
+#### Benefits of Unified Data Class Approach
+
+1. **Flexibility**: AI can extract exactly what each metric needs without pre-defined constraints
+2. **Consistency**: Standardized trace structure with type safety
+3. **Performance**: Single normalization pass, then dynamic extraction as needed
+4. **Maintainability**: Clean data model with helper methods for common operations
+5. **Extensibility**: Easy to add new helper methods without changing core structure
+
+
 
 ## Common Pitfalls to Avoid
 
-- **Missing Prerequisites**: Don't proceed without tracing setup and test cases
+- **Over-Engineering**: Don't add complexity before the basic version works
+- **Direct Agent Coupling**: Don't tightly couple evaluation to direct agent execution - prioritize trace-based evaluation
+- **Missing Trace Normalization**: Don't proceed without validating trace data can be normalized to NormalizedTrace objects
+- **Ignoring Trace-First Architecture**: Always implement normalization layer before evaluation logic
 - **Agent Simulation**: Never mock or simulate the agent being evaluated
 - **Hardcoded Values**: Use configuration files instead of embedding values in code
 - **Silent Failures**: Always log errors and provide clear error messages
-- **Ignoring Dependencies**: Ensure tracing and test data integration works properly
+- **Incomplete Normalization**: Ensure all required trace data (spans, attributes, metadata) is properly normalized
 - **Ignoring the Design**: Follow the established task structure and file organization
 
 

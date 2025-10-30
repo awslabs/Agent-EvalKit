@@ -60,7 +60,26 @@ Given that user evaluation requests or agent description, do this:
 
 4. Write the complete evaluation specification AND implementation plan to DESIGN_FILE (eval-design.md) using the template structure, replacing placeholders with concrete details derived from the agent analysis while preserving section order and headings.
 
-5. **Handle [NEEDS CLARIFICATION] markers** (if any remain):
+5. **Copy tracing templates if target agent code exists**:
+   
+   If target agent code was found during analysis (regardless of instrumentation status):
+   ```bash
+   # Create tracing subdirectory
+   mkdir -p eval/tracing
+   
+   # Copy OTEL templates from templates/tracing/
+   cp templates/tracing/setup-otelcol-template.sh eval/tracing/setup_otelcol.sh
+   cp templates/tracing/run-otelcol-template.sh eval/tracing/run_otelcol.sh
+   cp templates/tracing/otel-config-template.yaml eval/tracing/otel-config.yaml
+   
+   # Make scripts executable
+   chmod +x eval/tracing/setup_otelcol.sh
+   chmod +x eval/tracing/run_otelcol.sh
+   ```
+   
+   This ensures tracing infrastructure is available for later commands, even when `/evalkit.trace` is skipped for already-instrumented agents.
+
+6. **Handle [NEEDS CLARIFICATION] markers** (if any remain):
    
    1. Extract all [NEEDS CLARIFICATION: ...] markers from the spec
    2. **LIMIT CHECK**: If more than 5 markers exist, keep only the 5 most critical (by evaluation impact) and make informed guesses for the rest
@@ -92,7 +111,7 @@ Given that user evaluation requests or agent description, do this:
    8. Update the eval-design.md by replacing each [NEEDS CLARIFICATION] marker with the user's answer
    9. If no clarifications needed, proceed directly to step 6
 
-6. Report completion with branch name, evaluation design file path, and readiness for implementation (`/evalkit.implement`).
+7. Report completion with branch name, evaluation design file path, and readiness for implementation (`/evalkit.implement`).
 
 
 ## General Guidelines
@@ -107,13 +126,6 @@ When creating evaluation specifications and implementation plans from a user pro
 4. **Enable design iteration**: Always include guidance for refining evaluation requests when defaults don't match user needs
 5. **Think like an evaluator and architect**: Every requirement should be measurable and every technology choice should have clear rationale
 6. **Ask clarification questions**: Use [NEEDS CLARIFICATION: specific question] markers sparingly (max 5 total) for critical decisions that significantly impact evaluation scope or technical architecture
-
-### Section Requirements
-
-- **Mandatory sections**: Must be completed for every agent evaluation
-- **Optional sections**: Include only when relevant to the agent type or user input
-- When a section doesn't apply, remove it entirely (don't leave as "N/A")
-
 
 ## Evaluation Specification Phase Guidelines
 

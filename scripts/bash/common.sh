@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 # Common functions and variables for all scripts
 
+# Ensure script runs from repository root directory
+ensure_repo_root() {
+    local repo_root=$(get_repo_root)
+    if [[ "$(pwd)" != "$repo_root" ]]; then
+        echo "[evalkit] Changing to repository root: $repo_root" >&2
+        cd "$repo_root" || {
+            echo "ERROR: Failed to change to repository root: $repo_root" >&2
+            exit 1
+        }
+    fi
+}
+
 # Get repository root, with fallback for non-git repositories
 get_repo_root() {
     if git rev-parse --show-toplevel >/dev/null 2>&1; then

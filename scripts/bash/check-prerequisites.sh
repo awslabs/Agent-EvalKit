@@ -93,6 +93,9 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
+# Ensure we're running from repository root
+ensure_repo_root
+
 # Get evaluation paths and validate branch
 eval $(get_evaluation_paths)
 check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
@@ -101,14 +104,13 @@ check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
 if $PATHS_ONLY; then
     if $JSON_MODE; then
         # Minimal JSON paths payload (no validation performed)
-        printf '{"REPO_ROOT":"%s","BRANCH":"%s","EVALUATION_DIR":"%s","EVALUATION_SPEC":"%s","IMPL_PLAN":"%s"}\n' \
-            "$REPO_ROOT" "$CURRENT_BRANCH" "$EVALUATION_DIR" "$EVALUATION_SPEC" "$IMPL_PLAN"
+        printf '{"REPO_ROOT":"%s","BRANCH":"%s","EVALUATION_DIR":"%s","EVALUATION_DESIGN":"%s"}\n' \
+            "$REPO_ROOT" "$CURRENT_BRANCH" "$EVALUATION_DIR" "$EVALUATION_DESIGN"
     else
         echo "REPO_ROOT: $REPO_ROOT"
         echo "BRANCH: $CURRENT_BRANCH"
         echo "EVALUATION_DIR: $EVALUATION_DIR"
-        echo "EVALUATION_SPEC: $EVALUATION_SPEC"
-        echo "IMPL_PLAN: $IMPL_PLAN"
+        echo "EVALUATION_DESIGN: $EVALUATION_DESIGN"
     fi
     exit 0
 fi
@@ -121,7 +123,7 @@ if [[ ! -d "$EVALUATION_DIR" ]]; then
 fi
 
 # Check for eval-design.md if required (for implementation phase)
-if $REQUIRE_DESIGN && [[ ! -f "$EVALUATION_SPEC" ]]; then
+if $REQUIRE_DESIGN && [[ ! -f "$EVALUATION_DESIGN" ]]; then
     echo "ERROR: eval-design.md not found in $EVALUATION_DIR" >&2
     echo "Run /evalkit.design first to create the evaluation design." >&2
     exit 1
@@ -131,10 +133,10 @@ fi
 if $REQUIRE_TRACING; then
     tracing_files_missing=()
     
-    # Check for OTEL collector setup files
-    [[ ! -f "$EVALUATION_DIR/setup_otelcol.sh" ]] && tracing_files_missing+=("setup_otelcol.sh")
-    [[ ! -f "$EVALUATION_DIR/run_otelcol.sh" ]] && tracing_files_missing+=("run_otelcol.sh")
-    [[ ! -f "$EVALUATION_DIR/otel-config.yaml" ]] && tracing_files_missing+=("otel-config.yaml")
+    # Check for OTEL collector setup files in tracing subdirectory
+    [[ ! -f "$EVALUATION_DIR/tracing/setup_otelcol.sh" ]] && tracing_files_missing+=("tracing/setup_otelcol.sh")
+    [[ ! -f "$EVALUATION_DIR/tracing/run_otelcol.sh" ]] && tracing_files_missing+=("tracing/run_otelcol.sh")
+    [[ ! -f "$EVALUATION_DIR/tracing/otel-config.yaml" ]] && tracing_files_missing+=("tracing/otel-config.yaml")
     
     if [[ ${#tracing_files_missing[@]} -gt 0 ]]; then
         echo "ERROR: Tracing setup incomplete. Missing files in $EVALUATION_DIR:" >&2
@@ -144,9 +146,9 @@ if $REQUIRE_TRACING; then
     fi
     
     # Check if OTEL collector binary exists
-    if [[ ! -f "$EVALUATION_DIR/otelcol-contrib" ]]; then
-        echo "ERROR: OTEL collector binary not found in $EVALUATION_DIR" >&2
-        echo "Run ./setup_otelcol.sh in the evaluation directory to download the collector." >&2
+    if [[ ! -f "$EVALUATION_DIR/tracing/otelcol-contrib" ]]; then
+        echo "ERROR: OTEL collector binary not found in $EVALUATION_DIR/tracing/" >&2
+        echo "Run ./tracing/setup_otelcol.sh in the evaluation directory to download the collector." >&2
         exit 1
     fi
 fi
@@ -169,21 +171,21 @@ fi
 
 # Check for test scenarios in design if required (for data generation phase)
 if $REQUIRE_TEST_SCENARIOS; then
-    if [[ ! -f "$EVALUATION_SPEC" ]]; then
+    if [[ ! -f "$EVALUATION_DESIGN" ]]; then
         echo "ERROR: eval-design.md not found in $EVALUATION_DIR" >&2
         echo "Run /evalkit.design first to create the evaluation design." >&2
         exit 1
     fi
     
     # Check if design contains "Key Test Scenarios" section
-        if ! grep -q "### Key Test Scenarios" "$EVALUATION_SPEC" 2>/dev/null; then
+        if ! grep -q "### Key Test Scenarios" "$EVALUATION_DESIGN" 2>/dev/null; then
             echo "ERROR: eval-design.md missing 'Key Test Scenarios' section" >&2
             echo "Update eval-design.md to include test scenario specifications, or run /evalkit.design again." >&2
             exit 1
         fi
         
         # Check if test scenarios section has content (not just placeholders)
-        scenarios_content=$(sed -n '/### Key Test Scenarios/,/###\|^$/p' "$EVALUATION_SPEC" | grep -v "^#" | grep -v "^<!--" | grep -v "^$" | wc -l)
+        scenarios_content=$(sed -n '/### Key Test Scenarios/,/###\|^$/p' "$EVALUATION_DESIGN" | grep -v "^#" | grep -v "^<!--" | grep -v "^$" | wc -l)
         if [[ $scenarios_content -lt 3 ]]; then
             echo "ERROR: 'Key Test Scenarios' section appears to be empty or contains only placeholders" >&2
             echo "Please fill out the test scenarios in eval-design.md before running /evalkit.data." >&2
@@ -191,7 +193,7 @@ if $REQUIRE_TEST_SCENARIOS; then
         fi
         
         # Check if design contains "Test Case Requirements" section
-        if ! grep -q "### Test Case Requirements" "$EVALUATION_SPEC" 2>/dev/null; then
+        if ! grep -q "### Test Case Requirements" "$EVALUATION_DESIGN" 2>/dev/null; then
             echo "ERROR: eval-design.md missing 'Test Case Requirements' section" >&2
             echo "Update eval-design.md to include test case requirements, or run /evalkit.design again." >&2
             exit 1
@@ -207,24 +209,21 @@ if [[ -d "$RESULTS_DIR" ]] && [[ -n "$(ls -A "$RESULTS_DIR" 2>/dev/null)" ]]; th
 fi
 
 # Include eval-design.md if requested and it exists
-if $INCLUDE_DESIGN && [[ -f "$EVALUATION_SPEC" ]]; then
+if $INCLUDE_DESIGN && [[ -f "$EVALUATION_DESIGN" ]]; then
     docs+=("eval-design.md")
 fi
 
 # Include tracing files if they exist
-if [[ -f "$EVALUATION_DIR/otel-config.yaml" ]]; then
-    docs+=("otel-config.yaml")
+if [[ -f "$EVALUATION_DIR/tracing/otel-config.yaml" ]]; then
+    docs+=("tracing/otel-config.yaml")
 fi
-if [[ -f "$EVALUATION_DIR/tracing-setup.md" ]]; then
-    docs+=("tracing-setup.md")
+if [[ -f "$EVALUATION_DIR/tracing/otel-traces.jsonl" ]]; then
+    docs+=("tracing/otel-traces.jsonl")
 fi
 
 # Include test case files if they exist
 if [[ -f "$EVALUATION_DIR/test-cases.jsonl" ]]; then
     docs+=("test-cases.jsonl")
-fi
-if [[ -f "$EVALUATION_DIR/test-cases-metadata.json" ]]; then
-    docs+=("test-cases-metadata.json")
 fi
 
 # Output results
@@ -247,12 +246,12 @@ else
     check_dir "$RESULTS_DIR" "results/"
     
     if $INCLUDE_DESIGN; then
-        check_file "$EVALUATION_SPEC" "eval-design.md"
+        check_file "$EVALUATION_DESIGN" "eval-design.md"
     fi
     
     # Show tracing files status
-    check_file "$EVALUATION_DIR/otel-config.yaml" "otel-config.yaml"
-    check_file "$EVALUATION_DIR/tracing-setup.md" "tracing-setup.md"
+    check_file "$EVALUATION_DIR/tracing/otel-config.yaml" "tracing/otel-config.yaml"
+    check_file "$EVALUATION_DIR/tracing/otel-traces.jsonl" "tracing/otel-traces.jsonl"
     
     # Show test case files status
     check_file "$EVALUATION_DIR/test-cases.jsonl" "test-cases.jsonl"

@@ -120,6 +120,8 @@ chmod +x "./otelcol-contrib"
 
 # Clean up
 rm -f "otelcol-contrib.tar.gz"
+# Remove any extra files that might have been extracted (like README.md)
+rm -f README.md readme.md README.txt readme.txt LICENSE LICENSE.txt
 
 # Test the binary
 echo ""

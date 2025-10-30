@@ -1,7 +1,7 @@
 ---
 description: Set up tracing instrumentation for target agent
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-design
+  sh: scripts/bash/check-prerequisites.sh --json --require-design --include-design 
 ---
 
 ## User Input
@@ -84,24 +84,21 @@ def agent_decision_point():
 
 ### OTEL Collector Setup
 
-1. **Copy Templates to Workspace**:
-   ```bash
-   # Copy OTEL templates from templates/tracing/
-   cp templates/tracing/setup-otelcol-template.sh eval/setup_otelcol.sh
-   cp templates/tracing/run-otelcol-template.sh eval/run_otelcol.sh
-   cp templates/tracing/otel-config-template.yaml eval/otel-config.yaml
-   ```
+**Note**: Tracing templates are automatically copied by the design command when agent code is detected.
 
-2. **Make Scripts Executable**:
+1. **Setup Collector Binary**:
    ```bash
-   chmod +x eval/setup_otelcol.sh
-   chmod +x eval/run_otelcol.sh
-   ```
-
-3. **Setup Collector Binary**:
-   ```bash
-   cd eval
+   cd eval/tracing
    ./setup_otelcol.sh
+   ```
+
+2. **Test Collector**:
+   ```bash
+   # Start collector in background
+   ./run_otelcol.sh &
+   
+   # Verify collector is running
+   ps aux | grep otelcol
    ```
 
 ## Implementation Guidelines
@@ -114,22 +111,6 @@ def agent_decision_point():
 - **Graceful Degradation**: Agent should work even if tracing fails
 - **Performance Awareness**: Monitor and minimize tracing overhead
 - **Local-First**: Use local OTEL collector, avoid external dependencies
-
-### Documentation Requirements
-
-Create `eval/tracing-setup.md` with:
-- Tracing library and version used
-- Instrumentation points added
-- Configuration parameters
-
-## Completion Criteria
-
-The trace command is complete when:
-
-1. **Infrastructure Ready**: OTEL collector is set up and running
-2. **Agent Instrumented**: Target agent has tracing enabled
-3. **Traces Collected**: Test execution produces valid traces
-4. **Documentation Created**: Setup and configuration documented
 
 Report completion with tracing status, instrumentation details, and readiness for test case generation (`/evalkit.data`) or implementation (`/evalkit.implement`).
 
