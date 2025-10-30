@@ -30,7 +30,7 @@ Given that user evaluation requests or agent description, do this:
     2. Analyze agent state and user evaluation requests:
        a. **Priority 1 - User Input Analysis**: Parse specific evaluation requests, scenarios, and constraints from user input
        b. **Priority 2 - Agent State Detection**:
-          - Scan codebase for tracing instrumentation patterns (Langfuse, OpenTelemetry, custom tracing, agent SDK native tracing support, etc)
+          - Scan codebase for tracing instrumentation patterns (Traceloop, OpenTelemetry, custom tracing, agent SDK native tracing support, etc)
           - Check for existing trace files/directories in project
           - Identify existing test case files and formats
           - Determine default implementation scenario:
@@ -149,7 +149,7 @@ Metrics must be:
 
 **Examples of reasonable defaults** (don't ask about these):
 
-- **Tracing instrumentation**: Langfuse library
+- **Tracing instrumentation**: Traceloop library
 - **Evaluation frameworks**: DeepEval library
 - **LLM calling service**: LiteLLM library
 - **LLM provider**: Amazon Bedrock

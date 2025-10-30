@@ -1377,8 +1377,10 @@ def init(
     steps_lines.append(
         "   2.1 [cyan]/evalkit.design[/] - Analyze agent and design comprehensive evaluation specification with implementation plan"
     )
-    steps_lines.append("   2.2 [cyan]/evalkit.implement[/] - Execute evaluation pipeline implementation")
-    steps_lines.append("   2.3 [cyan]/evalkit.insights[/] - Analyze results and provide improvement suggestions")
+    steps_lines.append("   2.2 [cyan]/evalkit.trace[/] - Set up tracing instrumentation for target agent (if needed)")
+    steps_lines.append("   2.3 [cyan]/evalkit.data[/] - Generate test cases based on evaluation design (if needed)")
+    steps_lines.append("   2.4 [cyan]/evalkit.implement[/] - Implement core evaluation pipeline")
+    steps_lines.append("   2.5 [cyan]/evalkit.insights[/] - Analyze results and provide improvement suggestions")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()

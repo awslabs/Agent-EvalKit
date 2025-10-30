@@ -31,22 +31,6 @@
 **Available Tools**: [If applicable, list tools the agent can use]  
 **Technology Stack**: [Languages, frameworks, dependencies]
 
-
-### Tracing Instrumentation and Assets Analysis
-
-**Detected Instrumentation Status**: [Fully/Partially/Not Instrumented - tracing libraries found]   
-**Available Assets**: [Existing traces/test cases/source code only]   
-**Default Implementation Scenario**:
-Based on the target agent's current state and available assets, the marked option is suggested as the most appropriate evaluation approach. Each scenario determines which implementation modules will be included in your evaluation pipeline:
-<!--
-  ACTION REQUIRED: Select and mark with x
--->
-- [ ] **Instrumented agent + existing traces** → Core evaluation pipeline only (fastest setup - analyze existing trace data)
-- [ ] **Instrumented agent + test cases** → Trace collection + core evaluation pipeline (run tests to generate new traces, then evaluate)
-- [ ] **Instrumented agent only** → Test generation + trace collection + core evaluation pipeline (full pipeline - create tests, collect traces, evaluate)
-- [ ] **Agent without instrumentation** → Instrumentation guidance + full pipeline (complete setup - add tracing, create tests, collect traces, evaluate)
-- [ ] **Traces only** → Trace analysis + core evaluation pipeline (analyze existing traces without agent access)
-
 **Agent Workflow Diagram**:
 ```mermaid
 flowchart TD
@@ -64,6 +48,40 @@ flowchart TD
 <!--
   ACTION REQUIRED: Replace the generic workflow above with your agent's specific flow, showing key decision points, tool usage, and data transformations.
 -->
+
+### Tracing Instrumentation and Assets Analysis
+
+**Detected Instrumentation Status**: [Fully/Partially/Not Instrumented - tracing libraries found]   
+**Available Assets**: [Existing traces/test cases/source code only]   
+**5-Command Workflow Strategy**:
+Based on the target agent's current state and available assets, the marked option determines which commands are needed in your evaluation workflow:
+<!--
+  ACTION REQUIRED: Select and mark with x
+-->
+- [ ] **Instrumented agent + existing traces** → `/evalkit.implement` only (fastest setup - analyze existing trace data)
+- [ ] **Instrumented agent + test cases** → `/evalkit.implement` only (evaluate with existing tracing and test cases)
+- [ ] **Instrumented agent only** → `/evalkit.data` → `/evalkit.implement` (generate test cases and evaluate with existing tracing)
+- [ ] **Agent without instrumentation** → `/evalkit.trace` → `/evalkit.data` → `/evalkit.implement` (full workflow - add tracing, create tests, evaluate)
+- [ ] **Traces only** → `/evalkit.implement` only (analyze existing traces without agent access)
+
+### Tracing Configuration
+<!--
+  ACTION REQUIRED: Fill out if agent needs tracing instrumentation
+-->
+
+**Target Library**: [Traceloop (default)/OpenTelemetry/Custom - specify based on agent architecture]    
+**Instrumentation Points**: [Key functions/workflows to trace - e.g., main_execution, process_input, generate_response]   
+**Collection Method**: [Local OTEL collector (default)/Cloud service]   
+**Performance Impact**: [Expected overhead - Traceloop typically <5% performance impact]    
+
+**Agent Integration Strategy**:
+- **Default Traceloop Integration**: Use Traceloop decorators for evaluation-focused tracing
+  - `@workflow`: Mark main agent execution flows for evaluation boundaries
+  - `@task`: Mark individual reasoning/action steps for granular analysis
+  - `@agent`: Mark agent decision points for performance measurement
+- **Evaluation-Specific Naming**: Use descriptive span names that facilitate evaluation analysis
+  - Example: `"agent_planning_phase"`, `"tool_execution_step"`, `"response_generation"`
+- **Consistent App Naming**: Use format `"{agent-name}-eval-tracing"` for easy trace correlation
 
 ## Evaluation Areas
 <!--
@@ -98,21 +116,21 @@ flowchart TD
 
 ### Key Test Scenarios
 <!--
-  ACTION REQUIRED: Fill out key test scenarios if evaluation involves specific test cases (content below represents placeholders), or remove this entire "Key Test Scenarios" section as scenarios if existing test cases or traces are found.
+  ACTION REQUIRED: Fill out key test scenarios if evaluation involves specific test cases (content below represents placeholders), or remove this entire "Key Test Scenarios" section if existing test cases or traces are found.
 -->
 
 - **[Scenario Type 1]**: [What it tests, key characteristics without implementation]
 - **[Scenario Type 2]**: [What it tests, relationships to other scenarios]
 
-### Edge Cases & Failure Modes
+### Test Case Requirements
 <!--
-  ACTION REQUIRED: Fill out the edge cases for agent evaluation (content below represents placeholders), or remove this entire "Edge Cases & Failure Modes" section if existing test cases or traces are found.
+  ACTION REQUIRED: Fill out if test cases need to be generated, or remove this entire "Test Case Requirements" section if existing test cases or traces are found.
 -->
 
-- What happens when [agent receives ambiguous input]?
-- How does agent handle [out-of-scope requests]?
-- What occurs during [API failures or timeouts]?
-
+**Generation Strategy**: [Scenario-based (default)/Coverage-based/Hybrid]   
+**Test Case Format**: [JSONL with standardized schema (default)]    
+**Coverage Targets**: [Evaluation areas that need test cases - reference evaluation areas above]    
+**Expected Volume**: [Number of test cases needed - typically 5-10 based on evaluation scope]   
 
 
 ## Implementation Plan
@@ -121,25 +139,27 @@ flowchart TD
   Focus on practical decisions that enable trace-based evaluation of the agent.
 -->
 
-### Required Implementation Modules
+### Required Commands and Modules
 
-Based on user evaluation requests, tracing instrumentation status, and available assets, the following marked modules are suggested as required:
+Based on user evaluation requests, tracing instrumentation status, and available assets, the following commands and modules are suggested:
 <!--
-  ACTION REQUIRED: Select and mark with x
+  ACTION REQUIRED: Select and mark with x based on 5-Command Workflow Strategy above
 -->
-- [ ] Instrumentation Guidance (if agent lacks tracing)
-- [ ] Test Case Generation Module (if no test cases available/requested)
-- [ ] Trace Collection Module (if instrumented but no traces available/requested)
-- [ ] Core Evaluation Pipeline Module (always required)
+- [ ] `/evalkit.trace` - Tracing instrumentation setup (if agent lacks tracing)
+- [ ] `/evalkit.data` - Test case generation (if no test cases available/requested)
+- [ ] `/evalkit.implement` - Core evaluation pipeline (always required)
+- [ ] `/evalkit.insights` - Results analysis (optional after evaluation execution)
+
+**Command Execution Order**: `design` → `trace` (if needed) → `data` (if needed) → `implement` → `insights` (if needed)
 
 ### Technical Stack
 
-**Language/Version**: [e.g., Python 3.11, Node.js 18+]   
-**Tracing Libraries**: [e.g., Langfuse, OpenTelemetry]  
-**Evaluation Libraries**: [e.g., DeepEval, RAGAS, Custom]   
+**Language/Version**: [e.g., Python 3.11, Node.js 18+]  
+**Tracing Libraries**: [e.g., Traceloop (default), OpenTelemetry]   
+**OTEL Infrastructure**: [Local collector with file export (default)]   
+**Evaluation Libraries**: [e.g., DeepEval (default), RAGAS, Custom]   
 **Agent Integration**: [e.g., Direct import, API]   
-**Data Storage**: [e.g., JSONL/JSON files]  
-**Visualization**: [e.g., Streamlit dashboard]  
+**Data Storage**: [e.g., JSONL/JSON files]    
 
 ### Core Architecture
 
@@ -161,69 +181,65 @@ eval/
 ├── results/                 # Evaluation outputs (always present)
 ├── eval-design.md           # This evaluation specification and plan (always present)
 │
-├── instrumentation_guide.md # Only when agent lacks instrumentation
-├── test_generator.py        # When test generation needed
-├── trace_collector.py       # When trace collection needed
-└── traces/                  # When trace collection needed
+├── setup_otelcol.sh         # OTEL collector setup (from /evalkit.trace)
+├── run_otelcol.sh           # OTEL collector runner (from /evalkit.trace)
+├── otel-config.yaml         # OTEL collector config (from /evalkit.trace)
+└── test-cases.jsonl         # Generated test cases (from /evalkit.data)
 ```
 
 ### Implementation Tasks
 <!--
-  ACTION REQUIRED: Adjust based on tracing instrumentation and available assets analysis
+  ACTION REQUIRED: Adjust based on Required Commands and Modules above
 -->
 
-#### Setup Project Structure
+#### Tracing Setup Tasks (use `/evalkit.trace`)
+<!--
+  ACTION REQUIRED: Keep - only if agent lacks tracing instrumentation, otherwise remove
+-->
+- [ ] Copy OTEL templates to workspace (`setup_otelcol.sh`, `run_otelcol.sh`, `otel-config.yaml`)
+- [ ] Download and setup OTEL collector binary
+- [ ] Instrument agent code with selected tracing library (Traceloop default)
+- [ ] Test tracing setup and validate trace collection
+- [ ] Create tracing documentation in `eval/tracing-setup.md`
+
+#### Test Case Generation Tasks (use `/evalkit.data`)
+<!--
+  ACTION REQUIRED: Keep - only if no existing test cases available, otherwise remove
+-->
+- [ ] Parse evaluation design for test scenario requirements
+- [ ] Generate minimal test cases in JSONL format (`eval/test-cases.jsonl`)
+- [ ] Validate test case coverage across all evaluation areas
+
+#### Core Evaluation Tasks (use `/evalkit.implement`)
 <!--
   ACTION REQUIRED: Keep - always required
 -->
 - [ ] Create evaluation project structure based on the decided file structure
-- [ ] Set up Python environment with dependencies (using uv by default)
-
-#### Instrumentation Setup
-<!--
-  ACTION REQUIRED: Keep - only if agent lacks tracing instrumentation, otherwise remove
--->
-- [ ] Create instrumentation guide documentation in `eval/instrumentation_guide.md`
-- [ ] Enable tracing in agent code using selected instrumentation library
-
-#### Test Case Generation
-<!--
-  ACTION REQUIRED: Keep - only if no existing test cases available, otherwise remove
--->
-- [ ] Implement test case generator in `eval/test_generator.py`
-- [ ] Generate comprehensive test scenarios covering all evaluation areas
-
-#### Trace Collection
-<!--
-  ACTION REQUIRED: Keep - only if no existing traces available, otherwise remove
--->
-- [ ] Implement trace collector in `eval/trace_collector.py`
-- [ ] Set up trace storage and management in `eval/traces/`
-
-#### Core Evaluation Logic
-<!--
-  ACTION REQUIRED: Keep - always required
--->
 - [ ] Implement all evaluation area evaluators in `eval/evaluators.py`
 - [ ] Build helper functions to extract required input-output pair for each evaluator
 - [ ] Build main evaluation orchestration in `eval/run_evaluation.py`
 - [ ] Add configuration management in `eval/config.yaml`
+- [ ] Integrate with tracing data and test cases
+- [ ] Set up results storage in `eval/results/`
+- [ ] Set up Python environment with dependencies (using uv by default)
 
-#### Results & Analysis
+#### Results Analysis Tasks (use `/evalkit.insights`)
 <!--
   ACTION REQUIRED: Keep - always required
 -->
 - [ ] Implement results aggregation and analysis
 - [ ] Create visualization and reporting
-- [ ] Set up results storage in `eval/results/`
+- [ ] Generate actionable improvement recommendations
+- [ ] Create insights report with evidence-based findings
 
-#### Code Review & Testing
+#### Final Validation Tasks
 <!--
   ACTION REQUIRED: Keep - always required
 -->
 - [ ] Conduct code review to identify critical issues and fix
-- [ ] Test end-to-end evaluation pipeline
-- [ ] Validate all selected modules work together correctly
+- [ ] Test end-to-end evaluation pipeline across all commands
+- [ ] Validate command integration and data flow
+- [ ] Verify all selected commands work together correctly
 
 ### Important Notes
 
@@ -233,28 +249,38 @@ eval/
 
 ## Evaluation Design Iteration Guide
 
-If the suggested modules don't match your evaluation needs, try these scenario-specific requests:
+If the suggested command workflow doesn't match your evaluation needs, try these scenario-specific requests:
 
 **Scenario 1 - Focus on existing traces only:**
 `/evalkit.design I want to evaluate my agent using only the existing traces in ./traces/ directory`
+→ Workflow: `design` → `implement` → `insights`
 
-**Scenario 2 - Generate traces from existing test cases:**
-`/evalkit.design I want to run my instrumented agent on existing test cases and evaluate the generated traces`
+**Scenario 2 - Generate test cases for instrumented agent:**
+`/evalkit.design I want to generate test cases and evaluate my already-instrumented agent`
+→ Workflow: `design` → `data` → `implement` → `insights`
 
 **Scenario 3 - Full evaluation pipeline:**
-`/evalkit.design I want to generate test cases, collect traces, and evaluate my instrumented agent end-to-end`
+`/evalkit.design I want to add tracing, generate test cases, and evaluate my agent end-to-end`
+→ Workflow: `design` → `trace` → `data` → `implement` → `insights`
 
-**Scenario 4 - Add instrumentation first:**
-`/evalkit.design My agent needs tracing instrumentation before evaluation - guide me through the complete setup`
+**Scenario 4 - Add instrumentation only:**
+`/evalkit.design My agent needs tracing instrumentation before evaluation - guide me through setup only`
+→ Workflow: `design` → `trace` (then continue with other commands as needed)
 
 **Scenario 5 - Analyze unknown traces:**
 `/evalkit.design I have trace files but need to understand what agent capabilities they represent and evaluate them`
+→ Workflow: `design` → `implement` → `insights`
 
 **Custom evaluation focus:**
 `/evalkit.design I want to focus specifically on [accuracy/performance/safety/tool usage/reasoning] evaluation`
 
+**Command-specific refinements:**
+- **Tracing focus**: `/evalkit.design Focus on tracing setup with [specific library/requirements]`
+- **Test case focus**: `/evalkit.design Generate test cases for [specific scenarios/edge cases]`
+- **Implementation focus**: `/evalkit.design Implement evaluation for [specific metrics/frameworks]`
+
 **Refine current design:**
-You can manually edit this `eval-design.md` file to add/remove/modify specific modules, requirements, or focus areas as needed.
+You can manually edit this `eval-design.md` file to add/remove/modify specific commands, requirements, or focus areas as needed.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
-description: Execute implementation tasks according to the established plan
+description: Execute core evaluation pipeline implementation according to the established plan
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-design --include-design
+  sh: scripts/bash/check-prerequisites.sh --json --require-design --require-tracing --require-test-cases --include-design
 ---
 
 ## User Input
@@ -14,7 +14,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.implement` in the triggering message **is** additional context or specific implementation requirements. This command executes the implementation tasks according to the established plan.
+The text the user typed after `/evalkit.implement` in the triggering message **is** additional context or specific implementation requirements. This command executes the core evaluation pipeline implementation, assuming tracing and test cases are already prepared.
 
 Given that context, do this:
 
@@ -26,39 +26,51 @@ Given that context, do this:
 3. Follow this execution flow:
 
     1. Parse user context from Input (if provided)
-    2. Review evaluation design and identify task groups
-    3. Execute tasks according to the design structure (based on selected modules):
+    2. Review evaluation design and validate prerequisites
+    3. Verify tracing setup and test case availability
+    4. Execute core evaluation pipeline implementation:
        - Setup Project Structure (always required)
-       - Instrumentation Setup (if agent lacks tracing)
-       - Test Case Generation (if no existing test cases available)
-       - Trace Collection (if no exsiting traces available)
        - Core Evaluation Pipeline Module (always required)
        - Results & Analysis (always required)
        - Code Review & Testing (always required)
-    4. Test and validate each component as it's built
-    5. Ensure all evaluation uses actual agent execution, no mocking
+    5. Test and validate each component as it's built
+    6. Ensure all evaluation uses actual agent execution, no mocking
 
 ## Implementation Process
 
 ### Task Execution Strategy
 
 Follow the established design structure systematically:
-- Execute only the modules marked as required in `eval/eval-design.md`
-- Validate each component before proceeding
-- Use actual agent execution, never mock
+- **Prerequisites**: Ensure tracing is enabled and test cases are available
+- **Core Focus**: Implement evaluation pipeline, metrics, and analysis only
+- **Validation**: Validate each component before proceeding
+- **Real Execution**: Use actual agent execution, never mock
+
+### Prerequisites Validation
+
+Before implementation, verify:
+- `eval/eval-design.md` exists and contains complete specifications
+- **Tracing Setup**: Agent is instrumented and traces can be collected
+  - OTEL collector is configured (`eval/otel-config.yaml`)
+  - Agent has tracing enabled (via `/evalkit.trace` command)
+  - Test trace collection works (`eval/otel-traces.jsonl` can be generated)
+- **Test Cases**: Comprehensive test cases are available
+  - Test cases file exists (`eval/test-cases.jsonl`)
+  - Test cases cover all evaluation areas (via `/evalkit.data` command)
+  - Test case format is valid and complete
 
 ### Leveraging Context7 MCP for Latest Library Information
 
 **IMPORTANT**: EvalKit projects include Context7 MCP server for accessing the latest documentation and usage patterns. Use this built-in capability to ensure you're implementing with current best practices:
 
-- **Before implementing evaluation libraries**: Ask Context7 for the latest usage patterns, API changes, and best practices for libraries like Langfuse, DeepEval, LiteLLM, or other open source frameworks
+- **Before implementing evaluation libraries**: Ask Context7 for the latest usage patterns, API changes, and best practices for libraries like Traceloop, DeepEval, LiteLLM, or other open source frameworks
 - **For dependency management**: Get current version recommendations and compatibility information
 - **For integration patterns**: Access up-to-date examples and implementation guides
 - **For troubleshooting**: Get current solutions for common integration issues
 
 Example Context7 queries:
 - "What's the latest DeepEval API for custom metrics?"
-- "Show me current best practices for Langfuse trace fetch setup"
+- "Show me current best practices for Traceloop"
 - "How to properly configure evaluation environments with current dependency versions?"
 
 This ensures your implementation uses the most current approaches and avoids deprecated patterns.
@@ -180,9 +192,12 @@ For each implemented component:
 
 ## Quality Checklist
 
-- [ ] All tasks from evaluation design are completed
+- [ ] Prerequisites validated (tracing enabled, test cases available)
+- [ ] All core evaluation tasks from design are completed
 - [ ] Agent integration uses real agent (no simulation)
 - [ ] Evaluation metrics are computed from actual execution
+- [ ] Tracing integration works with evaluation pipeline
+- [ ] Test cases are properly loaded and executed
 - [ ] Error handling is robust and informative
 - [ ] Configuration is externalized in `config.yaml`
 - [ ] Results are stored in `results/` directory
@@ -199,9 +214,12 @@ For each implemented component:
 
 ## Common Pitfalls to Avoid
 
+- **Missing Prerequisites**: Don't proceed without tracing setup and test cases
 - **Agent Simulation**: Never mock or simulate the agent being evaluated
 - **Hardcoded Values**: Use configuration files instead of embedding values in code
 - **Silent Failures**: Always log errors and provide clear error messages
+- **Ignoring Dependencies**: Ensure tracing and test data integration works properly
 - **Ignoring the Design**: Follow the established task structure and file organization
+
 
 Report completion with implementation status and readiness for the next phase (`/evalkit.insights`).

@@ -130,7 +130,7 @@ build_variant() {
     esac
   fi
   
-  [[ -d templates ]] && { mkdir -p "$EVALKIT_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$EVALKIT_DIR"/ \; ; echo "Copied templates -> .evalkit/templates"; }
+  [[ -d templates ]] && { mkdir -p "$EVALKIT_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$EVALKIT_DIR"/ \; ; echo "Copied templates (including tracing templates) -> .evalkit/templates"; }
   
   # Copy MCP configuration to assistant-specific location if it exists
   if [[ -f mcps/mcp.json ]]; then
