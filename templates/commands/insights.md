@@ -18,12 +18,30 @@ The text the user typed after `/evalkit.insights` in the triggering message **is
 
 Given that context, do this:
 
-1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and RESULTS_PATH. All file paths must be absolute.
+1. **Navigate to repository root**:
+   
+   First, find the repository root using git (preferred) or by locating the script:
+   ```
+   REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+   ```
+   
+   If that fails (not in a git repo), find the script and go up two directories:
+   ```
+   SCRIPT_PATH=$(find . -name "check-prerequisites.sh" | head -1)
+   REPO_ROOT=$(cd "$(dirname "$SCRIPT_PATH")/../.." && pwd)
+   ```
+   
+   Then change to the repository root:
+   ```
+   cd "$REPO_ROOT"
+   ```
+
+2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and RESULTS_PATH. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
-2. Load and analyze the evaluation results from the specified path.
+3. Load and analyze the evaluation results from the specified path.
 
-3. Follow this execution flow:
+4. Follow this execution flow:
 
     1. Parse user context from Input (if provided)
     2. Load and validate evaluation results data
@@ -33,7 +51,7 @@ Given that context, do this:
     6. Create detailed insights report with evidence
     7. Provide prioritized action items for agent enhancement
 
-4. **Results Analysis Process**:
+5. **Results Analysis Process**:
 
    a. **Data Validation and Loading**: Ensure results are from real execution:
       - Load evaluation results from the specified path
@@ -60,7 +78,7 @@ Given that context, do this:
       - **Reliability Problems**: Analyze failure patterns and triggers
       - **Resource Constraints**: Identify limiting factors
 
-5. **Improvement Recommendations**: Generate specific, actionable recommendations:
+6. **Improvement Recommendations**: Generate specific, actionable recommendations:
 
    a. **Prioritized Action Items**: Based on impact and feasibility:
       
@@ -89,13 +107,13 @@ Given that context, do this:
       - **Expected Impact**: Quantified improvement predictions
       - **Success Metrics**: How to measure improvement
 
-6. **Insights Report Generation**: Create focused report with:
+7. **Insights Report Generation**: Create focused report with:
    - Executive summary with key findings
    - Performance analysis with core metrics
    - Prioritized improvement recommendations with evidence
    - Success metrics for tracking progress
 
-7. **Report Structure**:
+8. **Report Structure**:
    ```markdown
    # Agent Evaluation Insights Report
    
@@ -117,7 +135,7 @@ Given that context, do this:
    [How to measure improvement progress]
    ```
 
-8. Report completion with insights summary and critical recommendations.
+9. Report completion with insights summary and critical recommendations.
 
 ## General Guidelines
 

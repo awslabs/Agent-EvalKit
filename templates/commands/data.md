@@ -18,12 +18,30 @@ The text the user typed after `/evalkit.data` in the triggering message **is** a
 
 Given that context, do this:
 
-1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and DESIGN_FILE. All file paths must be absolute.
+1. **Navigate to repository root**:
+   
+   First, find the repository root using git (preferred) or by locating the script:
+   ```
+   REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+   ```
+   
+   If that fails (not in a git repo), find the script and go up two directories:
+   ```
+   SCRIPT_PATH=$(find . -name "check-prerequisites.sh" | head -1)
+   REPO_ROOT=$(cd "$(dirname "$SCRIPT_PATH")/../.." && pwd)
+   ```
+   
+   Then change to the repository root:
+   ```
+   cd "$REPO_ROOT"
+   ```
+
+2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and DESIGN_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
-2. Load the current evaluation design (`eval/eval-design.md`) to understand test scenario requirements and evaluation areas.
+3. Load the current evaluation design (`eval/eval-design.md`) to understand test scenario requirements and evaluation areas.
 
-3. Follow this execution flow:
+4. Follow this execution flow:
 
     1. Parse user context from Input (if provided)
     2. Validate evaluation design exists and contains "Key Test Scenarios" and "Test Case Requirements" sections

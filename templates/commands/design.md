@@ -18,12 +18,30 @@ The text the user typed after `/evalkit.design` in the triggering message **is**
 
 Given that user evaluation requests or agent description, do this:
 
-1. Run the script `{SCRIPT}` from repo root and parse its JSON output for BRANCH_NAME and DESIGN_FILE. All file paths must be absolute.
+1. **Navigate to repository root**:
+   
+   First, find the repository root using git (preferred) or by locating the script:
+   ```
+   REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+   ```
+   
+   If that fails (not in a git repo), find the script and go up two directories:
+   ```
+   SCRIPT_PATH=$(find . -name "create-new-evaluation.sh" | head -1)
+   REPO_ROOT=$(cd "$(dirname "$SCRIPT_PATH")/../.." && pwd)
+   ```
+   
+   Then change to the repository root:
+   ```
+   cd "$REPO_ROOT"
+   ```
+
+2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and DESIGN_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. For single quotes in args like "I'm analyzing", use escape syntax: e.g 'I'\''m analyzing' (or double-quote if possible: "I'm analyzing").
 
-2. Load `templates/eval-design-template.md` to understand required sections for both specification and implementation plan.
+3. Load `templates/eval-design-template.md` to understand required sections for both specification and implementation plan.
 
-3. Follow this execution flow:
+4. Follow this execution flow:
 
     1. Parse user evaluation requests from Input
        If empty: ERROR "No agent description or evaluation requests provided"
@@ -58,12 +76,19 @@ Given that user evaluation requests or agent description, do this:
        - Prioritize clarifications by impact: evaluation scope > metrics > technical architecture > implementation details
     8. Return: SUCCESS (evaluation design and implementation plan ready for implementation)
 
-4. Write the complete evaluation specification AND implementation plan to DESIGN_FILE (eval-design.md) using the template structure, replacing placeholders with concrete details derived from the agent analysis while preserving section order and headings.
+5. Write the complete evaluation specification AND implementation plan to DESIGN_FILE (eval-design.md) using the template structure, replacing placeholders with concrete details derived from the agent analysis while preserving section order and headings.
 
-5. **Copy tracing templates if target agent code exists**:
+6. **Copy tracing templates if target agent code exists**:
    
    If target agent code was found during analysis (regardless of instrumentation status):
-   ```bash
+   
+   First, ensure you're in the repository root:
+   ```
+   cd "$REPO_ROOT"
+   ```
+   
+   Then copy the tracing templates:
+   ```
    # Create tracing subdirectory
    mkdir -p eval/tracing
    
@@ -79,7 +104,7 @@ Given that user evaluation requests or agent description, do this:
    
    This ensures tracing infrastructure is available for later commands, even when `/evalkit.trace` is skipped for already-instrumented agents.
 
-6. **Handle [NEEDS CLARIFICATION] markers** (if any remain):
+7. **Handle [NEEDS CLARIFICATION] markers** (if any remain):
    
    1. Extract all [NEEDS CLARIFICATION: ...] markers from the spec
    2. **LIMIT CHECK**: If more than 5 markers exist, keep only the 5 most critical (by evaluation impact) and make informed guesses for the rest
@@ -111,7 +136,7 @@ Given that user evaluation requests or agent description, do this:
    8. Update the eval-design.md by replacing each [NEEDS CLARIFICATION] marker with the user's answer
    9. If no clarifications needed, proceed directly to step 6
 
-7. Report completion with branch name, evaluation design file path, and readiness for implementation (`/evalkit.implement`).
+8. Report completion with branch name, evaluation design file path, and readiness for implementation (`/evalkit.implement`).
 
 
 ## General Guidelines
