@@ -44,7 +44,7 @@ evalkit --help
 
 Configure Claude Code for testing EvalKit commands:
 
-**~/.claude/settings.json**:
+**~/.claude/setting.json**:
 ```json
 {
   "env": {

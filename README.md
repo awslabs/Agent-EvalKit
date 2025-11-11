@@ -103,9 +103,10 @@ Then use the tool directly:
 ```bash
 evalkit init <PROJECT_NAME>
 evalkit check
+cd <PROJECT_NAME>
 ```
 
-To upgrade evalkit run:
+(Optional) To upgrade evalkit run:
 
 ```bash
 uv tool install evalkit-cli --force --from git+https://github.com/awslabs/Agent-EvalKit.git
@@ -117,6 +118,7 @@ Run directly without installing:
 
 ```bash
 uvx --from git+https://github.com/awslabs/Agent-EvalKit.git evalkit init <PROJECT_NAME>
+cd <PROJECT_NAME>
 ```
 
 **Benefits of persistent installation:**
@@ -168,7 +170,7 @@ Use **`/evalkit.code`** to build your trace-based evaluation pipeline with norma
 /evalkit.code
 ```
 
-### 6. Analyze results and get actionable recommendations
+### 6. Analyze results and get actionable recommendations (if needed)
 
 Use **`/evalkit.report`** to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
 
