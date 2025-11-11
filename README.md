@@ -136,20 +136,7 @@ Use the **`/evalkit.plan`** command to analyze your agent and design a comprehen
 /evalkit.plan Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
 ```
 
-### 3. Set up tracing instrumentation (if needed)
-
-Use **`/evalkit.trace`** to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
-
-```bash
-/evalkit.trace Add Traceloop instrumentation to capture agent execution traces
-```
-
-Or simply:
-```bash
-/evalkit.trace
-```
-
-### 4. Generate test cases (if needed)
+### 3. Generate test cases (if needed)
 
 Use **`/evalkit.data`** to generate comprehensive test cases for your evaluation scenarios. **User input is optional** - the command will use design specifications if no input provided.
 
@@ -160,6 +147,19 @@ Use **`/evalkit.data`** to generate comprehensive test cases for your evaluation
 Or simply:
 ```bash
 /evalkit.data
+```
+
+### 4. Set up tracing instrumentation (if needed)
+
+Use **`/evalkit.trace`** to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
+
+```bash
+/evalkit.trace Add Traceloop instrumentation to capture agent execution traces
+```
+
+Or simply:
+```bash
+/evalkit.trace
 ```
 
 ### 5. Implement evaluation pipeline
@@ -266,8 +266,8 @@ Essential commands for the trace-based Agent Evaluation workflow:
 | Command                  | Description                                                           |
 |--------------------------|-----------------------------------------------------------------------|
 | `/evalkit.plan`          | Analyze agent and design trace-based evaluation strategy             |
-| `/evalkit.trace`         | Add tracing instrumentation to agent for trace-based evaluation      |
 | `/evalkit.data`          | Generate comprehensive test cases for evaluation scenarios            |
+| `/evalkit.trace`         | Add tracing instrumentation to agent for trace-based evaluation      |
 | `/evalkit.code`          | Execute trace-based evaluation pipeline implementation                |
 | `/evalkit.report`        | Analyze results and provide actionable improvement recommendations    |
 

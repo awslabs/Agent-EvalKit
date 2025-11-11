@@ -29,9 +29,9 @@ set -e
 # Parse command line arguments
 JSON_MODE=false
 REQUIRE_PLAN=false
-REQUIRE_TRACING=false
 REQUIRE_TEST_DATA_FILE=false
 REQUIRE_TEST_DATA_SECTION=false
+REQUIRE_TRACING=false
 REQUIRE_PROCESSED_TRACES=false
 REQUIRE_RESULTS=false
 INCLUDE_PLAN=false
@@ -45,14 +45,14 @@ for arg in "$@"; do
         --require-plan)
             REQUIRE_PLAN=true
             ;;
-        --require-tracing)
-            REQUIRE_TRACING=true
-            ;;
         --require-test-data-file)
             REQUIRE_TEST_DATA_FILE=true
             ;;
         --require-test-data-section)
             REQUIRE_TEST_DATA_SECTION=true
+            ;;
+        --require-tracing)
+            REQUIRE_TRACING=true
             ;;
         --require-processed-traces)
             REQUIRE_PROCESSED_TRACES=true
@@ -143,30 +143,6 @@ if $REQUIRE_PLAN && [[ ! -f "$EVALUATION_DIR/eval-plan.md" ]]; then
     exit 1
 fi
 
-# Check for tracing setup if required (for implementation phase)
-if $REQUIRE_TRACING; then
-    tracing_files_missing=()
-    
-    # Check for OTEL collector setup files in tracing subdirectory
-    [[ ! -f "$EVALUATION_DIR/tracing/setup_otelcol.sh" ]] && tracing_files_missing+=("tracing/setup_otelcol.sh")
-    [[ ! -f "$EVALUATION_DIR/tracing/run_otelcol.sh" ]] && tracing_files_missing+=("tracing/run_otelcol.sh")
-    [[ ! -f "$EVALUATION_DIR/tracing/otel-config.yaml" ]] && tracing_files_missing+=("tracing/otel-config.yaml")
-    
-    if [[ ${#tracing_files_missing[@]} -gt 0 ]]; then
-        echo "ERROR: Tracing setup incomplete. Missing files in $EVALUATION_DIR:" >&2
-        printf "  - %s\n" "${tracing_files_missing[@]}" >&2
-        echo "Run /evalkit.trace first to set up tracing instrumentation." >&2
-        exit 1
-    fi
-    
-    # Check if OTEL collector binary exists
-    if [[ ! -f "$EVALUATION_DIR/tracing/otelcol-contrib" ]]; then
-        echo "ERROR: OTEL collector binary not found in $EVALUATION_DIR/tracing/" >&2
-        echo "Run ./tracing/setup_otelcol.sh in the evaluation directory to download the collector." >&2
-        exit 1
-    fi
-fi
-
 # Check for test data file if required
 if $REQUIRE_TEST_DATA_FILE; then
     if [[ ! -f "$EVALUATION_DIR/test-cases.jsonl" ]]; then
@@ -203,6 +179,30 @@ if $REQUIRE_TEST_DATA_SECTION; then
     if [[ $test_data_content -lt 5 ]]; then
         echo "ERROR: 'Test Data Generation' section appears to be empty or contains only placeholders" >&2
         echo "Please fill out the test scenarios and generation requirements in eval-plan.md before running /evalkit.data." >&2
+        exit 1
+    fi
+fi
+
+# Check for tracing setup if required (for implementation phase)
+if $REQUIRE_TRACING; then
+    tracing_files_missing=()
+    
+    # Check for OTEL collector setup files in tracing subdirectory
+    [[ ! -f "$EVALUATION_DIR/tracing/setup_otelcol.sh" ]] && tracing_files_missing+=("tracing/setup_otelcol.sh")
+    [[ ! -f "$EVALUATION_DIR/tracing/run_otelcol.sh" ]] && tracing_files_missing+=("tracing/run_otelcol.sh")
+    [[ ! -f "$EVALUATION_DIR/tracing/otel-config.yaml" ]] && tracing_files_missing+=("tracing/otel-config.yaml")
+    
+    if [[ ${#tracing_files_missing[@]} -gt 0 ]]; then
+        echo "ERROR: Tracing setup incomplete. Missing files in $EVALUATION_DIR:" >&2
+        printf "  - %s\n" "${tracing_files_missing[@]}" >&2
+        echo "Run /evalkit.trace first to set up tracing instrumentation." >&2
+        exit 1
+    fi
+    
+    # Check if OTEL collector binary exists
+    if [[ ! -f "$EVALUATION_DIR/tracing/otelcol-contrib" ]]; then
+        echo "ERROR: OTEL collector binary not found in $EVALUATION_DIR/tracing/" >&2
+        echo "Run ./tracing/setup_otelcol.sh in the evaluation directory to download the collector." >&2
         exit 1
     fi
 fi
