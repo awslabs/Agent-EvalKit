@@ -95,7 +95,7 @@ Choose your preferred installation method:
 Install once and use everywhere:
 
 ```bash
-uv tool install evalkit-cli --from git+https://github.com/kangISU/eval-kit.git
+uv tool install evalkit-cli --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
 Then use the tool directly:
@@ -108,7 +108,7 @@ evalkit check
 To upgrade evalkit run:
 
 ```bash
-uv tool install evalkit-cli --force --from git+https://github.com/kangISU/eval-kit.git
+uv tool install evalkit-cli --force --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
 #### Option 2: One-time Usage
@@ -116,7 +116,7 @@ uv tool install evalkit-cli --force --from git+https://github.com/kangISU/eval-k
 Run directly without installing:
 
 ```bash
-uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAME>
+uvx --from git+https://github.com/awslabs/Agent-EvalKit.git evalkit init <PROJECT_NAME>
 ```
 
 **Benefits of persistent installation:**

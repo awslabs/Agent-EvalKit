@@ -450,8 +450,8 @@ def download_template_from_github(
     debug: bool = False,
     github_token: str = None,
 ) -> Tuple[Path, dict]:
-    repo_owner = "kangISU"  # Replace with your GitHub username
-    repo_name = "eval-kit"  # Your repository name
+    repo_owner = "awslabs"  # Replace with your GitHub username
+    repo_name = "Agent-EvalKit"  # Your repository name
     if client is None:
         client = httpx.Client(verify=ssl_context)
 

@@ -25,8 +25,8 @@ Since EvalKit is in a private repository, configure Git authentication first.
 
 ```bash
 # Clone and create feature branch
-git clone https://github.com/kangISU/eval-kit.git
-cd eval-kit
+git clone https://github.com/awslabs/Agent-EvalKit.git
+cd Agent-EvalKit
 git checkout -b your-feature-branch
 
 # Create isolated environment
@@ -54,7 +54,7 @@ Configure Claude Code for testing EvalKit commands:
     "DISABLE_TELEMETRY": "1",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
-  "model": "us.anthropic.claude-sonnet-4-20250514-v1:0"
+  "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 }
 ```
 
@@ -87,7 +87,7 @@ role=Admin
 
 ### Iterate on Changes
 
-1. **Make changes** to templates or scripts in your eval-kit repository
+1. **Make changes** to templates or scripts in your Agent-EvalKit repository
 2. **Re-initialize** to test changes:
    ```bash
    cd /path/to/your/workspace
@@ -110,7 +110,7 @@ The `--local-dev` flag:
 1. **Test thoroughly** in demo projects
 2. **Commit changes**:
    ```bash
-   cd /path/to/eval-kit
+   cd /path/to/Agent-EvalKit
    git add templates/ scripts/
    git commit -m "Update templates and scripts"
    ```
