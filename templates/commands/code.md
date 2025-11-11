@@ -1,5 +1,5 @@
 ---
-description: Execute core evaluation pipeline implementation according to the established plan
+description: Implement trace-based evaluation pipeline
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-processed-traces
 ---

@@ -1,5 +1,5 @@
 ---
-description: Generate test cases based on evaluation plan
+description: Generate test cases for evaluation
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-section
 ---

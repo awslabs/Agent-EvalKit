@@ -3,8 +3,8 @@
 **Branch:** `[###-eval-pipeline]` | **Date:** `[DATE]`
 
 ## User Requirements
-**User Input:** `"$ARGUMENTS"`\
-**User Requests:** [Parsed from user input - highest priority, or "Not found"]
+- **User Input:** `"$ARGUMENTS"`
+- **User Requests:** [Parsed from user input - highest priority, or "Not found"]
 
 
 ## Available Assets

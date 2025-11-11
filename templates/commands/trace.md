@@ -1,5 +1,5 @@
 ---
-description: Set up tracing instrumentation for target agent
+description: Set up tracing instrumentation and collect traces 
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-file
 ---
@@ -47,7 +47,7 @@ Given that context, do this:
     2. Validate evaluation plan exists and `eval/test-cases.jsonl` exists
     3. Copy pre-built tracing artifacts to `eval/tracing/`
     4. Analyze agent code for supported frameworks and existing instrumentation
-    5. Add minimal tracing instrumentation (only if needed)
+    5. Add minimal tracing instrumentation to the original agent code (only if needed)
     6. Create `eval/test_executor.py` for orchestrated test execution
     7. Set up OTEL collector and environment
     8. Run `eval/test_executor.py` on test cases to collect raw traces
@@ -64,6 +64,7 @@ Copy tracing infrastructure to evaluation workspace:
 # Create tracing subdirectory
 mkdir -p eval/tracing
 
+# Navigate back to repository root
 # Copy OTEL templates from templates/tracing/
 cp templates/tracing/setup-otelcol.sh eval/tracing/setup-otelcol.sh
 cp templates/tracing/run-otelcol.sh eval/tracing/run-otelcol.sh
@@ -135,7 +136,7 @@ def custom_tool_usage():
     pass
 ```
 
-**Note**: The `Traceloop.init()` initialization is still required regardless of instrumentation approach.
+**Note**: The `Traceloop.init()` initialization is still required regardless of instrumentation approach. Does instrumention by directly modifying the original agent code (do not create new agent files).
 
 ### Test Executor Implementation
 

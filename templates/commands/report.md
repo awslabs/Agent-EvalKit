@@ -1,5 +1,5 @@
 ---
-description: Analyze the evaluation execution results and provide actionable improvement recommendations
+description: Analyze results and provide improvement recommendations
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-results
 ---

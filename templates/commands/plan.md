@@ -1,5 +1,5 @@
 ---
-description: Analyze user agent source code and design comprehensive evaluation plan
+description: Analyze your agent and design evaluation strategy
 scripts:
   sh: scripts/bash/create-new-evaluation.sh --json
 ---
