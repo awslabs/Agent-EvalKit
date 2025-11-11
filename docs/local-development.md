@@ -83,7 +83,7 @@ role=Admin
 
 2. **Add your test agent**: Copy your agent folder to the demo project root directory.
 
-3. **Test EvalKit commands**: Use `/evalkit.design`, `/evalkit.trace`, etc. in Claude Code terminal.
+3. **Test EvalKit commands**: Use `/evalkit.plan`, `/evalkit.trace`, etc. in Claude Code terminal.
 
 ### Iterate on Changes
 

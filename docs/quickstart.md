@@ -22,26 +22,13 @@ uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAM
 
 ### 2. Design Evaluation Strategy
 
-Use the `/evalkit.design` command to analyze your agent and design a comprehensive trace-based evaluation strategy. **User input is required** for this command to specify your evaluation goals.
+Use the `/evalkit.plan` command to analyze your agent and design a comprehensive trace-based evaluation strategy. **User input is required** for this command to specify your evaluation goals.
 
 ```bash
-/evalkit.design Analyze my customer service chatbot agent located in ./src/chatbot.py and design evaluation strategy focusing on response accuracy, conversation flow, and user satisfaction metrics using trace-based evaluation.
+/evalkit.plan Analyze my customer service chatbot agent located in ./src/chatbot.py and design evaluation strategy focusing on response accuracy, conversation flow, and user satisfaction metrics using trace-based evaluation.
 ```
 
-### 3. Set Up Tracing Instrumentation (if needed)
-
-Use the `/evalkit.trace` command to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
-
-```bash
-/evalkit.trace Add Traceloop instrumentation to capture agent execution traces including LLM calls, tool usage, and workflow steps.
-```
-
-Or simply:
-```bash
-/evalkit.trace
-```
-
-### 4. Generate Test Cases (if needed)
+### 3. Generate Test Cases (if needed)
 
 Use the `/evalkit.data` command to generate comprehensive test cases for your evaluation scenarios. **User input is optional** - the command will use design specifications if no input provided.
 
@@ -54,27 +41,40 @@ Or simply:
 /evalkit.data
 ```
 
-### 5. Implement Evaluation Pipeline
+### 4. Set Up Tracing Instrumentation (if needed)
 
-Use `/evalkit.implement` to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
+Use the `/evalkit.trace` command to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
 
 ```bash
-/evalkit.implement
+/evalkit.trace Add Traceloop instrumentation to capture agent execution traces including LLM calls, tool usage, and workflow steps.
 ```
 
-### 6. Analyze Results and Get Insights
+Or simply:
+```bash
+/evalkit.trace
+```
 
-Use `/evalkit.insights` to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
+### 5. Implement Evaluation Pipeline
+
+Use `/evalkit.code` to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
 
 ```bash
-/evalkit.insights
+/evalkit.code
+```
+
+### 6. Analyze Results and Get Actionable Recommendations
+
+Use `/evalkit.report` to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
+
+```bash
+/evalkit.report
 ```
 
 ## Detailed Example: Evaluating a Customer Service Chatbot
 
 Here's a complete example of evaluating a customer service chatbot:
 
-### Step 1: Design Evaluation Strategy with `/evalkit.design`
+### Step 1: Design Evaluation Strategy with `/evalkit.plan`
 
 ```text
 Analyze my customer service chatbot agent that handles customer inquiries, processes refund requests,
@@ -84,16 +84,7 @@ and customer satisfaction using trace-based evaluation. Focus on real-world scen
 like unclear requests and system errors.
 ```
 
-### Step 2: Set Up Tracing with `/evalkit.trace` (if needed)
-
-Add tracing instrumentation to capture agent execution data:
-
-```text
-/evalkit.trace Add Traceloop instrumentation to capture LLM calls, RAG retrieval steps, tool usage,
-and conversation flow for comprehensive trace-based evaluation.
-```
-
-### Step 3: Generate Test Cases with `/evalkit.data` (if needed)
+### Step 2: Generate Test Cases with `/evalkit.data` (if needed)
 
 Create comprehensive test scenarios:
 
@@ -102,22 +93,31 @@ Create comprehensive test scenarios:
 order lookups, edge cases with unclear requests, and system error handling scenarios.
 ```
 
-### Step 4: Implement Evaluation Pipeline with `/evalkit.implement`
+### Step 3: Set Up Tracing with `/evalkit.trace` (if needed)
+
+Add tracing instrumentation to capture agent execution data:
+
+```text
+/evalkit.trace Add Traceloop instrumentation to capture LLM calls, RAG retrieval steps, tool usage,
+and conversation flow for comprehensive trace-based evaluation.
+```
+
+### Step 4: Implement Evaluation Pipeline with `/evalkit.code`
 
 Build the trace-based evaluation pipeline:
 
 ```text
-/evalkit.implement Use DeepEval for response quality metrics (relevance, faithfulness, coherence) with
+/evalkit.code Use DeepEval for response quality metrics (relevance, faithfulness, coherence) with
 trace-extracted data. Implement custom metrics for tool usage accuracy and conversation flow analysis.
 Process normalized traces for comprehensive evaluation.
 ```
 
-### Step 5: Analyze Results with `/evalkit.insights`
+### Step 5: Analyze Results with `/evalkit.report`
 
 After running evaluations, analyze the results:
 
 ```text
-/evalkit.insights Analyze trace-based evaluation results and provide actionable improvement recommendations
+/evalkit.report Analyze trace-based evaluation results and provide actionable improvement recommendations
 for response accuracy, tool usage optimization, and conversation flow enhancement.
 ```
 

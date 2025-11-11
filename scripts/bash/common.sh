@@ -86,7 +86,7 @@ REPO_ROOT='$repo_root'
 CURRENT_BRANCH='$current_branch'
 HAS_GIT='$has_git_repo'
 EVALUATION_DIR='$evaluation_dir'
-EVALUATION_DESIGN='$evaluation_dir/eval-design.md'
+EVALUATION_PLAN='$evaluation_dir/eval-plan.md'
 RESULTS_DIR='$evaluation_dir/results'
 EOF
 }

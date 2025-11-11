@@ -9,11 +9,13 @@
 #
 # OPTIONS:
 #   --json                  Output in JSON format
-#   --require-design        Require eval-design.md to exist (for implementation phase)
-#   --require-tracing       Require tracing setup to be complete (for implementation phase)
-#   --require-test-cases    Require test cases to be available (for implementation phase)
-#   --require-test-scenarios Require test scenarios in design (for data generation phase)
-#   --include-design        Include eval-design.md in AVAILABLE_DOCS list
+#   --require-plan          Require eval-plan.md to exist
+#   --require-tracing       Require tracing setup to be complete
+#   --require-test-data-file Require test data file to be available
+#   --require-test-data-section Require test data generation section in plan
+#   --require-processed-traces Require processed traces directory to exist and not be empty
+#   --require-results       Require results directory to exist and not be empty
+#   --include-plan          Include eval-plan.md in AVAILABLE_DOCS list
 #   --paths-only            Only output path variables (no validation)
 #   --help, -h              Show help message
 #
@@ -26,11 +28,13 @@ set -e
 
 # Parse command line arguments
 JSON_MODE=false
-REQUIRE_DESIGN=false
+REQUIRE_PLAN=false
 REQUIRE_TRACING=false
-REQUIRE_TEST_CASES=false
-REQUIRE_TEST_SCENARIOS=false
-INCLUDE_DESIGN=false
+REQUIRE_TEST_DATA_FILE=false
+REQUIRE_TEST_DATA_SECTION=false
+REQUIRE_PROCESSED_TRACES=false
+REQUIRE_RESULTS=false
+INCLUDE_PLAN=false
 PATHS_ONLY=false
 
 for arg in "$@"; do
@@ -38,20 +42,26 @@ for arg in "$@"; do
         --json)
             JSON_MODE=true
             ;;
-        --require-design)
-            REQUIRE_DESIGN=true
+        --require-plan)
+            REQUIRE_PLAN=true
             ;;
         --require-tracing)
             REQUIRE_TRACING=true
             ;;
-        --require-test-cases)
-            REQUIRE_TEST_CASES=true
+        --require-test-data-file)
+            REQUIRE_TEST_DATA_FILE=true
             ;;
-        --require-test-scenarios)
-            REQUIRE_TEST_SCENARIOS=true
+        --require-test-data-section)
+            REQUIRE_TEST_DATA_SECTION=true
             ;;
-        --include-design)
-            INCLUDE_DESIGN=true
+        --require-processed-traces)
+            REQUIRE_PROCESSED_TRACES=true
+            ;;
+        --require-results)
+            REQUIRE_RESULTS=true
+            ;;
+        --include-plan)
+            INCLUDE_PLAN=true
             ;;
         --paths-only)
             PATHS_ONLY=true
@@ -64,17 +74,21 @@ Consolidated prerequisite checking for Agent Evaluation workflow.
 
 OPTIONS:
   --json              Output in JSON format
-  --require-design    Require eval-design.md to exist (for implementation phase)
-  --include-design    Include eval-design.md in AVAILABLE_DOCS list
+  --require-plan      Require eval-plan.md to exist
+  --require-test-data-file Require test data file to be available
+  --require-test-data-section Require test data generation section in plan
+  --require-processed-traces Require processed traces directory to exist and not be empty
+  --require-results   Require results directory to exist and not be empty
+  --include-plan      Include eval-plan.md in AVAILABLE_DOCS list
   --paths-only        Only output path variables (no prerequisite validation)
   --help, -h          Show this help message
 
 EXAMPLES:
-  # Check design prerequisites (eval-design.md required)
-  ./check-prerequisites.sh --json
+  # Check plan prerequisites (eval-plan.md required)
+  ./check-prerequisites.sh --json --require-plan
   
-  # Check implementation prerequisites (eval-design.md required)
-  ./check-prerequisites.sh --json --require-design --include-design
+  # Check implementation prerequisites (eval-plan.md required)
+  ./check-prerequisites.sh --json --require-plan --include-plan
   
   # Get evaluation paths only (no validation)
   ./check-prerequisites.sh --paths-only
@@ -104,13 +118,13 @@ check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
 if $PATHS_ONLY; then
     if $JSON_MODE; then
         # Minimal JSON paths payload (no validation performed)
-        printf '{"REPO_ROOT":"%s","BRANCH":"%s","EVALUATION_DIR":"%s","EVALUATION_DESIGN":"%s"}\n' \
-            "$REPO_ROOT" "$CURRENT_BRANCH" "$EVALUATION_DIR" "$EVALUATION_DESIGN"
+        printf '{"REPO_ROOT":"%s","BRANCH":"%s","EVALUATION_DIR":"%s","EVALUATION_PLAN":"%s"}\n' \
+            "$REPO_ROOT" "$CURRENT_BRANCH" "$EVALUATION_DIR" "$EVALUATION_DIR/eval-plan.md"
     else
         echo "REPO_ROOT: $REPO_ROOT"
         echo "BRANCH: $CURRENT_BRANCH"
         echo "EVALUATION_DIR: $EVALUATION_DIR"
-        echo "EVALUATION_DESIGN: $EVALUATION_DESIGN"
+        echo "EVALUATION_PLAN: $EVALUATION_DIR/eval-plan.md"
     fi
     exit 0
 fi
@@ -118,14 +132,14 @@ fi
 # Validate required directories and files
 if [[ ! -d "$EVALUATION_DIR" ]]; then
     echo "ERROR: Evaluation directory not found: $EVALUATION_DIR" >&2
-    echo "Run /evalkit.design first to create the evaluation structure." >&2
+    echo "Run /evalkit.plan first to create the evaluation structure." >&2
     exit 1
 fi
 
-# Check for eval-design.md if required (for implementation phase)
-if $REQUIRE_DESIGN && [[ ! -f "$EVALUATION_DESIGN" ]]; then
-    echo "ERROR: eval-design.md not found in $EVALUATION_DIR" >&2
-    echo "Run /evalkit.design first to create the evaluation design." >&2
+# Check for eval-plan.md if required
+if $REQUIRE_PLAN && [[ ! -f "$EVALUATION_DIR/eval-plan.md" ]]; then
+    echo "ERROR: eval-plan.md not found in $EVALUATION_DIR" >&2
+    echo "Run /evalkit.plan first to create the evaluation plan." >&2
     exit 1
 fi
 
@@ -153,8 +167,8 @@ if $REQUIRE_TRACING; then
     fi
 fi
 
-# Check for test cases if required (for implementation phase)
-if $REQUIRE_TEST_CASES; then
+# Check for test data file if required
+if $REQUIRE_TEST_DATA_FILE; then
     if [[ ! -f "$EVALUATION_DIR/test-cases.jsonl" ]]; then
         echo "ERROR: Test cases not found: $EVALUATION_DIR/test-cases.jsonl" >&2
         echo "Run /evalkit.data first to generate test cases." >&2
@@ -169,36 +183,62 @@ if $REQUIRE_TEST_CASES; then
     fi
 fi
 
-# Check for test scenarios in design if required (for data generation phase)
-if $REQUIRE_TEST_SCENARIOS; then
-    if [[ ! -f "$EVALUATION_DESIGN" ]]; then
-        echo "ERROR: eval-design.md not found in $EVALUATION_DIR" >&2
-        echo "Run /evalkit.design first to create the evaluation design." >&2
+# Check for test data generation section in plan if required (for data generation phase)
+if $REQUIRE_TEST_DATA_SECTION; then
+    if [[ ! -f "$EVALUATION_DIR/eval-plan.md" ]]; then
+        echo "ERROR: eval-plan.md not found in $EVALUATION_DIR" >&2
+        echo "Run /evalkit.plan first to create the evaluation plan." >&2
         exit 1
     fi
     
-    # Check if design contains "Key Test Scenarios" section
-        if ! grep -q "### Key Test Scenarios" "$EVALUATION_DESIGN" 2>/dev/null; then
-            echo "ERROR: eval-design.md missing 'Key Test Scenarios' section" >&2
-            echo "Update eval-design.md to include test scenario specifications, or run /evalkit.design again." >&2
-            exit 1
-        fi
-        
-        # Check if test scenarios section has content (not just placeholders)
-        scenarios_content=$(sed -n '/### Key Test Scenarios/,/###\|^$/p' "$EVALUATION_DESIGN" | grep -v "^#" | grep -v "^<!--" | grep -v "^$" | wc -l)
-        if [[ $scenarios_content -lt 3 ]]; then
-            echo "ERROR: 'Key Test Scenarios' section appears to be empty or contains only placeholders" >&2
-            echo "Please fill out the test scenarios in eval-design.md before running /evalkit.data." >&2
-            exit 1
-        fi
-        
-        # Check if design contains "Test Case Requirements" section
-        if ! grep -q "### Test Case Requirements" "$EVALUATION_DESIGN" 2>/dev/null; then
-            echo "ERROR: eval-design.md missing 'Test Case Requirements' section" >&2
-            echo "Update eval-design.md to include test case requirements, or run /evalkit.design again." >&2
-            exit 1
-        fi
+    # Check if plan contains "## Test Data Generation" section
+    if ! grep -q "## Test Data Generation" "$EVALUATION_DIR/eval-plan.md" 2>/dev/null; then
+        echo "ERROR: eval-plan.md missing 'Test Data Generation' section" >&2
+        echo "Update eval-plan.md to include test data generation specifications, or run /evalkit.plan again." >&2
+        exit 1
+    fi
+    
+    # Check if test data generation section has content (not just placeholders)
+    test_data_content=$(sed -n '/## Test Data Generation/,/##\|^$/p' "$EVALUATION_DIR/eval-plan.md" | grep -v "^#" | grep -v "^<!--" | grep -v "^$" | wc -l)
+    if [[ $test_data_content -lt 5 ]]; then
+        echo "ERROR: 'Test Data Generation' section appears to be empty or contains only placeholders" >&2
+        echo "Please fill out the test scenarios and generation requirements in eval-plan.md before running /evalkit.data." >&2
+        exit 1
+    fi
 fi
+
+# Check for processed traces if required
+if $REQUIRE_PROCESSED_TRACES; then
+    if [[ ! -d "$EVALUATION_DIR/traces" ]]; then
+        echo "ERROR: Processed traces directory not found: $EVALUATION_DIR/traces" >&2
+        echo "Run /evalkit.trace first to generate and process traces." >&2
+        exit 1
+    fi
+    
+    # Check if traces directory is not empty
+    if [[ -z "$(ls -A "$EVALUATION_DIR/traces" 2>/dev/null)" ]]; then
+        echo "ERROR: Processed traces directory is empty: $EVALUATION_DIR/traces" >&2
+        echo "Run /evalkit.trace to generate traces, then process them before running /evalkit.code." >&2
+        exit 1
+    fi
+fi
+
+# Check for results directory if required
+if $REQUIRE_RESULTS; then
+    if [[ ! -d "$RESULTS_DIR" ]]; then
+        echo "ERROR: Results directory not found: $RESULTS_DIR" >&2
+        echo "Run /evalkit.code first to execute evaluations and generate results." >&2
+        exit 1
+    fi
+    
+    # Check if results directory is not empty
+    if [[ -z "$(ls -A "$RESULTS_DIR" 2>/dev/null)" ]]; then
+        echo "ERROR: Results directory is empty: $RESULTS_DIR" >&2
+        echo "Run /evalkit.code to execute evaluations before running /evalkit.report." >&2
+        exit 1
+    fi
+fi
+
 
 # Build list of available documents
 docs=()
@@ -208,9 +248,9 @@ if [[ -d "$RESULTS_DIR" ]] && [[ -n "$(ls -A "$RESULTS_DIR" 2>/dev/null)" ]]; th
     docs+=("results/")
 fi
 
-# Include eval-design.md if requested and it exists
-if $INCLUDE_DESIGN && [[ -f "$EVALUATION_DESIGN" ]]; then
-    docs+=("eval-design.md")
+# Include eval-plan.md if it exists (automatic inclusion)
+if [[ -f "$EVALUATION_DIR/eval-plan.md" ]]; then
+    docs+=("eval-plan.md")
 fi
 
 # Include tracing files if they exist
@@ -224,6 +264,11 @@ fi
 # Include test case files if they exist
 if [[ -f "$EVALUATION_DIR/test-cases.jsonl" ]]; then
     docs+=("test-cases.jsonl")
+fi
+
+# Include processed traces if they exist
+if [[ -d "$EVALUATION_DIR/traces" ]] && [[ -n "$(ls -A "$EVALUATION_DIR/traces" 2>/dev/null)" ]]; then
+    docs+=("traces/")
 fi
 
 # Output results
@@ -245,9 +290,8 @@ else
     # Show status of each potential document
     check_dir "$RESULTS_DIR" "results/"
     
-    if $INCLUDE_DESIGN; then
-        check_file "$EVALUATION_DESIGN" "eval-design.md"
-    fi
+    # Always show eval-plan.md status (automatic inclusion)
+    check_file "$EVALUATION_DIR/eval-plan.md" "eval-plan.md"
     
     # Show tracing files status
     check_file "$EVALUATION_DIR/tracing/otel-config.yaml" "tracing/otel-config.yaml"
@@ -255,5 +299,7 @@ else
     
     # Show test case files status
     check_file "$EVALUATION_DIR/test-cases.jsonl" "test-cases.jsonl"
-    check_file "$EVALUATION_DIR/test-cases-metadata.json" "test-cases-metadata.json"
+    
+    # Show processed traces status
+    check_dir "$EVALUATION_DIR/traces" "traces/"
 fi

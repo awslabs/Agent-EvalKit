@@ -1,7 +1,7 @@
 ---
-description: Generate test cases based on evaluation design and scenarios
+description: Generate test cases based on evaluation plan
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-design --require-test-scenarios --include-design 
+  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-section
 ---
 
 ## User Input
@@ -36,18 +36,18 @@ Given that context, do this:
    cd "$REPO_ROOT"
    ```
 
-2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and DESIGN_FILE. All file paths must be absolute.
+2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and PLAN_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
 
-3. Load the current evaluation design (`eval/eval-design.md`) to understand test scenario requirements and evaluation areas.
+3. Load the current evaluation plan (`eval/eval-plan.md`) to understand evaluation areas and test data generation requirements.
 
 4. Follow this execution flow:
 
     1. Parse user context from Input (if provided)
-    2. Validate evaluation design exists and contains "Key Test Scenarios" and "Test Case Requirements" sections
+    2. Validate evaluation plan exists and contains "Test Data Generation" section
     3. Generate proper test cases covering all scenarios and meeting all requirements
     4. Structure test cases in JSONL format
     5. Save test cases to `eval/test-cases.jsonl`
 
 
-Report completion with test case count, coverage summary, and readiness for implementation (`/evalkit.implement`).
+Report completion with test case count, coverage summary, and readiness for trace setup and collection (`/evalkit.trace`).

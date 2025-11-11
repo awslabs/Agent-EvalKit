@@ -128,10 +128,10 @@ uvx --from git+https://github.com/kangISU/eval-kit.git evalkit init <PROJECT_NAM
 
 ### 2. Design evaluation strategy
 
-Use the **`/evalkit.design`** command to analyze your agent and design a comprehensive evaluation strategy with trace-based evaluation architecture. **User input is required** to specify your evaluation goals.
+Use the **`/evalkit.plan`** command to analyze your agent and design a comprehensive evaluation strategy with trace-based evaluation architecture. **User input is required** to specify your evaluation goals.
 
 ```bash
-/evalkit.design Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
+/evalkit.plan Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
 ```
 
 ### 3. Set up tracing instrumentation (if needed)
@@ -162,18 +162,18 @@ Or simply:
 
 ### 5. Implement evaluation pipeline
 
-Use **`/evalkit.implement`** to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
+Use **`/evalkit.code`** to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
 
 ```bash
-/evalkit.implement
+/evalkit.code
 ```
 
-### 6. Analyze results and get insights
+### 6. Analyze results and get actionable recommendations
 
-Use **`/evalkit.insights`** to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
+Use **`/evalkit.report`** to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
 
 ```bash
-/evalkit.insights
+/evalkit.report
 ```
 
 For detailed step-by-step instructions, see our [comprehensive guide](./docs/quickstart.md).
@@ -263,11 +263,11 @@ Essential commands for the trace-based Agent Evaluation workflow:
 
 | Command                  | Description                                                           |
 |--------------------------|-----------------------------------------------------------------------|
-| `/evalkit.design`        | Analyze agent and design trace-based evaluation strategy             |
+| `/evalkit.plan`          | Analyze agent and design trace-based evaluation strategy             |
 | `/evalkit.trace`         | Add tracing instrumentation to agent for trace-based evaluation      |
 | `/evalkit.data`          | Generate comprehensive test cases for evaluation scenarios            |
-| `/evalkit.implement`     | Execute trace-based evaluation pipeline implementation                |
-| `/evalkit.insights`      | Analyze results and provide improvement suggestions                   |
+| `/evalkit.code`          | Execute trace-based evaluation pipeline implementation                |
+| `/evalkit.report`        | Analyze results and provide actionable improvement recommendations    |
 
 ### Environment Variables
 

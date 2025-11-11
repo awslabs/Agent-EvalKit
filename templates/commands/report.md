@@ -1,7 +1,7 @@
 ---
-description: Analyze the evaluation execution results and propose improvement suggestions
+description: Analyze the evaluation execution results and provide actionable improvement recommendations
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json
+  sh: scripts/bash/check-prerequisites.sh --json --require-results
 ---
 
 ## User Input
@@ -14,7 +14,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.insights` in the triggering message **is** additional context or specific analysis requirements. This command analyzes evaluation execution results and provides actionable improvement suggestions.
+The text the user typed after `/evalkit.report` in the triggering message **is** additional context or specific analysis requirements. This command analyzes evaluation execution results and provides actionable improvement recommendations.
 
 Given that context, do this:
 
@@ -48,94 +48,73 @@ Given that context, do this:
     3. Perform comprehensive results analysis
     4. Identify patterns, strengths, and weaknesses
     5. Generate actionable improvement recommendations
-    6. Create detailed insights report with evidence
+    6. Create detailed advisory report with evidence
     7. Provide prioritized action items for agent enhancement
 
 5. **Results Analysis Process**:
 
-   a. **Data Validation and Loading**: Ensure results are from real execution:
+   a. **Data Validation**: Ensure results are from real execution:
       - Load evaluation results from the specified path
       - Validate that results come from actual agent execution (not simulation)
-      - Check for red flags: identical metrics, unrealistic execution times, simulation keywords
       - Verify data completeness and format consistency
 
-   b. **Performance Analysis**: Analyze key performance metrics:
+   b. **Results Analysis**: Analyze evaluation outcomes:
       - **Success Rate**: Calculate overall success/failure rates
-      - **Latency Metrics**: Average, P95, min/max response times
       - **Quality Scores**: Evaluation metric performance across test cases
-      - **Throughput**: Cases processed per unit time
-      - **Cost Analysis**: Resource usage and efficiency metrics
+      - **Failure Patterns**: Common error types and their frequency
+      - **Strengths & Weaknesses**: Areas of strong vs. poor performance
 
-   c. **Pattern Identification**: Identify trends and patterns in results:
-      - **Failure Modes**: Common error types and their frequency
-      - **Performance Trends**: Patterns in latency and quality over time
-      - **Strengths**: Areas where agent performs exceptionally well
-      - **Weaknesses**: Consistent problem areas requiring attention
-
-   d. **Root Cause Analysis**: Investigate underlying causes of issues:
-      - **Performance Bottlenecks**: Identify what causes slow responses
-      - **Quality Issues**: Understand why certain metrics underperform
-      - **Reliability Problems**: Analyze failure patterns and triggers
-      - **Resource Constraints**: Identify limiting factors
+   c. **Insights Generation**: Identify key findings:
+      - **Root Causes**: Why certain metrics underperform
+      - **Improvement Opportunities**: Specific areas for enhancement
+      - **Quality Trends**: Patterns in evaluation scores and response quality
 
 6. **Improvement Recommendations**: Generate specific, actionable recommendations:
 
-   a. **Prioritized Action Items**: Based on impact and feasibility:
+   a. **Prioritized Recommendations**: Based on evaluation findings:
       
-      **Priority 1 - Critical Issues (High Impact, Immediate Attention)**
-      - **High Failure Rate**: If success rate <70%, identify primary failure modes
-      - **Performance Bottlenecks**: If P95 latency >5s, analyze slow cases
-      - **Quality Issues**: If evaluation scores <0.6, examine response quality
+      **Critical Issues** (Immediate attention required)
+      - Address high failure rates or low quality scores
+      - Fix systematic errors in reasoning or response generation
       
-      **Priority 2 - Performance Improvements (Medium Impact, Optimization)**
-      - **Latency Optimization**: Reduce average response time
-      - **Cost Efficiency**: Optimize resource usage and API calls
-      - **Throughput Enhancement**: Improve processing capacity
+      **Quality Improvements** (Medium-term enhancements)
+      - Improve consistency across test cases
+      - Enhance response completeness and accuracy
       
-      **Priority 3 - Enhancement Opportunities (Lower Impact, Future Improvements)**
-      - **Edge Case Handling**: Address uncommon failure scenarios
-      - **User Experience**: Improve response formatting and clarity
-      - **Monitoring**: Add better observability and tracking
+      **Enhancement Opportunities** (Future improvements)
+      - Handle edge cases more effectively
+      - Improve response clarity and formatting
 
    b. **Evidence-Based Recommendations**: All recommendations must cite specific data:
-      
-      **Recommendation Structure**:
-      - **Issue**: Clear problem statement with metrics
-      - **Evidence**: Specific data points from evaluation results
-      - **Root Cause**: Analysis of underlying causes
+      - **Issue**: Clear problem statement with evaluation metrics
+      - **Evidence**: Specific data points from results
       - **Recommended Actions**: Specific improvement suggestions
-      - **Expected Impact**: Quantified improvement predictions
-      - **Success Metrics**: How to measure improvement
+      - **Expected Impact**: Predicted improvements in evaluation scores
 
-7. **Insights Report Generation**: Create focused report with:
+7. **Advisory Report Generation**: Create focused report with:
    - Executive summary with key findings
-   - Performance analysis with core metrics
+   - Evaluation results analysis
    - Prioritized improvement recommendations with evidence
-   - Success metrics for tracking progress
 
 8. **Report Structure**:
    ```markdown
-   # Agent Evaluation Insights Report
+   # Agent Evaluation Report
    
    ## Executive Summary
-   - Overall Performance: [Rating and key metrics]
+   - Overall Performance: [Key evaluation metrics]
    - Critical Issues: [Top issues requiring attention]
    - Key Strengths: [What works well]
    
-   ## Performance Analysis
+   ## Evaluation Results
    - Success Rate: [X%]
-   - Average Latency: [Xms]
-   - Quality Score: [X.X/5.0]
-   - Cost per Query: [$X.XX]
+   - Quality Scores: [Metric breakdown]
+   - Key Patterns: [Notable findings]
    
    ## Improvement Recommendations
    [Prioritized list with evidence and expected impact]
-   
-   ## Success Metrics
-   [How to measure improvement progress]
    ```
 
-9. Report completion with insights summary and critical recommendations.
+9. Report completion with actionable insights and recommendations.
 
 ## General Guidelines
 
@@ -152,9 +131,8 @@ Given that context, do this:
 Always check for these indicators of simulated results:
 - Identical metrics across different test cases
 - Perfect success rates (100%) with large test sets
-- Execution times of exactly 0 or unrealistic values
 - Keywords like "simulated", "mocked", "fake" in results
-- Lack of natural variation in performance metrics
+- Lack of natural variation in evaluation scores
 
 ### Quality Standards for Recommendations
 
@@ -174,8 +152,8 @@ Always check for these indicators of simulated results:
 
 ### Report Quality Standards
 
-Ensure your insights report:
+Ensure your advisory report:
 - Uses data from real agent execution (never simulation)
 - Provides specific, actionable recommendations with evidence
-- Quantifies expected improvements and success metrics
-- Prioritizes recommendations by impact and feasibility
+- Focuses on evaluation results analysis and insights
+- Prioritizes recommendations by impact on evaluation performance
