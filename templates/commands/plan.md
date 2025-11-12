@@ -43,7 +43,7 @@ Given that user evaluation requests or agent description, do this:
 
 4. Follow this execution flow:
 
-    1. Parse user evaluation requests from input
+    1. Parse user evaluation requests from user input
        If empty: ERROR "No agent description or evaluation requests provided"
     2. Analyze agent and user requirements:
        - Parse specific evaluation requests, scenarios, and constraints from user input
@@ -113,7 +113,7 @@ Evaluation metrics must be:
 
 ### Technology Selection Defaults
 
-**Examples of reasonable defaults** (don't ask about these):
+**Examples of reasonable defaults**:
 
 - **Tracing instrumentation**: Traceloop library
 - **Evaluation frameworks**: DeepEval library
