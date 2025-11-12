@@ -43,11 +43,15 @@ Given that context, do this:
 
 4. Follow this execution flow:
 
-    1. Parse user context from Input (if provided)
-    2. Validate evaluation plan exists and contains "Test Data Generation" section
+    1. Parse user context from user input (if provided)
+    2. Validate that the evaluation plan exists and contains a "Test Data Generation" section; update the evaluation plan if it does not align with the user's input
     3. Generate proper test cases covering all scenarios and meeting all requirements
     4. Structure test cases in JSONL format
     5. Save test cases to `eval/test-cases.jsonl`
 
+5. Report completion with test case count, coverage summary, and readiness for trace setup and collection (`/evalkit.trace`).
 
-Report completion with test case count, coverage summary, and readiness for trace setup and collection (`/evalkit.trace`).
+## General Guidelines
+
+1. **Prioritize user-specific data requests**: User input takes precedence over the established evaluation plan - always honor specific user requirements and constraints. Update the evaluation plan if needed.
+
