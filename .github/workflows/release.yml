@@ -4,9 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
+      - 'commands/**'
       - 'mcps/**'
       - 'scripts/**'
       - 'templates/**'
+      - 'tracing/**'
       - '.github/workflows/**'
   workflow_dispatch:
 

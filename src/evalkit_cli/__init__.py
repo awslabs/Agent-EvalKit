@@ -101,7 +101,7 @@ BANNER = """
 ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝
 """
 
-TAGLINE = "EvalKit - Agent Evaluation Framework"
+TAGLINE = "EvalKit - Agent Evaluation Tool Kit"
 
 
 class StepTracker:

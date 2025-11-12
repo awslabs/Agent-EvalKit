@@ -6,7 +6,7 @@ receivers:
 
 exporters:
   file:
-    path: ./otel-traces.jsonl
+    path: eval/otel-traces.jsonl
 
 service:
   pipelines:

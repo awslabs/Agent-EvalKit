@@ -43,15 +43,18 @@ Given that context, do this:
 
 4. Follow this execution flow:
 
-    1. Parse user context from Input (if provided)
+    1. Parse user context from user input (if provided)
     2. Validate evaluation plan exists and `eval/test-cases.jsonl` exists
     3. Copy pre-built tracing artifacts to `eval/tracing/`
     4. Analyze agent code for supported frameworks and existing instrumentation
-    5. Add minimal tracing instrumentation to the original agent code (only if needed)
+    5. Add minimal tracing instrumentation to the original agent code (if needed)
     6. Create `eval/test_executor.py` for orchestrated test execution
     7. Set up OTEL collector and environment
     8. Run `eval/test_executor.py` on test cases to collect raw traces
     9. Run `eval/tracing/trace-processor.py` to simplify raw traces
+    
+    7. Setup environment
+    8. Provide instructions to user on setting up OTEL collector, running `eval/test_executor.py` on test cases to collect raw traces, and running `eval/trace-processor.py` to simplify raw traces (DO NOT conduct these execution by yourself, just provide instructions)
 
 
 ## Technical Guidelines

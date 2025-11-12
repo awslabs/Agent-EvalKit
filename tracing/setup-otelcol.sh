@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # Automated OpenTelemetry Collector Setup Script
+# Downloads and sets up otelcol-contrib binary in .evalkit/tracing/
+#
+# Usage: .evalkit/tracing/setup-otelcol.sh
+# Run from repository root directory
 
 set -e
 
@@ -39,17 +43,26 @@ case $OS in
         ;;
 esac
 
+# Set up directory paths
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TRACING_DIR=".evalkit/tracing"
+BINARY_PATH="${TRACING_DIR}/otelcol-contrib"
+
 echo "🔧 Setting up OpenTelemetry Collector (Automated)"
 echo "================================================="
 echo "Version: ${OTELCOL_VERSION}"
 echo "OS: ${OS}"
 echo "Architecture: ${ARCH}"
+echo "Binary will be saved to: ${BINARY_PATH}"
 echo ""
 
+# Create tracing directory if it doesn't exist
+mkdir -p "${TRACING_DIR}"
+
 # Check if binary already exists
-if [ -f "./otelcol-contrib" ]; then
-    echo "✅ otelcol-contrib binary already exists"
-    echo "   To re-download, delete ./otelcol-contrib and run this script again"
+if [ -f "${BINARY_PATH}" ]; then
+    echo "✅ otelcol-contrib binary already exists at ${BINARY_PATH}"
+    echo "   To re-download, delete ${BINARY_PATH} and run this script again"
     exit 0
 fi
 
@@ -61,7 +74,7 @@ echo "📥 Downloading OpenTelemetry Collector binary..."
 echo "   URL: ${DOWNLOAD_URL}"
 
 # Download with better error handling
-curl -L -f -o "otelcol-contrib.tar.gz" "${DOWNLOAD_URL}"
+curl -L -f -o "${TRACING_DIR}/otelcol-contrib.tar.gz" "${DOWNLOAD_URL}"
 
 if [ $? -ne 0 ]; then
     echo "❌ Download failed."
@@ -76,13 +89,14 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check if download was successful (file size > 1KB)
-if [ ! -f "otelcol-contrib.tar.gz" ] || [ $(stat -f%z "otelcol-contrib.tar.gz" 2>/dev/null || stat -c%s "otelcol-contrib.tar.gz" 2>/dev/null || echo "0") -lt 1000 ]; then
+if [ ! -f "${TRACING_DIR}/otelcol-contrib.tar.gz" ] || [ $(stat -f%z "${TRACING_DIR}/otelcol-contrib.tar.gz" 2>/dev/null || stat -c%s "${TRACING_DIR}/otelcol-contrib.tar.gz" 2>/dev/null || echo "0") -lt 1000 ]; then
     echo "❌ Downloaded file is too small or doesn't exist"
-    rm -f "otelcol-contrib.tar.gz"
+    rm -f "${TRACING_DIR}/otelcol-contrib.tar.gz"
     exit 1
 fi
 
 echo "📦 Extracting binary..."
+cd "${TRACING_DIR}"
 tar -xzf "otelcol-contrib.tar.gz"
 
 # Find the binary in the extracted files
@@ -126,10 +140,13 @@ rm -f README.md readme.md README.txt readme.txt LICENSE LICENSE.txt
 # Test the binary
 echo ""
 echo "🎉 Setup complete!"
-echo "   Binary location: ./otelcol-contrib"
+echo "   Binary location: ${BINARY_PATH}"
 
 if ./otelcol-contrib --version >/dev/null 2>&1; then
     echo "   Version: $(./otelcol-contrib --version 2>/dev/null | head -1)"
 else
     echo "   ⚠️  Version check failed, but binary exists"
 fi
+
+# Return to original directory
+cd - > /dev/null

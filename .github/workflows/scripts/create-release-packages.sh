@@ -34,26 +34,27 @@ rewrite_paths() {
   sed -E \
     -e 's@(/?)memory/@.evalkit/memory/@g' \
     -e 's@(/?)scripts/@.evalkit/scripts/@g' \
-    -e 's@(/?)templates/@.evalkit/templates/@g'
+    -e 's@(/?)templates/@.evalkit/templates/@g' \
+    -e 's@(/?)tracing/@.evalkit/tracing/@g'
 }
 
 generate_commands() {
   local agent=$1 ext=$2 arg_format=$3 output_dir=$4 script_variant=$5
   mkdir -p "$output_dir"
-  for template in templates/commands/*.md; do
-    [[ -f "$template" ]] || continue
+  for command in commands/*.md; do
+    [[ -f "$command" ]] || continue
     local name description script_command agent_script_command body
-    name=$(basename "$template" .md)
+    name=$(basename "$command" .md)
     
     # Normalize line endings
-    file_content=$(tr -d '\r' < "$template")
+    file_content=$(tr -d '\r' < "$command")
     
     # Extract description and script command from YAML frontmatter
     description=$(printf '%s\n' "$file_content" | awk '/^description:/ {sub(/^description:[[:space:]]*/, ""); print; exit}')
     script_command=$(printf '%s\n' "$file_content" | awk -v sv="$script_variant" '/^[[:space:]]*'"$script_variant"':[[:space:]]*/ {sub(/^[[:space:]]*'"$script_variant"':[[:space:]]*/, ""); print; exit}')
     
     if [[ -z $script_command ]]; then
-      echo "Warning: no script command found for $script_variant in $template" >&2
+      echo "Warning: no script command found for $script_variant in $command" >&2
       script_command="(Missing script command for $script_variant)"
     fi
     
@@ -130,7 +131,9 @@ build_variant() {
     esac
   fi
   
-  [[ -d templates ]] && { mkdir -p "$EVALKIT_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$EVALKIT_DIR"/ \; ; echo "Copied templates (including tracing templates) -> .evalkit/templates"; }
+  [[ -d templates ]] && { cp -r templates "$EVALKIT_DIR/"; echo "Copied templates -> .evalkit/templates"; }
+  
+  [[ -d tracing ]] && { cp -r tracing "$EVALKIT_DIR/"; echo "Copied tracing -> .evalkit/tracing"; }
   
   # Copy MCP configuration to assistant-specific location if it exists
   if [[ -f mcps/mcp.json ]]; then
