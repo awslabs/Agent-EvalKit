@@ -44,40 +44,15 @@ Given that context, do this:
 4. Follow this execution flow:
 
     1. Parse user context from user input (if provided)
-    2. Validate evaluation plan exists and `eval/test-cases.jsonl` exists
-    3. Copy pre-built tracing artifacts to `eval/tracing/`
-    4. Analyze agent code for supported frameworks and existing instrumentation
-    5. Add minimal tracing instrumentation to the original agent code (if needed)
-    6. Create `eval/test_executor.py` for orchestrated test execution
-    7. Set up OTEL collector and environment
-    8. Run `eval/test_executor.py` on test cases to collect raw traces
-    9. Run `eval/tracing/trace-processor.py` to simplify raw traces
-    
-    7. Setup environment
-    8. Provide instructions to user on setting up OTEL collector, running `eval/test_executor.py` on test cases to collect raw traces, and running `eval/trace-processor.py` to simplify raw traces (DO NOT conduct these execution by yourself, just provide instructions)
+    2. Review the evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided)
+    3. Analyze agent code for supported frameworks and existing instrumentation
+    4. Add minimal tracing instrumentation to the original agent code (if needed)
+    5. Create requirements.txt in repository root
+
+5. Report completion with tracing status, instrumentation details, requirements.txt creation, and readiness for core evaluation implementation (`/evalkit.code`).
 
 
 ## Technical Guidelines
-
-### Pre-built Tracing Artifacts
-
-Copy tracing infrastructure to evaluation workspace:
-
-```bash
-# Create tracing subdirectory
-mkdir -p eval/tracing
-
-# Navigate back to repository root
-# Copy OTEL templates from templates/tracing/
-cp templates/tracing/setup-otelcol.sh eval/tracing/setup-otelcol.sh
-cp templates/tracing/run-otelcol.sh eval/tracing/run-otelcol.sh
-cp templates/tracing/otel-config.yaml eval/tracing/otel-config.yaml
-cp templates/tracing/trace-processor.py eval/tracing/trace-processor.py
-
-# Make scripts executable
-chmod +x eval/tracing/setup-otelcol.sh
-chmod +x eval/tracing/run-otelcol.sh
-```
 
 ### Intelligent Instrumentation Detection
 
@@ -141,39 +116,10 @@ def custom_tool_usage():
 
 **Note**: The `Traceloop.init()` initialization is still required regardless of instrumentation approach. Does instrumention by directly modifying the original agent code (do not create new agent files).
 
-### Test Executor Implementation
+### Strands Framework
+If the agent is built on the Strands framework, note that **Strands is not supported by Traceloop's auto-instrumentation**. For Strands-based agents, you must implement custom instrumentation using separate approaches. Please check the Strands-specific instrumentation reference in `reference/strands` for detailed implementation guidance.
 
-Create `eval/test_executor.py` for orchestrated test execution:
-
-```python
-# Template for test_executor.py
-import json
-import os
-
-def load_test_cases():
-    """Load test cases from test-cases.jsonl"""
-    with open('test-cases.jsonl', 'r') as f:
-        return [json.loads(line) for line in f]
-
-def execute_agent_on_test_case(test_case):
-    """Execute instrumented agent on single test case"""
-    # Import and run your instrumented agent here
-    # The agent code should have Traceloop.init() and instrumentation
-    # Return results
-    pass
-
-def main():
-    test_cases = load_test_cases()
-    for i, test_case in enumerate(test_cases):
-        print(f"Executing test case {i+1}/{len(test_cases)}")
-        result = execute_agent_on_test_case(test_case)
-        # Results are automatically traced via OTEL
-
-if __name__ == "__main__":
-    main()
-```
-
-###  Set Up Environment
+###  Create requirements.txt
 
 1. **Detect Existing Dependencies**: Check for existing dependency files in agent directory and repository root
    ```bash
@@ -188,19 +134,6 @@ if __name__ == "__main__":
    # Add trace instrumentation dependencies
    ```
 
-3. **Create Virtual Environment**: Use `uv` to create `.venv` at repository root
-   ```bash
-   # Create virtual environment at repository root (not in eval/ directory)
-   uv venv .venv
-   source .venv/bin/activate  # Linux/Mac
-   # or .venv\Scripts\activate  # Windows
-   ```
-
-4. **Install Dependencies**: Use `uv pip install` for consistent dependency resolution
-   ```bash
-   uv pip install -r requirements.txt
-   ```
-
 #### Dependency Detection Priority
 
 Check for existing dependency files in this order:
@@ -210,30 +143,6 @@ Check for existing dependency files in this order:
 - `Pipfile` (pipenv projects)
 - `environment.yml` (conda environments)
 
-### OTEL Collector Setup & Execution
-
-1. **Setup and Start Collector**:
-   ```bash
-   cd eval/tracing
-   ./setup-otelcol.sh
-   ./run-otelcol.sh &
-   ```
-
-2. **Execute Test Cases**:
-   ```bash
-   # Run instrumented agent on test cases
-   python test_executor.py
-   ```
-
-3. **Process Raw Traces**:
-   ```bash
-   # Convert raw OTEL traces to evaluation-ready format
-   python tracing/trace-processor.py
-   ```
-
-This creates:
-- `eval/tracing/otel-traces.jsonl` (raw traces)
-- `eval/traces/<traceId>.json` (processed individual traces)
 
 ## Instrumentation Guidelines
 
@@ -242,8 +151,3 @@ This creates:
 - **Evaluation-Focused**: Instrument specifically for agent evaluation analysis, not general monitoring
 - **Meaningful Naming**: Use descriptive span names that facilitate evaluation insights
 - **Minimal Invasiveness**: Add tracing with minimal changes to existing agent code
-- **Graceful Degradation**: Agent should work even if tracing fails
-- **Local-First**: Use local OTEL collector, avoid external dependencies
-
-Report completion with tracing status, instrumentation details, trace collection results, and readiness for core evaluation implementation (`/evalkit.code`).
-

@@ -43,7 +43,7 @@ Given that context, do this:
 
 4. Follow this execution flow:
 
-    1. Parse user context from Input (if provided)
+    1. Parse user context from user input (if provided)
     2. Load and validate evaluation results data
     3. Perform comprehensive results analysis
     4. Identify patterns, strengths, and weaknesses

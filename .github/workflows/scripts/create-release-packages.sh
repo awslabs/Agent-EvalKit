@@ -35,7 +35,8 @@ rewrite_paths() {
     -e 's@(/?)memory/@.evalkit/memory/@g' \
     -e 's@(/?)scripts/@.evalkit/scripts/@g' \
     -e 's@(/?)templates/@.evalkit/templates/@g' \
-    -e 's@(/?)tracing/@.evalkit/tracing/@g'
+    -e 's@(/?)tracing/@.evalkit/tracing/@g' \
+    -e 's@(/?)reference/@.evalkit/reference/@g'
 }
 
 generate_commands() {
@@ -132,6 +133,8 @@ build_variant() {
   fi
   
   [[ -d templates ]] && { cp -r templates "$EVALKIT_DIR/"; echo "Copied templates -> .evalkit/templates"; }
+  
+  [[ -d reference ]] && { cp -r reference "$EVALKIT_DIR/"; echo "Copied reference -> .evalkit/reference"; }
   
   [[ -d tracing ]] && { cp -r tracing "$EVALKIT_DIR/"; echo "Copied tracing -> .evalkit/tracing"; }
   

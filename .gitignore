@@ -54,3 +54,4 @@ test_env/
 single-normalized-trace.json
 raw-otel-trace.jsonl
 traces/
+legacy.md

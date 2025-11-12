@@ -99,7 +99,7 @@ flowchart TD
 
 ## Implementation Plan
 <!--
-  IMPORTANT: This section outlines the commands, architecture, file structure, and step-by-step tasks needed to implement the evaluation system.
+  IMPORTANT: This section outlines the commands, architecture, and file structure to implement the evaluation system.
   Focus on practical implementation decisions and clear execution steps.
 -->
 
@@ -110,27 +110,9 @@ Based on evaluation requests, agent instrumentation status, and available assets
   ACTION REQUIRED: Mark selected commands with [x]
 -->
 - [ ] `/evalkit.data` - Generate test cases
-- [ ] `/evalkit.trace` - Instrument agent, execute on test cases, process raw traces
-- [ ] `/evalkit.code` - Build the core trace-based evaluation module
+- [ ] `/evalkit.trace` - Instrument agent
+- [ ] `/evalkit.code` - Build the core trace-based evaluation pipeline
 - [ ] `/evalkit.report` - Generate evaluation analysis and actionable improvement recommendations (optional after evaluation execution)
-
-### Core Architecture
-
-**Modular Evaluation Pipeline**: Each step can be executed independently when required input is available
-
-- **Step 1 - Agent Execution**: Instrumented agent runs on test cases → generates raw OTLP-JSON traces
-  - *Input*: Test cases
-  - *Output*: Raw trace files
-- **Step 2 - Trace Processing**: Raw traces filtered and simplified → evaluation-ready format
-  - *Input*: Raw trace files
-  - *Output*: Processed trace files (individual trace files)
-- **Step 3 - Metric Evaluation**: Extract data from processed traces → compute evaluation metrics
-  - *Input*: Processed trace files
-  - *Output*: Evaluation results
-
-**Key Components**:
-- **Metric Extractors**: Helper functions that pull specific data (e.g., input/output pairs, tool usage, conversation history, reasoning steps, etc) from processed traces
-- **Evaluation Metrics**: Core measurement logic that processes extracted data to compute evaluation scores (e.g., accuracy, relevance, tool effectiveness)
 
 ### Recommended File Structure
 <!--
@@ -145,23 +127,15 @@ Based on evaluation requests, agent instrumentation status, and available assets
     ├── README.md            # Running instructions and usage examples (always present)
     ├── config.yaml          # Configuration for evaluation framework (always present)
     ├── metrics.py           # Core evaluation metrics implementation (always present)
-    ├── extraction_utils.py  # Helper functions for extracting data from processed traces (always present)
-    ├── test_executor.py     # Test case execution orchestration (always present)
+    ├── extraction_utils.py  # Helper functions for extracting data from processed traces (if needed)
+    ├── test_executor.py     # Test case execution orchestration (if needed)
     ├── run_evaluation.py    # Main evaluation orchestration script (always present)
     ├── results/             # Evaluation outputs (always present)
     ├── eval-plan.md         # This evaluation specification and plan (always present)
     ├── test-cases.jsonl     # Generated test cases (from /evalkit.data)
     │
-    ├── traces/              # Processed trace files for evaluation
-    │   └── <traceId>.json   # Individual processed trace files (from trace-processor.py)
-    │
-    └── tracing/             # Tracing instrumentation and collection (from /evalkit.trace)
-        ├── setup-otelcol.sh    # OTEL collector setup script
-        ├── run-otelcol.sh      # OTEL collector runner script
-        ├── otel-config.yaml    # OTEL collector configuration
-        ├── otelcol-contrib      # OTEL collector binary (downloaded by setup)
-        ├── trace-processor.py  # Raw trace processing script
-        └── otel-traces.jsonl   # Raw traces collected from OTEL collector
+    └── traces/              # Processed trace files for evaluation
+        └── <traceId>.json   # Individual processed trace files (from trace-processor.py)
 ```
 
 ### Recommended Technical Stack
@@ -177,45 +151,6 @@ Based on evaluation requests, agent instrumentation status, and available assets
 | **LLM Model** | [us.anthropic.claude-sonnet-4-20250514-v1:0 (default)] |
 | **Agent Integration** | [e.g., Direct import, API] |
 | **Results Storage** | [e.g., JSON files (default)] |
-
-
-### Implementation Tasks
-<!--
-  ACTION REQUIRED: Adjust task sections based on selected commands above
--->
-
-#### Test Case Generation Tasks (use `/evalkit.data`)
-<!--
-  ACTION REQUIRED: Keep this section only if test cases need to be generated, otherwise remove
--->
-- Parse evaluation design for test cases
-- Generate minimal test cases in JSONL format (`eval/test-cases.jsonl`)
-
-#### Tracing Setup Tasks (use `/evalkit.trace`)
-<!--
-  ACTION REQUIRED: Keep this section - always required for trace collection and processing
--->
-- Create tracing subdirectory (`eval/tracing/`)
-- Copy tracing files to tracing directory (`setup-otelcol.sh`, `run-otelcol.sh`, `otel-config.yaml`, `trace-processor.py`)
-- Instrument agent code with tracing library (Traceloop default) (optional if already instrumented and compatible with provided artifacts in `eval/tracing/`)
-- Create `test_executor.py` to orchestrate agent execution with direct import of instrumented agent (default approach)
-- Create `requirements.txt` consolidating target agent + tracing dependencies, create virtual environment with `uv venv`, install dependencies with `uv pip install -r requirements.txt`, and activate with `source .venv/bin/activate`
-- Download and setup OTEL collector binary by running `setup-otelcol.sh` and `run-otelcol.sh`
-- Run `test_executor.py` to execute agent on test cases and collect raw traces in `eval/tracing/otel-traces.jsonl`
-- Run `tracing/trace-processor.py` to process raw traces into `eval/traces/<traceId>.json` files
-
-#### Core Evaluation Tasks (use `/evalkit.code`)
-<!--
-  ACTION REQUIRED: Keep this section - always required for evaluation implementation
--->
-- Verify `eval/traces/<traceId>.json` exists (will serve as reference for accurate implementation)
-- **Implement data extraction utilities in `eval/extraction_utils.py` and evaluation metrics in `eval/metrics.py` (critical step - extraction functions + metrics that use extracted data)**
-- Build main evaluation orchestration in `eval/run_evaluation.py` (coordinates extraction and metrics execution: processed traces → extracted data → evaluation results)
-- Add minimal configuration management in `eval/config.yaml`
-- Conduct code review to identify critical issues and fix
-- Create a brief `eval/README.md` with clear running instructions and usage examples
-- Update `requirements.txt` with evaluation dependencies and install with `uv pip install -r requirements.txt`
-- Run `run_evaluation.py` to execute evaluation pipeline and generate results
 
 
 ## Evaluation Planning Iteration Guide
