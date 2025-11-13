@@ -1,7 +1,7 @@
 ---
-description: Set up tracing instrumentation and collect traces 
+description: Set up tracing instrumentation 
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-file
+  sh: scripts/bash/check-prerequisites.sh --json --require-plan
 ---
 
 ## User Input
@@ -14,7 +14,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.trace` in the triggering message **is** additional context or specific tracing requirements. This command sets up tracing instrumentation for the target agent based on the evaluation plan, creates scripts to run the instrumented agent on test cases to collect raw traces, and processes and simplifies the raw traces.
+The text the user typed after `/evalkit.trace` in the triggering message **is** additional context or specific tracing requirements. This command sets up tracing instrumentation for the target agent based on the evaluation plan.
 
 Given that context, do this:
 
@@ -37,19 +37,20 @@ Given that context, do this:
    ```
 
 2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and PLAN_FILE. All file paths must be absolute.
-   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. If any error occurs, stop the process immediately and provide solving instructions for users.
 
 3. Load the current evaluation plan (`eval/eval-plan.md`) to understand tracing requirements and agent architecture.
 
 4. Follow this execution flow:
 
     1. Parse user context from user input (if provided)
-    2. Review the evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided)
+    2. Review the evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
+       - `/evalkit.trace`: [User input from $ARGUMENTS, or "Not found"]
     3. Analyze agent code for supported frameworks and existing instrumentation
     4. Add minimal tracing instrumentation to the original agent code (if needed)
     5. Create requirements.txt in repository root
 
-5. Report completion with tracing status, instrumentation details, requirements.txt creation, and readiness for core evaluation implementation (`/evalkit.code`).
+5. Report completion with tracing status, instrumentation details, requirements.txt creation, and readiness for evaluation pipeline implementation (`/evalkit.code`).
 
 
 ## Technical Guidelines

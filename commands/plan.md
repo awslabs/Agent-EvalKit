@@ -43,10 +43,10 @@ Given that user evaluation requests or agent description, do this:
 
 4. Follow this execution flow:
 
-    1. Parse user evaluation requests from user input
-       If empty: ERROR "No agent description or evaluation requests provided"
+    1. Parse user evaluation requirements from user input
+       If empty: STOP the process, and output ERROR "No agent description or evaluation requirements provided"
     2. Analyze agent and user requirements:
-       - Parse specific evaluation requests, scenarios, and constraints from user input
+       - Parse specific evaluation requirements, scenarios, and constraints from user input
        - Scan codebase for agent architecture and capabilities
        - Detect tracing instrumentation patterns (Traceloop, OpenTelemetry, etc.)
        - Check for existing test cases and trace files

@@ -1,7 +1,7 @@
 ---
 description: Implement trace-based evaluation pipeline
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-processed-traces
+  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-file
 ---
 
 ## User Input
@@ -37,22 +37,27 @@ Given that context, do this:
    ```
 
 2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and PLAN_FILE. All file paths must be absolute.
-   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. If any error occurs, stop the process immediately and provide solving instructions for users.
 
 3. Load the current evaluation plan (`eval/eval-plan.md`) to understand the task structure and requirements.
 
 4. Follow this execution flow:
 
     1. Parse user context from Input (if provided)
-    2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided)
-    3. Conduct core evaluation implementation:
-       - **Implement extraction utilities** (if pipeline's input is processed traces from `eval/traces/<traceId>.json` files)
-       - **Implement metrics** (critical step)
-       - **Build evaluation orchestration** (`eval/run_evaluation.py` - coordinates the pipeline)
-       - **Add configuration management** (`eval/config.yaml`)
-       - **Code review** (identify and fix critical issues)
-       - **Update requirements** (add additional pipeline required dependencies to `requirements.txt`)
-       - **Create documentation** (`eval/README.md` with running instructions including OTEL collector setup, environment setup, pipeline execution, etc)
+    2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
+       - `/evalkit.code`: [User input from $ARGUMENTS, or "Not found"]
+    3. Conduct evaluation pipeline implementation:
+       **IMPORTANT**: Always navigate to repository root before any operation in the following process to avoid path errors.
+       - **Set up environment**: Use `uv` to create virtual environment, activate it, and install `requirements.txt`
+       - **Set up local OTEL collector**: Run `tracing/setup-otelcol.sh` and `tracing/run-otelcol.sh &` to ensure `eval/otel-traces.jsonl` is created
+       - **Create test executor**: Create a script (e.g., `eval/test_executor.py`) to run instrumented agent on test cases (`eval/test-cases.jsonl`), then execute it (e.g., `python eval/test_executor.py --input eval/test-cases.jsonl`) to export raw OTEL traces into `eval/otel-traces.jsonl`
+       - **Process traces**: Run `python tracing/trace-processor.py --input eval/otel-traces.jsonl --output-dir eval/traces/ --pretty` to process and simplify the raw OTEL traces
+       - **Implement extraction utilities and metrics** (critical step): Evaluation input will be the processed traces from `eval/traces/<traceId>.json` files. **MUST** examine processed trace structure by loading a trace file before implementing
+       - **Build evaluation orchestration**: Create `eval/run_evaluation.py` to coordinate the pipeline
+       - **Add configuration management**: Create `eval/config.yaml` if needed
+       - **Code review**: Identify and fix critical issues
+       - **Update requirements and environment**: Add additional pipeline dependencies to `requirements.txt` and reinstall
+       - **Create documentation**: Create `eval/README.md` with running instructions including OTEL collector setup, environment setup, pipeline execution, etc.
     4. Instruct user to follow `eval/README.md` to run evaluation
 
 5. Report completion with implementation status and readiness for execution and the optional next phase (`/evalkit.report`) after execution.
@@ -96,9 +101,10 @@ This ensures production-ready code that follows current best practices and avoid
    # Add other dependencies as needed based on evaluation plan
    ```
 
-3. **Installation**: Instruct to use `uv` for dependency management in `eval/README.md`
+3. **Installation**: Use `uv` for dependency management
    ```bash
-   # Install requirements
+   uv venv
+   source .venv/bin/activate
    uv pip install -r requirements.txt
    ```
 

@@ -37,13 +37,16 @@ Given that context, do this:
    ```
 
 2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and RESULTS_PATH. All file paths must be absolute.
-   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for.
+   **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. If any error occurs, stop the process immediately and provide solving instructions for users.
 
-3. Load and analyze the evaluation results from the specified path.
+3. Copy the evaluation report template from `templates/eval-report-template.md` to `eval/eval-report.md`.
 
-4. Follow this execution flow:
+4. Load and analyze the evaluation results from the specified path.
 
-    1. Parse user context from user input (if provided)
+5. Follow this execution flow:
+
+    1. Parse user context from user input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
+       - `/evalkit.report`: [User input from $ARGUMENTS, or "Not found"]
     2. Load and validate evaluation results data
     3. Perform comprehensive results analysis
     4. Identify patterns, strengths, and weaknesses
@@ -51,7 +54,7 @@ Given that context, do this:
     6. Create detailed advisory report with evidence
     7. Provide prioritized action items for agent enhancement
 
-5. **Results Analysis Process**:
+6. **Results Analysis Process**:
 
    a. **Data Validation**: Ensure results are from real execution:
       - Load evaluation results from the specified path
@@ -69,7 +72,7 @@ Given that context, do this:
       - **Improvement Opportunities**: Specific areas for enhancement
       - **Quality Trends**: Patterns in evaluation scores and response quality
 
-6. **Improvement Recommendations**: Generate specific, actionable recommendations:
+7. **Improvement Recommendations**: Generate specific, actionable recommendations:
 
    a. **Prioritized Recommendations**: Based on evaluation findings:
       
@@ -91,12 +94,12 @@ Given that context, do this:
       - **Recommended Actions**: Specific improvement suggestions
       - **Expected Impact**: Predicted improvements in evaluation scores
 
-7. **Advisory Report Generation**: Create focused report with:
+8. **Advisory Report Generation**: Create focused report with:
    - Executive summary with key findings
    - Evaluation results analysis
    - Prioritized improvement recommendations with evidence
 
-8. **Report Structure**:
+9. **Report Structure**:
    ```markdown
    # Agent Evaluation Report
    
@@ -114,7 +117,7 @@ Given that context, do this:
    [Prioritized list with evidence and expected impact]
    ```
 
-9. Report completion with actionable insights and recommendations.
+10. Report completion with actionable insights and recommendations.
 
 ## General Guidelines
 

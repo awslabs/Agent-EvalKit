@@ -2,9 +2,9 @@
 
 **Branch:** `[###-eval-pipeline]` | **Date:** `[DATE]`
 
-## User Requirements
+## User Evaluation Requirements
 - **User Input:** `"$ARGUMENTS"`
-- **User Requests:** [Parsed from user input - highest priority, or "Not found"]
+- **Parsed Evaluation Requirements:** [Parsed from user input - highest priority, or "Not found"]
 
 
 ## Available Assets
@@ -94,7 +94,7 @@ flowchart TD
 
 - **Evaluation Area Coverage**: [Evaluation areas that need test cases - reference evaluation areas above]
 - **Test Case Format**: [JSONL with standardized schema (default)]
-- **Expected Volume**: [Number of test cases needed - typically start with 5-10 based on evaluation scope]
+- **Expected Volume**: [Number of test cases needed - typically start with less than 5]
 
 
 ## Implementation Plan
@@ -166,4 +166,10 @@ You can manually edit this `eval-plan.md` file to add/remove/modify specific con
 ---
 
 **Note**: Running `/evalkit.plan` again will create a new evaluation branch and automatically remove the current `eval/` directory to start fresh. This allows you to iterate on your evaluation plan with different approaches while preserving your work in separate branches.
+
+
+## Appendix
+
+### User Input Tracker
+- `/evalkit.plan`: [User input from $ARGUMENTS, or "Not found"]
 
