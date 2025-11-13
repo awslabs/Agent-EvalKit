@@ -1,57 +1,21 @@
 <div align="center">
-    <img src="./media/logo.png" alt="EvalKit Logo" width="200">
-    <h1>EvalKit</h1>
-    <h3><em>Evaluate AI agents systematically.</em></h3>
+    <h1>Agent-EvalKit</h1>
+    <h3><em>Evaluate AI agents quickly</em></h3>
 </div>
 
 <p align="center">
-    <strong>A comprehensive framework for evaluating AI agents with trace-based evaluation across multiple dimensions including quality, performance, robustness, and user experience.</strong>
+    <strong>A toolkit for developers to quickly build agent evaluation pipelines with flexible evaluation SDK support.</strong>
 </p>
-
----
-
-## ✨ Key Design Features
-
-EvalKit stands out with thoughtfully designed architectural features that ensure reliable, consistent, and cutting-edge agent evaluation:
-
-### 🔌 Built-in MCP Server Support
-
-**Universal MCP Integration Across All AI Assistants**
-- **Context7 MCP Server**: Automatically deployed with every project for accessing the latest library documentation and usage patterns
-- **Always Current**: Ensures you're implementing with the latest library functionalities and best practices
-- **Zero Configuration**: MCP servers are automatically configured and ready to use
-
-**Why This Matters**: Instead of relying on potentially outdated training data, you get real-time access to current library documentation, API changes, and implementation patterns. This dramatically reduces implementation errors and ensures your evaluations use modern approaches.
-
-### 🛠️ Built-in Bash Scripts for Deterministic Operations
-
-**Reliable, Consistent Automation**
-- **Prerequisite Checking**: Automated validation of project requirements and dependencies
-- **Branch Management**: Consistent Git workflow management across all evaluation projects
-- **Environment Setup**: Standardized project initialization and configuration
-
-**Why This Matters**: Rather than asking AI assistants to perform these operations ad-hoc (which can be inconsistent), EvalKit provides battle-tested scripts that ensure reliable, repeatable results every time. This eliminates variability in project setup and management.
-
-### 🎯 The Perfect Balance
-
-EvalKit combines the **creativity and intelligence of AI assistants** for evaluation design and implementation with **deterministic, reliable automation** for infrastructure operations. This hybrid approach delivers:
-
-- **Consistent Infrastructure**: Reliable project setup and management
-- **Current Best Practices**: Always up-to-date library usage through MCP integration
-- **Reduced Errors**: Automated validation and standardized workflows
-- **Enhanced Productivity**: Focus on evaluation logic, not infrastructure concerns
 
 ---
 
 ## Table of Contents
 
-- [✨ Key Design Features](#-key-design-features)
 - [👨‍💻 For Developers](#-for-developers)
-- [⚡ Get started (Users)](#-get-started-users)
+- [⚡ Get started](#-get-started)
 - [🤖 Supported AI Assistants](#-supported-ai-assistants)
 - [🔧 EvalKit CLI Reference](#-evalkit-cli-reference)
 - [🔧 Prerequisites](#-prerequisites)
-- [👥 Maintainers](#-maintainers)
 - [🙏 Acknowledgements](#-acknowledgements)
 
 ## 👨‍💻 For Developers
@@ -184,9 +148,9 @@ For detailed step-by-step instructions, see our [comprehensive guide](./docs/qui
 
 | Assistant                                                     | Support | Notes                                             |
 |---------------------------------------------------------------|---------|---------------------------------------------------|
-| [Kilo Code](https://kilocode.ai)                              | ✅ |                                                   |
 | [Claude Code](https://www.anthropic.com/claude-code)         | ✅ |                                                   |
-| [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) | ✅ |                                                   |
+| [Kilo Code](https://kilocode.ai)                              | 🔄 | CLI support coming soon                           |
+| [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) | 🔄 | CLI support coming soon                           |
 
 ## 🔧 EvalKit CLI Reference
 
@@ -221,21 +185,12 @@ The `evalkit` command supports the following options:
 evalkit init my-agent-evaluation
 
 # Initialize with specific AI assistant
-evalkit init my-evaluation --ai kilocode
-
-# Initialize with Claude Code support
 evalkit init my-evaluation --ai claude
 
-# Initialize with Amazon Q CLI support
-evalkit init my-evaluation --ai q
-
-# Initialize with PowerShell scripts (Windows/cross-platform, support soon)
-evalkit init my-evaluation --ai claude --script ps
-
 # Initialize in current directory
-evalkit init . --ai kilocode
+evalkit init . --ai claude
 # or use the --here flag
-evalkit init --here --ai kilocode
+evalkit init --here --ai claude
 
 # Force merge into current (non-empty) directory without confirmation
 evalkit init . --force --ai claude
@@ -243,13 +198,13 @@ evalkit init . --force --ai claude
 evalkit init --here --force --ai claude
 
 # Skip git initialization
-evalkit init my-evaluation --ai q --no-git
+evalkit init my-evaluation --ai claude --no-git
 
 # Enable debug output for troubleshooting
-evalkit init my-evaluation --ai kilocode --debug
+evalkit init my-agent-evaluation --ai claude --debug
 
 # Use GitHub token for API requests (helpful for corporate environments)
-evalkit init my-evaluation --ai claude --github-token ghp_your_token_here
+evalkit init my-agent-evaluation --ai claude --github-token ghp_your_token_here
 
 # Check system requirements
 evalkit check
@@ -280,7 +235,7 @@ Essential commands for the trace-based Agent Evaluation workflow:
 ## 🔧 Prerequisites
 
 - **Linux/macOS** (or WSL2 on Windows)
-- AI coding assistant: [Kilo Code](https://kilocode.ai), [Claude Code](https://www.anthropic.com/claude-code), or [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/)
+- AI coding assistant: [Claude Code](https://www.anthropic.com/claude-code), [Kilo Code](https://kilocode.ai), or [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/)
 - [uv](https://docs.astral.sh/uv/) for package management
 - [Python 3.11+](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/downloads)
@@ -289,10 +244,6 @@ If you encounter issues with an assistant, please open an issue so we can refine
 
 ---
 
-## 👥 Maintainers
-
-- Kang Zhou ([@kangISU](https://github.com/kangISU))
-
 ## 🙏 Acknowledgements
 
-This project evolved from [spec-kit](https://github.com/github/spec-kit), transforming from a software development specification toolkit into a comprehensive agent evaluation framework.
+This project archecture is inspired by [spec-kit](https://github.com/github/spec-kit).
