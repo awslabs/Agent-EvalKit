@@ -14,9 +14,11 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.plan` in the triggering message **is** the user evaluation requests or agent description. Assume you always have it available in this conversation even if it appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+The text the user typed after `/evalkit.plan` in the triggering message **is** the user evaluation requests or agent description.
 
 Given that user evaluation requests or agent description, do this:
+
+0. **Check user input (IMPORTANT)**: If user input is empty, you MUST STOP the process immediately, and output ERROR "No agent description or evaluation requirements provided"
 
 1. **Navigate to repository root**:
    
@@ -44,7 +46,6 @@ Given that user evaluation requests or agent description, do this:
 4. Follow this execution flow:
 
     1. Parse user evaluation requirements from user input
-       If empty: STOP the process, and output ERROR "No agent description or evaluation requirements provided"
     2. Analyze agent and user requirements:
        - Parse specific evaluation requirements, scenarios, and constraints from user input
        - Scan codebase for agent architecture and capabilities
