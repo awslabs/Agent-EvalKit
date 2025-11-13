@@ -125,9 +125,7 @@ Based on evaluation requests, agent instrumentation status, and available assets
 │
 └── eval/                    # Evaluation workspace
     ├── README.md            # Running instructions and usage examples (always present)
-    ├── config.yaml          # Configuration for evaluation framework (always present)
     ├── metrics.py           # Core evaluation metrics implementation (always present)
-    ├── extraction_utils.py  # Helper functions for extracting data from processed traces (if needed)
     ├── test_executor.py     # Test case execution orchestration (if needed)
     ├── run_evaluation.py    # Main evaluation orchestration script (always present)
     ├── results/             # Evaluation outputs (always present)

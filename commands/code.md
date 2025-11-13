@@ -14,7 +14,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.code` in the triggering message **is** additional context or specific implementation requirements. This command conducts the core evaluation pipeline implementation.
+The text the user typed after `/evalkit.code` in the triggering message **is** additional context or specific implementation requirements. This command conducts the evaluation pipeline implementation.
 
 Given that context, do this:
 
@@ -43,7 +43,7 @@ Given that context, do this:
 
 4. Follow this execution flow:
 
-    1. Parse user context from Input (if provided)
+    1. Parse user context from user input (if provided)
     2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
        - `/evalkit.code`: [User input from $ARGUMENTS, or "Not found"]
     3. Conduct evaluation pipeline implementation:
@@ -51,16 +51,17 @@ Given that context, do this:
        - **Set up environment**: Use `uv` to create virtual environment, activate it, and install `requirements.txt`
        - **Set up local OTEL collector**: Run `tracing/setup-otelcol.sh` and `tracing/run-otelcol.sh &` to ensure `eval/otel-traces.jsonl` is created
        - **Create test executor**: Create a script (e.g., `eval/test_executor.py`) to run instrumented agent on test cases (`eval/test-cases.jsonl`), then execute it (e.g., `python eval/test_executor.py --input eval/test-cases.jsonl`) to export raw OTEL traces into `eval/otel-traces.jsonl`
-       - **Process traces**: Run `python tracing/trace-processor.py --input eval/otel-traces.jsonl --output-dir eval/traces/ --pretty` to process and simplify the raw OTEL traces
-       - **Implement extraction utilities and metrics** (critical step): Evaluation input will be the processed traces from `eval/traces/<traceId>.json` files. **MUST** examine processed trace structure by loading a trace file before implementing
-       - **Build evaluation orchestration**: Create `eval/run_evaluation.py` to coordinate the pipeline
-       - **Add configuration management**: Create `eval/config.yaml` if needed
+       - **Process raw OTEL traces**: Run `python tracing/trace-processor.py --input eval/otel-traces.jsonl --output-dir eval/traces/ --pretty` to process and simplify the raw OTEL traces
+       - **Implement metrics** (critical step): Evaluation input will be the processed traces from `eval/traces/<traceId>.json` files. The script (e.g., `eval/metrics.py`) should include both metric classes and necessary extraction functions to extract evaluation-required information from processed traces. **MUST** examine processed trace structure by loading a trace file before implementing
+       - **Build evaluation main entry function**: Create `eval/run_evaluation.py` to coordinate the pipeline. Ensure evaluation results are saved to `eval/results/`.
        - **Code review**: Identify and fix critical issues
        - **Update requirements and environment**: Add additional pipeline dependencies to `requirements.txt` and reinstall
        - **Create documentation**: Create `eval/README.md` with running instructions including OTEL collector setup, environment setup, pipeline execution, etc.
     4. Instruct user to follow `eval/README.md` to run evaluation
 
-5. Report completion with implementation status and readiness for execution and the optional next phase (`/evalkit.report`) after execution.
+5. Terminate any running OTEL collector processes in the background
+
+6. Report completion with implementation status and readiness for execution and the optional next phase (`/evalkit.report`) after execution.
 
 
 ## Implementation Guidelines
@@ -77,7 +78,7 @@ Given that context, do this:
 
 This ensures production-ready code that follows current best practices and avoids deprecated patterns.
 
-### Code Patterns
+### Code Patterns/Examples
 - If using DeepEval, please refer to `reference/deepeval/` for implementation patterns and examples.
 - If using Strands Evals SDK, please refer to `reference/strands/` for implementation patterns and examples.
 
@@ -113,5 +114,4 @@ This ensures production-ready code that follows current best practices and avoid
 
 - **Over-Engineering**: Don't add complexity before the basic version works
 - **Ignoring Reference Implementation**: Always use specified reference during development
-- **Hardcoded Values**: Use configuration files instead of embedding values in code
 - **Ignoring the Plan**: Follow the established evaluation plan structure and requirements

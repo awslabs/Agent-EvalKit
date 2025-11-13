@@ -48,7 +48,7 @@ Given that context, do this:
        - `/evalkit.trace`: [User input from $ARGUMENTS, or "Not found"]
     3. Analyze agent code for supported frameworks and existing instrumentation
     4. Add minimal tracing instrumentation to the original agent code (if needed)
-    5. Create requirements.txt in repository root
+    5. Create `requirements.txt` in repository root
 
 5. Report completion with tracing status, instrumentation details, requirements.txt creation, and readiness for evaluation pipeline implementation (`/evalkit.code`).
 
