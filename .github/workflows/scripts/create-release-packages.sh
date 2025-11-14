@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # create-release-packages.sh (workflow-local)
-# Build EvalKit template release archives for each supported AI assistant and script type.
+# Build Agent-EvalKit template release archives for each supported AI assistant and script type.
 # Usage: .github/workflows/scripts/create-release-packages.sh <version>
 #   Version argument should include leading 'v'.
 #   Optionally set AGENTS and/or SCRIPTS env vars to limit what gets built.

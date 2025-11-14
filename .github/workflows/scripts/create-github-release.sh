@@ -19,5 +19,5 @@ gh release create "$VERSION" \
   .genreleases/evalkit-template-kilocode-sh-"$VERSION".zip \
   .genreleases/evalkit-template-claude-sh-"$VERSION".zip \
   .genreleases/evalkit-template-q-sh-"$VERSION".zip \
-  --title "EvalKit Templates - $VERSION_NO_V" \
+  --title "Agent-EvalKit - $VERSION_NO_V" \
   --notes-file release_notes.md

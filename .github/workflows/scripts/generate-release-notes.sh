@@ -28,7 +28,7 @@ fi
 
 # Create release notes
 cat > release_notes.md << EOF
-This is the latest set of releases that you can use with your agent of choice. We recommend using the EvalKit CLI to scaffold your evaluation projects, however you can download these independently and manage them yourself.
+This is the latest set of releases that you can use with your agent of choice. We recommend using the Agent-EvalKit CLI to scaffold your evaluation projects, however you can download these independently and manage them yourself.
 
 EOF
 
