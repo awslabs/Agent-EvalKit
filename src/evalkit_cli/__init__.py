@@ -1046,7 +1046,7 @@ def init(
     ignore_agent_tools: bool = typer.Option(
         False, "--ignore-agent-tools", help="Skip checks for AI agent tools like Claude Code"
     ),
-    no_git: bool = typer.Option(False, "--no-git", help="Skip git repository initialization"),
+    init_git: bool = typer.Option(False, "--git", help="Initialize git repository"),
     here: bool = typer.Option(
         False, "--here", help="Initialize project in the current directory instead of creating a new one"
     ),
@@ -1161,7 +1161,7 @@ def init(
     console.print(Panel("\n".join(setup_lines), border_style="cyan", padding=(1, 2)))
 
     should_init_git = False
-    if not no_git:
+    if init_git:
         should_init_git = check_tool("git")
         if not should_init_git:
             console.print("[yellow]Git not found - will skip repository initialization[/yellow]")
@@ -1275,7 +1275,7 @@ def init(
 
             ensure_executable_scripts(project_path, tracker=tracker)
 
-            if not no_git:
+            if init_git:
                 tracker.start("git")
                 if is_git_repo(project_path):
                     tracker.complete("git", "existing repo detected")
@@ -1289,7 +1289,7 @@ def init(
                 else:
                     tracker.skip("git", "git not available")
             else:
-                tracker.skip("git", "--no-git flag")
+                tracker.skip("git", "git initialization not requested")
 
             tracker.complete("final", "project ready")
         except Exception as e:
