@@ -77,7 +77,7 @@ When `/evalkit.quick` is invoked:
      - [ ] Step 5 – `evalkit.eval`
      - [ ] Step 6 – `evalkit.report`
 
-   - Update this checklist as the user tells you which steps are done.
+   - Update this checklist as the user tells you which steps are done
 
 ---
 
