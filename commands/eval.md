@@ -1,7 +1,7 @@
 ---
-description: Implement trace-based evaluation pipeline
+description: Write evaluation code taking traces as input, and execute it
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-file
+  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-processed-traces
 ---
 
 ## User Input
@@ -14,7 +14,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-The text the user typed after `/evalkit.code` in the triggering message **is** additional context or specific implementation requirements. This command conducts the evaluation pipeline implementation.
+The text the user typed after `/evalkit.eval` in the triggering message **is** additional context or specific implementation requirements. This command writes evaluation code taking traces as input, and executes it.
 
 Given that context, do this:
 
@@ -45,23 +45,17 @@ Given that context, do this:
 
     1. Parse user context from user input (if provided)
     2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
-       - `/evalkit.code`: [User input from $ARGUMENTS, or "Not found"]
+       - `/evalkit.eval`: [User input from $ARGUMENTS, or "Not found"]
     3. Conduct evaluation pipeline implementation:
        **IMPORTANT**: Always navigate to repository root before any operation in the following process to avoid path errors.
-       - **Set up environment**: Use `uv` to create virtual environment, activate it, and install `requirements.txt`
-       - **Set up local OTEL collector**: Run `tracing/setup-otelcol.sh` and `tracing/run-otelcol.sh &` to ensure `eval/otel-traces.jsonl` is created
-       - **Create test executor**: Create a script (e.g., `eval/test_executor.py`) to run instrumented agent on test cases (`eval/test-cases.jsonl`), then execute it (e.g., `python eval/test_executor.py --input eval/test-cases.jsonl`) to export raw OTEL traces into `eval/otel-traces.jsonl`
-       - **Process raw OTEL traces**: Run `python tracing/trace-processor.py --input eval/otel-traces.jsonl --output-dir eval/traces/ --pretty` to process and simplify the raw OTEL traces
        - **Implement metrics** (critical step): Evaluation input will be the processed traces from `eval/traces/<traceId>.json` files. The script (e.g., `eval/metrics.py`) should include both metric classes and necessary extraction functions to extract evaluation-required information from processed traces. **MUST** examine processed trace structure by loading a trace file before implementing
        - **Build evaluation main entry function**: Create `eval/run_evaluation.py` to coordinate the pipeline. Ensure evaluation results are saved to `eval/results/`.
        - **Code review**: Identify and fix critical issues
-       - **Update requirements and environment**: Add additional pipeline dependencies to `requirements.txt` and reinstall
-       - **Create documentation**: Create `eval/README.md` with running instructions including OTEL collector setup, environment setup, pipeline execution, etc.
-    4. Instruct user to follow `eval/README.md` to run evaluation
+       - **Update requirements and environment**: Add additional evaluation dependencies to `requirements.txt` and reinstall if needed
+       - **Execute evaluation**: Run `python eval/run_evaluation.py` to execute the evaluation code and generate results
+       - **Create documentation**: Create `eval/README.md` with running instructions for users
 
-5. Terminate any running OTEL collector processes in the background
-
-6. Report completion with implementation status and readiness for execution and the optional next phase (`/evalkit.report`) after execution.
+5. Report completion with implementation status and readiness for evaluation execution and the optional next phase (`/evalkit.report`) after execution.
 
 
 ## Implementation Guidelines
@@ -93,13 +87,13 @@ This ensures production-ready code that follows current best practices and avoid
    ls requirements.txt
    ```
 
-2. **Add Evaluation Dependencies**: Update requirements.txt with additional evaluation pipeline dependencies, for example
+2. **Add Evaluation Dependencies**: Update existing requirements.txt with additional evaluation dependencies as needed
    ```bash
-   # Add evaluation framework dependencies (if not already present)
-   echo "boto3>=1.35.0" >> requirements.txt
-   echo "litellm>=1.0.0" >> requirements.txt
-   echo "deepeval>=0.21.0" >> requirements.txt
-   # Add other dependencies as needed based on evaluation plan
+   # Check if evaluation dependencies are already present
+   grep -q "deepeval" requirements.txt || echo "deepeval>=0.21.0" >> requirements.txt
+   grep -q "boto3" requirements.txt || echo "boto3>=1.35.0" >> requirements.txt
+   grep -q "litellm" requirements.txt || echo "litellm>=1.0.0" >> requirements.txt
+   # Add other evaluation-specific dependencies as needed based on evaluation plan
    ```
 
 3. **Installation**: Use `uv` for dependency management

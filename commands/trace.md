@@ -48,9 +48,8 @@ Given that context, do this:
        - `/evalkit.trace`: [User input from $ARGUMENTS, or "Not found"]
     3. Analyze agent code for supported frameworks and existing instrumentation
     4. Add minimal tracing instrumentation to the original agent code (if needed)
-    5. Create `requirements.txt` in repository root
 
-5. Report completion with tracing status, instrumentation details, requirements.txt creation, and readiness for evaluation pipeline implementation (`/evalkit.code`).
+5. Report completion with tracing status, instrumentation details, and readiness for agent execution (`/evalkit.run_agent`).
 
 
 ## Technical Guidelines
@@ -120,29 +119,6 @@ def custom_tool_usage():
 ### Strands Framework
 If the agent is built on the Strands framework, note that **Strands is not supported by Traceloop's auto-instrumentation**. For Strands-based agents, you must implement custom instrumentation using separate approaches. Please check the Strands-specific instrumentation reference in `reference/strands` for detailed implementation guidance.
 
-###  Create requirements.txt
-
-1. **Detect Existing Dependencies**: Check for existing dependency files in agent directory and repository root
-   ```bash
-   # Check for existing dependency files (in order of priority)
-   find . -name "requirements.txt" -o -name "pyproject.toml" -o -name "setup.py" -o -name "Pipfile" -o -name "environment.yml"
-   ```
-
-2. **Consolidate Requirements**: Create unified `requirements.txt` at repository root
-   ```bash
-   # Merge agent dependencies with trace instrumentation dependencies
-   # Include agent's existing requirements if found
-   # Add trace instrumentation dependencies
-   ```
-
-#### Dependency Detection Priority
-
-Check for existing dependency files in this order:
-- `requirements.txt` (standard Python)
-- `pyproject.toml` (modern Python projects)
-- `setup.py` (legacy Python packages)
-- `Pipfile` (pipenv projects)
-- `environment.yml` (conda environments)
 
 
 ## Instrumentation Guidelines

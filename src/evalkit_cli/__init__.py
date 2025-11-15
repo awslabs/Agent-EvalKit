@@ -1372,13 +1372,34 @@ def init(
         )
         step_num += 1
 
+    # Add AI agent startup instruction
+    agent_config = AGENT_CONFIG.get(selected_ai)
+    if agent_config:
+        if selected_ai == "claude":
+            steps_lines.append(f"{step_num}. Start Claude Code by running: [cyan]claude[/cyan]")
+        elif selected_ai == "kilocode":
+            steps_lines.append(f"{step_num}. Open your IDE with Kilo Code extension enabled")
+        elif selected_ai == "q":
+            steps_lines.append(f"{step_num}. Start Amazon Q Developer CLI by running: [cyan]q[/cyan]")
+        else:
+            steps_lines.append(f"{step_num}. Start your AI agent: [cyan]{selected_ai}[/cyan]")
+        step_num += 1
+
     steps_lines.append(f"{step_num}. Start using slash commands with your AI agent:")
 
-    steps_lines.append("   2.1 [cyan]/evalkit.plan[/] - Analyze your agent and design evaluation strategy")
-    steps_lines.append("   2.2 [cyan]/evalkit.data[/] - Generate test cases for evaluation")
-    steps_lines.append("   2.3 [cyan]/evalkit.trace[/] - Set up tracing instrumentation and collect traces")
-    steps_lines.append("   2.4 [cyan]/evalkit.code[/] - Implement trace-based evaluation pipeline")
-    steps_lines.append("   2.5 [cyan]/evalkit.report[/] - Analyze results and provide improvement recommendations")
+    steps_lines.append(f"   {step_num}.1 [cyan]/evalkit.plan[/] - Analyze your agent and design evaluation strategy")
+    steps_lines.append(f"   {step_num}.2 [cyan]/evalkit.data[/] - Generate test cases for evaluation")
+    steps_lines.append(f"   {step_num}.3 [cyan]/evalkit.trace[/] - Set up tracing instrumentation")
+    steps_lines.append(f"   {step_num}.4 [cyan]/evalkit.run_agent[/] - Run instrumented agent and collect traces")
+    steps_lines.append(
+        f"   {step_num}.5 [cyan]/evalkit.eval[/] - Write evaluation code taking traces as input, and execute it"
+    )
+    steps_lines.append(
+        f"   {step_num}.6 [cyan]/evalkit.report[/] - Analyze results and provide improvement recommendations"
+    )
+    steps_lines.append("")
+    steps_lines.append("   [dim]Or run the complete pipeline automatically:[/dim]")
+    steps_lines.append("   [cyan]/evalkit.quick[/] - Run all commands above sequentially with auto-approval")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()
