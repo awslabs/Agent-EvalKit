@@ -138,104 +138,67 @@ When `/evalkit.quick` is invoked:
 
 ## Step-by-step guidance details
 
+**Before starting**: Verify agent code exists. The evaluation process requires agent code to evaluate. If no agent code is found, guide the user to provide the agent file path or copy the agent code file into the current workspace.
+
 For each step, follow this pattern:
+
+### Step 0 – Verify Agent Code (prerequisite)
+
+- **Purpose**: Confirm agent code exists before proceeding with evaluation
+- **Action**: Check for agent code in the project (e.g., `agent.py`, or path in `$ARGUMENTS`)
+- **If missing**: Ask user to copy agent code file into the workspace before proceeding to Step 1
+- **If found**: Note the agent location and proceed to Step 1
 
 ### Step 1 – Plan (`evalkit.plan`)
 
-- When plan is missing or quick redesign is useful:
+- **Purpose**: Analyze agent and design evaluation plan (goals, metrics, scenario categories)
+- **Command**: `/evalkit.plan [optional, agent description or evaluation requirements]`
+- **Output**: Creates `eval/eval-plan.md` with complete evaluation strategy
 
-  - Explain that `evalkit.plan` will:
-    - Define goals, metrics, and scenario categories for this eval.
-  - Suggest a command, e.g.:
+**When to run**:
 
-    ```text
-    Please run:
+- **No existing plan**: Run this step to create the initial evaluation strategy
+- **Existing plan detected**:
 
-    /evalkit.plan quick full eval for [agent/goal]
-    ```
-
-- If you detect an existing plan:
-  - Suggest either:
-    - Skipping this step (for speed), or
-    - Running `evalkit.plan` to refine/update, depending on how “quick” vs “thorough” the user seems to want to be.
+  - **Skip** if user prioritizes speed and current plan is adequate
+  - **Run** to refine/update if user wants thoroughness or plan needs adjustment
 
 ### Step 2 – Data (`evalkit.data`)
 
-- Explain that `evalkit.data` will:
-  - Generate a **small, representative** set of evaluation scenarios for a quick run.
-- Suggest something like:
-
-  ```text
-  Next, please run:
-
-  /evalkit.data quick scenarios based on the current plan
-  ```
-
-- If a good dataset already exists and the user didn’t ask for new data:
-
-  - Mention that `evalkit.data` is optional here in a quick run, and you can proceed directly to `evalkit.trace` or `evalkit.run_agent`.
+- **Purpose**: Generate small, representative evaluation scenarios
+- **Command**: `/evalkit.data` (arguments optional; defaults to plan-based generation)
+- **Output**: Creates `eval/test-cases.jsonl` with test cases
+- **Skip if**: Good dataset exists and user didn't request new data
 
 ### Step 3 – Trace (`evalkit.trace`)
 
-- Explain that `evalkit.trace` will:
-
-  - Add minimal tracing hooks to the agent code to record inputs/outputs and metadata during eval.
-
-- Suggest a command such as:
-
-  ```text
-  Next, please run:
-
-  /evalkit.trace instrument main agent for quick eval tracing
-  ```
-
-- If tracing is clearly already configured, describe the assumption and suggest optionally skipping or tightening it.
+- **Purpose**: Set up tracing instrumentation for the agent (Traceloop/OpenTelemetry)
+- **Command**: `/evalkit.trace` (arguments optional; additional context or specific tracing requirements)
+- **Prerequisites**: Requires existing evaluation plan
+- **Output**: Adds tracing instrumentation to agent code
+- **Skip if**: Tracing already configured
 
 ### Step 4 – Run agent (`evalkit.run_agent`)
 
-- Explain that `evalkit.run_agent` will:
-
-  - Run the agent over the eval dataset and write traces (e.g., `evalkit/traces/`).
-
-- Example guidance:
-
-  ```text
-  Next, please run:
-
-  /evalkit.run_agent run quick eval on scenarios to collect traces
-  ```
-
-- If traces already exist and the user doesn’t need fresh ones:
-
-  - Mention that this step can be skipped for a quick run.
+- **Purpose**: Execute instrumented agent on test cases and collect traces
+- **Command**: `/evalkit.run_agent` (arguments optional; additional context or execution requirements)
+- **Prerequisites**: Requires evaluation plan and test data file (`eval/test-cases.jsonl`)
+- **Output**: Creates `eval/traces/` directory with processed trace files
+- **Skip if**: Fresh traces exist and user doesn't need new ones
 
 ### Step 5 – Eval (`evalkit.eval`)
 
-- Explain that `evalkit.eval` will:
-
-  - Write/update the evaluation code and compute metrics (success rate, etc.) over the collected traces.
-
-- Suggest:
-
-  ```text
-  Next, please run:
-
-  /evalkit.eval compute quick metrics over collected traces
-  ```
+- **Purpose**: Write and execute evaluation code to compute metrics over traces
+- **Command**: `/evalkit.eval` (arguments optional; additional context or implementation requirements)
+- **Prerequisites**: Requires evaluation plan and processed traces in `eval/traces/`
+- **Output**: Creates evaluation code (e.g., `eval/run_evaluation.py`) and results in `eval/results/`
 
 ### Step 6 – Report (`evalkit.report`)
 
-- Explain that `evalkit.report` will:
-
-  - Generate a Markdown report or template summarizing results and next steps.
-
-- Suggest:
-
-  ```text
-  Finally, please run:
-
-  /evalkit.report quick summary of this evaluation run
-  ```
+- **Purpose**: Analyze results and generate improvement recommendations
+- **Command**: `/evalkit.report` (arguments optional; additional context or analysis requirements)
+- **Prerequisites**: Requires evaluation results in `eval/results/`
+- **Output**: Creates `eval/eval-report.md` with analysis and recommendations
 
 ---
 
