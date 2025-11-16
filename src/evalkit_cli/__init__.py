@@ -1292,8 +1292,6 @@ def init(
                         git_error_message = error_msg
                 else:
                     tracker.skip("git", "git not available")
-            else:
-                tracker.skip("git", "git initialization not requested")
 
             tracker.complete("final", "project ready")
         except Exception as e:
