@@ -52,7 +52,24 @@ When `/evalkit.quick` is invoked:
      - `evalkit.plan`, `evalkit.data`, `evalkit.trace`, `evalkit.run_agent`, `evalkit.eval`, `evalkit.report`.
    - Make it very clear that **the user should run each of those as its own command** so they get separate task trackers.
 
-3. **Guide the user step-by-step**
+3. **Keep a concise checklist of progress**
+
+   - Display a simple checklist at the start and maintain it throughout, e.g.:
+
+     - [ ] Step 1 – `evalkit.plan` ⏳ (pending)
+     - [ ] Step 2 – `evalkit.data` ⏳ (pending)
+     - [ ] Step 3 – `evalkit.trace` ⏳ (pending)
+     - [ ] Step 4 – `evalkit.run_agent` ⏳ (pending)
+     - [ ] Step 5 – `evalkit.eval` ⏳ (pending)
+     - [ ] Step 6 – `evalkit.report` ⏳ (pending)
+
+   - Update this checklist after each step with status indicators:
+     - [x] ✅ = completed successfully
+     - [-] 🔄 = in progress
+     - [!] ⚠️ = failed (needs retry)
+     - [ ] ⏳ = pending
+
+4. **Guide the user step-by-step**
 
    - Start with **Step 1**:
 
@@ -68,39 +85,47 @@ When `/evalkit.quick` is invoked:
 
        (where $ARGUMENTS is passed through from the user's original input)
 
-     - Optionally propose expected outputs from this command (e.g. `evalkit/plan.md`).
+     - Briefly mention expected outputs from this command (e.g. `evalkit/plan.md`).
 
    - Then **stop and wait** (do not try to simulate `evalkit.plan` here).
    - The user will actually run `/evalkit.plan` as a new task.
 
-4. **After each step finishes**
+5. **After each step finishes**
 
-   - The user can come back to this chat and tell you something like:
-     - “Plan done”
-     - “Just ran `/evalkit.plan`, created the plan”
-   - Based on that, you:
-     - Move to the next step (e.g. `evalkit.data`).
-     - Explain what the next command will do.
-     - Tell the user exactly which command to run next (e.g. `/evalkit.data`).
-   - Repeat this pattern for:
+   - **Proactively assess completion status:**
+
+     - Monitor for success indicators (files created, expected outputs, completion messages)
+     - Check for errors, warnings, or missing artifacts
+     - Review the task completion status from the user's previous command execution
+
+   - **If the step succeeded:**
+
+     - Confirm completion with specific evidence (e.g., "✅ Step 1 complete: eval-plan has been created successfully")
+     - Move to the next step without waiting for explicit user confirmation
+     - Briefly explain what the next command will do in this context
+     - Show the exact command to run with clear visual highlighting:
+       ```
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       Run this command:
+         $ /evalkit.data
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ```
+     - Briefly mention expected outputs from this command
+     - Update the progress checklist
+
+   - **If the step failed or has issues:**
+
+     - Clearly explain what went wrong based on error messages or missing outputs
+     - Provide specific troubleshooting guidance
+     - Suggest retrying the same command or fixing prerequisites first
+     - Do not proceed to the next step until issues are resolved (unless user explicitly requests to skip)
+
+   - **Repeat this assessment and guidance pattern for all remaining steps:**
      - Step 2: `evalkit.data`
      - Step 3: `evalkit.trace`
      - Step 4: `evalkit.run_agent`
      - Step 5: `evalkit.eval`
      - Step 6: `evalkit.report`
-
-5. **Keep a concise checklist of progress**
-
-   - Maintain a simple checklist in your responses, e.g.:
-
-     - [x] Step 1 – `evalkit.plan` ✅ (evalkit/plan.md created)
-     - [-] Step 2 – `evalkit.data` 🔄 (in progress)
-     - [ ] Step 3 – `evalkit.trace` ⏳ (pending)
-     - [!] Step 4 – `evalkit.run_agent` ⚠️ (failed - needs retry)
-     - [ ] Step 5 – `evalkit.eval`
-     - [ ] Step 6 – `evalkit.report`
-
-   - Update this checklist as the user tells you which steps are done
 
 6. **When all steps are complete**
 
