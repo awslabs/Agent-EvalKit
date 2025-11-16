@@ -1227,17 +1227,19 @@ def init(
 
     # Add tracker steps based on whether we're using local development or GitHub download
     if local_dev:
-        for key, label in [
+        steps = [
             ("local-build", "Build local templates"),
             ("local-copy", "Copy processed templates"),
             ("chmod", "Ensure scripts executable"),
             ("mcp-config", "Copy MCP configuration"),
-            ("git", "Initialize git repository"),
-            ("final", "Finalize"),
-        ]:
+        ]
+        if init_git:
+            steps.append(("git", "Initialize git repository"))
+        steps.append(("final", "Finalize"))
+        for key, label in steps:
             tracker.add(key, label)
     else:
-        for key, label in [
+        steps = [
             ("fetch", "Fetch latest release"),
             ("download", "Download template"),
             ("extract", "Extract template"),
@@ -1245,9 +1247,11 @@ def init(
             ("extracted-summary", "Extraction summary"),
             ("chmod", "Ensure scripts executable"),
             ("cleanup", "Cleanup"),
-            ("git", "Initialize git repository"),
-            ("final", "Finalize"),
-        ]:
+        ]
+        if init_git:
+            steps.append(("git", "Initialize git repository"))
+        steps.append(("final", "Finalize"))
+        for key, label in steps:
             tracker.add(key, label)
 
     # Track git error message outside Live context so it persists
