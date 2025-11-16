@@ -1046,7 +1046,7 @@ def init(
     ignore_agent_tools: bool = typer.Option(
         False, "--ignore-agent-tools", help="Skip checks for AI agent tools like Claude Code"
     ),
-    init_git: bool = typer.Option(False, "--git", help="Initialize git repository"),
+    no_git: bool = typer.Option(False, "--no-git", help="Skip git repository initialization"),
     here: bool = typer.Option(
         False, "--here", help="Initialize project in the current directory instead of creating a new one"
     ),
@@ -1161,7 +1161,7 @@ def init(
     console.print(Panel("\n".join(setup_lines), border_style="cyan", padding=(1, 2)))
 
     should_init_git = False
-    if init_git:
+    if not no_git:
         should_init_git = check_tool("git")
         if not should_init_git:
             console.print("[yellow]Git not found - will skip repository initialization[/yellow]")
@@ -1227,19 +1227,17 @@ def init(
 
     # Add tracker steps based on whether we're using local development or GitHub download
     if local_dev:
-        steps = [
+        for key, label in [
             ("local-build", "Build local templates"),
             ("local-copy", "Copy processed templates"),
             ("chmod", "Ensure scripts executable"),
             ("mcp-config", "Copy MCP configuration"),
-        ]
-        if init_git:
-            steps.append(("git", "Initialize git repository"))
-        steps.append(("final", "Finalize"))
-        for key, label in steps:
+            ("git", "Initialize git repository"),
+            ("final", "Finalize"),
+        ]:
             tracker.add(key, label)
     else:
-        steps = [
+        for key, label in [
             ("fetch", "Fetch latest release"),
             ("download", "Download template"),
             ("extract", "Extract template"),
@@ -1247,11 +1245,9 @@ def init(
             ("extracted-summary", "Extraction summary"),
             ("chmod", "Ensure scripts executable"),
             ("cleanup", "Cleanup"),
-        ]
-        if init_git:
-            steps.append(("git", "Initialize git repository"))
-        steps.append(("final", "Finalize"))
-        for key, label in steps:
+            ("git", "Initialize git repository"),
+            ("final", "Finalize"),
+        ]:
             tracker.add(key, label)
 
     # Track git error message outside Live context so it persists
@@ -1279,7 +1275,7 @@ def init(
 
             ensure_executable_scripts(project_path, tracker=tracker)
 
-            if init_git:
+            if not no_git:
                 tracker.start("git")
                 if is_git_repo(project_path):
                     tracker.complete("git", "existing repo detected")
@@ -1292,6 +1288,8 @@ def init(
                         git_error_message = error_msg
                 else:
                     tracker.skip("git", "git not available")
+            else:
+                tracker.skip("git", "--no-git flag")
 
             tracker.complete("final", "project ready")
         except Exception as e:
