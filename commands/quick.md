@@ -55,13 +55,23 @@ When `/evalkit.quick` is invoked:
 3. **Guide the user step-by-step**
 
    - Start with **Step 1**:
+
      - Briefly explain what `evalkit.plan` will do in this context.
-     - Show the exact command to run:  
-       `/evalkit.plan $ARGUMENTS`
+     - Show the exact command to run with clear visual highlighting:
+
+       ```
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       Run this command:
+         $ /evalkit.plan $ARGUMENTS
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ```
+
        (where $ARGUMENTS is passed through from the user's original input)
+
      - Optionally propose expected outputs from this command (e.g. `evalkit/plan.md`).
-   - Then **stop and wait** (do not try to simulate `evalkit.plan` here).  
-     The user will actually run `/evalkit.plan` as a new task.
+
+   - Then **stop and wait** (do not try to simulate `evalkit.plan` here).
+   - The user will actually run `/evalkit.plan` as a new task.
 
 4. **After each step finishes**
 
