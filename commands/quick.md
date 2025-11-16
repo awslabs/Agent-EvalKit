@@ -56,12 +56,14 @@ When `/evalkit.quick` is invoked:
 
    - Display a simple checklist at the start and maintain it throughout, e.g.:
 
-     - [ ] Step 1 – `evalkit.plan` ⏳ (pending)
-     - [ ] Step 2 – `evalkit.data` ⏳ (pending)
-     - [ ] Step 3 – `evalkit.trace` ⏳ (pending)
-     - [ ] Step 4 – `evalkit.run_agent` ⏳ (pending)
-     - [ ] Step 5 – `evalkit.eval` ⏳ (pending)
-     - [ ] Step 6 – `evalkit.report` ⏳ (pending)
+   ```
+    - [x] ✅ Step 1 – evalkit.plan (completed)
+    - [ ] ⏳ Step 2 – evalkit.data (pending)
+    - [ ] ⏳ Step 3 – evalkit.trace (pending)
+    - [ ] ⏳ Step 4 – evalkit.run_agent (pending)
+    - [ ] ⏳ Step 5 – evalkit.eval (pending)
+    - [ ] ⏳ Step 6 – evalkit.report (pending)
+   ```
 
    - Update this checklist after each step with status indicators:
      - [x] ✅ = completed successfully
@@ -139,6 +141,11 @@ When `/evalkit.quick` is invoked:
 ## Step-by-step guidance details
 
 **Before starting**: Verify agent code exists. The evaluation process requires agent code to evaluate. If no agent code is found, guide the user to provide the agent file path or copy the agent code file into the current workspace.
+
+**For ALL steps**: After showing each command, remind the user to **come back and confirm** completion by saying something like:
+
+- "Done" or "[Step name] complete" (e.g., "Plan done", "Data generated", "Traces collected")
+- Or any confirmation that the step is completed and they're ready for the next step (e.g., "ok", "looks good")
 
 For each step, follow this pattern:
 
