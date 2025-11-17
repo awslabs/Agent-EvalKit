@@ -67,26 +67,25 @@ If intent is ambiguous, make a reasonable assumption, state it explicitly, and p
 
 ## 2. Light status check
 
-Do a quick check for existing artifacts:
+Do a quick check for existing artifacts (file existence and obvious relevance only; detailed analysis happens in individual commands):
 
+- **Agent** (PREREQUISITE): obvious entrypoints such as `agent.py`, `chatbot.py` - **must exist with agent code available before any evaluation can proceed**.
 - **Plan**: files like `eval/eval-plan.md`
 - **Data**: `eval/test-scenarios.*` etc.
-- **Traces**: agent code with tracing instrumentations
+- **Tracing**: agent code with tracing/observability instrumentation or decorators.
 - **Eval code**: `eval/run_evaluation.py`, code that computes metrics, success/failure, LLM-as-judge, etc.
 - **Report**: `eval/eval-report.md`
-- **Agent**: obvious entrypoints such as `agent.py`, `app/agent.py`, **must** have agent code for evaluation.
 
-For each dimension (Plan, Data, Traces, Eval code, Report), classify as:
+For each dimension (Agent, Plan, Data, Tracing instrumentation, Eval code, Report), classify as:
 
-- **✅ OK** – present and seems reasonably aligned with the user’s current goal.
-- **✏️ refine** – present, but based on the user’s query it likely needs improvement  
-  (e.g. “augment data”, “add stricter metrics”, “update report”).
+- **✅ OK** – present and aligned with user's goal (e.g., plan covers requested flows, data includes target scenarios, eval code measures requested metrics).
+- **✏️ refine** – present, but based on the user's query it likely needs improvement
+  (e.g. "augment data", "add stricter metrics", "update report").
 - **❌ missing** – nothing relevant found.
-- **?** – uncertain.
 
-Produce a **compact status line**, e.g.:
+Produce a **compact status line** in prerequisite → preparation → execution order, e.g.:
 
-- `Plan: ✏️  Data: ✅  Traces: ❌  Eval code: ✏️  Report: ❌`
+- `Agent: ✅ | Plan: ✏️  Data: ✅  Tracing: ❌ | Eval: ✏️  Report: ❌`
 
 and optionally one short explanation line if needed, e.g.:
 
@@ -180,9 +179,9 @@ Your response for `/evalkit.auto` should be **short, structured, and command-ori
 
    An ordered list; each item like:
 
-   - `/evalkit.plan ...` – _why_: "No plan found; we should define goals and metrics first."
-   - `/evalkit.data ...` – _why_: "No scenarios found; we need a dataset to drive the eval."
-   - `/evalkit.eval ...` – _why_: "Traces and data exist; we can now compute metrics."
+   - `/evalkit.plan ...`
+   - `/evalkit.data ...`
+   - `/evalkit.eval ...`
 
    Make it clear that these argument strings are **suggestions** that the user can tweak or omit.
 
@@ -233,7 +232,7 @@ End each response with:
 
 ---
 
-## 5. Constraints
+## 6. Constraints
 
 - Do **not** simulate or inline the detailed behavior of `evalkit.plan`, `evalkit.data`, `evalkit.trace`, `evalkit.run_agent`, `evalkit.eval`, or `evalkit.report` inside `/evalkit.auto`.
 
