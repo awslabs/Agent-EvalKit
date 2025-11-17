@@ -166,52 +166,70 @@ Your response for `/evalkit.auto` should be **short, structured, and command-ori
 
 1. **Intent summary**
 
-   - “You want: …”
-   - “Assumptions: … (can be adjusted)”
+   - "You want: …"
+   - "Assumptions: … (can be adjusted)"
 
 2. **Status**
 
-   - One line using the three-way status, e.g.:  
+   - One line using the three-way status, e.g.:
      `Plan: ✏️  Data: ✅  Traces: ❌  Eval code: ✏️  Report: ❌`
-   - Add a brief clarification only if it helps, e.g.:  
-     `Plan: ✏️ (exists, but doesn’t cover multilingual flows yet)`
+   - Add a brief clarification only if it helps, e.g.:
+     `Plan: ✏️ (exists, but doesn't cover multilingual flows yet)`
 
 3. **Recommended commands (with suggested arguments)**
 
    An ordered list; each item like:
 
-   - `/evalkit.plan ...` – _why_: “No plan found; we should define goals and metrics first.”
-   - `/evalkit.data ...` – _why_: “No scenarios found; we need a dataset to drive the eval.”
-   - `/evalkit.eval ...` – _why_: “Traces and data exist; we can now compute metrics.”
+   - `/evalkit.plan ...` – _why_: "No plan found; we should define goals and metrics first."
+   - `/evalkit.data ...` – _why_: "No scenarios found; we need a dataset to drive the eval."
+   - `/evalkit.eval ...` – _why_: "Traces and data exist; we can now compute metrics."
 
    Make it clear that these argument strings are **suggestions** that the user can tweak or omit.
 
-4. **Optional pipeline sketch**
+4. **Next action (clear and explicit)**
 
-   - One short line, e.g.:
-     `Suggested pipeline: plan → data (augment) → trace → run_agent → eval → report`
-     or
-     `Suggested pipeline: data (existing) → traces (existing) → eval → report`
+   Show the first/most important command with visual emphasis:
 
-## Step 5 – Interactivity and follow-up
+   ```
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Next: Run this command
+     $ /evalkit.plan "quick eval plan for support_bot"
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ```
 
-After your initial recommendation:
+5. **Confirmation request**
 
-- Invite the user to confirm or refine intent:
+   End with: "After running this, come back and confirm (e.g., 'done', 'looks good', 'continue') so I can recommend the next step."
 
-  - e.g. “If you only want to generate data for now, you can just run `/evalkit.data`.”
+---
 
-- When the user reports they ran a command (e.g. “I ran `/evalkit.data` and created evalkit/scenarios.json”):
+## 5. Interactivity and follow-up
 
-  - Update your **status snapshot** (Data → ✅).
-  - Recompute the recommended next commands.
-  - Present an updated short pipeline consistent with their (possibly evolving) goals.
+### Initial recommendation
 
-You can keep using `/evalkit.auto` as a **check-in** after each step.
+Follow the format in section 4 above, always ending with a clear next action and confirmation request.
 
-End with a brief note like:
+### When user returns with confirmation
 
-> “After you run the next command(s), you can call `/evalkit.auto` again and I’ll update the recommendations based on the new status.”
+When the user says "done", "looks good", "continue", or similar:
+
+1. **Acknowledge**: "✅ Step completed successfully."
+2. **Update status**: Show updated status line (e.g., `Data: ❌ → ✅`)
+3. **Recommend next**: Determine next 1-2 commands based on updated status
+4. **Show next action**: Use the visual format from section 4
+5. **Request confirmation**: Ask them to return after running the command
+
+### Iterative check-ins
+
+You can be called multiple times as a check-in after each step. Each time:
+
+- Reassess status based on what's been completed
+- Update recommendations
+- Keep the flow moving toward the user's goal
+
+End each response with:
+
+> "After you run the next command, come back and confirm (or call `/evalkit.auto` again) and I'll update recommendations."
 
 ---
 
