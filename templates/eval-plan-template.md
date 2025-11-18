@@ -17,8 +17,8 @@ User input and interpreted evaluation requirements.
 | **Agent Name**        | [Agent name]                                                |
 | **Purpose**           | [Primary purpose and use case in 1-2 sentences]             |
 | **Core Capabilities** | [Key functionalities the agent provides]                    |
-| **Input:**            | [Short description, Data types, schemas]                    |
-| **Output:**           | [Short description, Response types, schemas]                |
+| **Input**             | [Short description, Data types, schemas]                    |
+| **Output**            | [Short description, Response types, schemas]                |
 | **Agent Framework**   | [e.g., CrewAI, LangGraph, AutoGen, Custom/None]             |
 | **Technology Stack**  | [Programming language, frameworks, libraries, dependencies] |
 
@@ -67,7 +67,7 @@ User input and interpreted evaluation requirements.
 
 ---
 
-## 4. Test Case Design
+## 4. Test Data Generation
 
 - Total number of test cases: [Count; default to 2-3 test cases total when no specific user requirement is provided]
 - **[Test Scenario 1]:** [Description and purpose, complexity]
@@ -85,17 +85,17 @@ The code structure below will be adjusted based on your evaluation requirements 
 
 ```Recommended evaluation code structure.
 ./                           # Repository root directory
-├── requirements.txt         # Consolidated dependencies (created by /evalkit.trace, updated by /evalkit.code)
+├── requirements.txt         # Consolidated dependencies 
 ├── .venv/                   # Python virtual environment (created by uv)
 │
 └── eval/                    # Evaluation workspace
     ├── README.md            # Running instructions and usage examples (always present)
     ├── metrics.py           # Core evaluation metrics implementation (always present)
-    ├── agent_runner.py      # Runs agent against test scenarios, agent execution logic (if needed)
+    ├── agent_runner.py      # Runs agent against test cases, agent execution logic (if needed)
     ├── run_evaluation.py    # Main evaluation orchestration script (always present)
     ├── results/             # Evaluation outputs (always present)
     ├── eval-plan.md         # This evaluation specification and plan (always present)
-    ├── test-scenarios.jsonl  # Generated test scenarios (from /evalkit.data)
+    ├── test-cases.jsonl     # Generated test cases (from /evalkit.data)
     │
     └── traces/              # Processed trace files for evaluation
         └── <traceId>.json   # Individual processed trace files (from trace-processor.py)
