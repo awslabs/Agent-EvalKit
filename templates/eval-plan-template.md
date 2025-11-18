@@ -1,41 +1,30 @@
-# Agent Evaluation Plan: [AGENT NAME]
-
-**Branch:** `[###-eval-pipeline]` | **Date:** `[DATE]`
-
-## User Evaluation Requirements
-- **User Input:** `"$ARGUMENTS"`
-- **Parsed Evaluation Requirements:** [Parsed from user input - highest priority, or "Not found"]
-
-
-## Available Assets
-
-| **Asset Type** | **Path** |
-|:--------------|:------|
-| **Agent Code** | [Path to agent code/repository, or "Not found"] |
-| **Test Cases** | [Path to existing test cases, or "Not found"] |
-| **Traces** | [Path to existing traces, or "Not found"] |
-
+# Evaluation Plan for [AGENT NAME]
 
 ## Agent Architecture & Capabilities
+
 <!--
   IMPORTANT: Analyze the agent's architecture, capabilities, and workflow to understand what needs evaluation.
 -->
+
 ### Agent Description
+
 [Brief description of what the agent is designed to do, and how the agent typically processes requests and generates responses - 2-3 sentences]
 
-| **Attribute** | **Details** |
-|:-----------------|:---------------|
-| **Agent Type** | [e.g., Conversational, RAG, Tool-using, Code generation] |
-| **Input/Output** | [Describe data types and interaction patterns] |
-| **Key Functions** | [List primary capabilities and decision points] |
-| **Available Tools** | [If applicable, list tools the agent can use] |
-| **Tracing Status** | [Fully/Partially/Not Instrumented - tracing libraries found] |
-| **Technology Stack** | [Languages, frameworks, dependencies] |
+| **Attribute**        | **Details**                                                  |
+| :------------------- | :----------------------------------------------------------- |
+| **Agent Type**       | [e.g., Conversational, RAG, Tool-using, Code generation]     |
+| **Input/Output**     | [Describe data types and interaction patterns]               |
+| **Key Functions**    | [List primary capabilities and decision points]              |
+| **Available Tools**  | [If applicable, list tools the agent can use]                |
+| **Tracing Status**   | [Fully/Partially/Not Instrumented - tracing libraries found] |
+| **Technology Stack** | [Languages, frameworks, dependencies]                        |
 
 ### Agent Workflow
+
 <!--
   ACTION REQUIRED: Replace the generic workflow below with the agent's specific flow, showing key decision points, tool usage, and data transformations.
 -->
+
 ```mermaid
 flowchart TD
     A[User Input] --> B[Agent Processing]
@@ -43,15 +32,15 @@ flowchart TD
     C --> D[Tool Usage/Action]
     D --> E[Response Generation]
     E --> F[User Output]
-    
+
     %% Add specific nodes for the agent:
     %% Example: C --> G[RAG Retrieval]
     %% Example: C --> H[Code Generation]
     %% Example: G --> I[Context Processing]
 ```
 
-
 ## Evaluation Areas
+
 <!--
   IMPORTANT: Focus on user evaluation requests. Do not over-complicate.
   - Prioritize what the user specifically asked for in their evaluation requests
@@ -69,35 +58,39 @@ flowchart TD
 - **Independent Test**: [Describe how this can be evaluated independently - e.g., "Can be fully tested by [specific scenarios] and delivers [specific insights]"]
 
 #### Metrics
+
 <!--
   IMPORTANT: Keep metrics minimal - 1-2 focused metrics maximum.
   Do not propose many metrics. Focus on what directly measures the evaluation area's core value.
 -->
-| **Metric Name** | **Measurement/Description** | **Method** |
-|:----------------|:---------------------------|:-----------|
-| [metric name] | [specific measurement/description] | [LLM-as-Judge or Code-based] |
 
+| **Metric Name** | **Measurement/Description**        | **Method**                   |
+| :-------------- | :--------------------------------- | :--------------------------- |
+| [metric name]   | [specific measurement/description] | [LLM-as-Judge or Code-based] |
 
 ## Test Data Generation
+
 <!--
   ACTION REQUIRED: Fill out test scenarios and generation requirements if evaluation requires test case generation, or remove this entire "Test Data Generation" section if existing test cases or traces are available.
 -->
 
 ### Test Scenarios
+
 <!--
   IMPORTANT: Keep scenarios minimal and focused.
   Do not propose many scenarios. Focus on what directly measures the evaluation area's core value.
 -->
+
 - **[Scenario Type 1]**: [What it tests, key characteristics without implementation details]
 
 ### Generation Requirements
 
 - **Evaluation Area Coverage**: [Evaluation areas that need test cases - reference evaluation areas above]
 - **Test Case Format**: [JSONL with standardized schema (default)]
-- **Expected Volume**: [Number of test cases needed - typically start with less than 5]
-
+- **Expected Volume**: [Number of test cases needed - typically 2 or 3 test scenarios in default]
 
 ## Implementation Plan
+
 <!--
   IMPORTANT: This section outlines the commands, architecture, and file structure to implement the evaluation system.
   Focus on practical implementation decisions and clear execution steps.
@@ -106,18 +99,22 @@ flowchart TD
 ### Required Commands
 
 Based on evaluation requests, agent instrumentation status, and available assets, the required commands are:
+
 <!--
   ACTION REQUIRED: Mark selected commands with [x]
 -->
+
 - [ ] `/evalkit.data` - Generate test cases
 - [ ] `/evalkit.trace` - Instrument agent
 - [ ] `/evalkit.code` - Build the core trace-based evaluation pipeline
 - [ ] `/evalkit.report` - Generate evaluation analysis and actionable improvement recommendations (optional after evaluation execution)
 
 ### Recommended File Structure
+
 <!--
   ACTION REQUIRED: Adjust file structure based on selected commands and evaluation requirements
 -->
+
 ```
 ./                           # Repository root directory
 ├── requirements.txt         # Consolidated dependencies (created by /evalkit.trace, updated by /evalkit.code)
@@ -138,18 +135,17 @@ Based on evaluation requests, agent instrumentation status, and available assets
 
 ### Recommended Technical Stack
 
-| **Component** | **Selection** |
-|:--------------|:--------------|
-| **Language/Version** | [e.g., Python 3.11, Node.js 18+] |
-| **Tracing Libraries** | [e.g., Traceloop (default), OpenTelemetry] |
-| **OTEL Infrastructure** | [Local collector with file export (default)] |
-| **Evaluation Libraries** | [e.g., DeepEval (default), RAGAS, Custom] |
-| **LLM Service** | [LiteLLM (default)] |
-| **LLM Provider** | [Bedrock (default)] |
-| **LLM Model** | [us.anthropic.claude-sonnet-4-20250514-v1:0 (default)] |
-| **Agent Integration** | [e.g., Direct import, API] |
-| **Results Storage** | [e.g., JSON files (default)] |
-
+| **Component**            | **Selection**                                          |
+| :----------------------- | :----------------------------------------------------- |
+| **Language/Version**     | [e.g., Python 3.11, Node.js 18+]                       |
+| **Tracing Libraries**    | [e.g., Traceloop (default), OpenTelemetry]             |
+| **OTEL Infrastructure**  | [Local collector with file export (default)]           |
+| **Evaluation Libraries** | [e.g., DeepEval (default), RAGAS, Custom]              |
+| **LLM Service**          | [LiteLLM (default)]                                    |
+| **LLM Provider**         | [Bedrock (default)]                                    |
+| **LLM Model**            | [us.anthropic.claude-sonnet-4-20250514-v1:0 (default)] |
+| **Agent Integration**    | [e.g., Direct import, API]                             |
+| **Results Storage**      | [e.g., JSON files (default)]                           |
 
 ## Evaluation Planning Iteration Guide
 
@@ -165,9 +161,29 @@ You can manually edit this `eval-plan.md` file to add/remove/modify specific con
 
 **Note**: Running `/evalkit.plan` again will create a new evaluation branch and automatically remove the current `eval/` directory to start fresh. This allows you to iterate on your evaluation plan with different approaches while preserving your work in separate branches.
 
-
 ## Appendix
 
 ### User Input Tracker
+
 - `/evalkit.plan`: [User input from $ARGUMENTS, or "Not found"]
 
+---
+
+**Branch:** `[###-eval-pipeline]` | **Date:** `[DATE]`
+
+---
+
+## User Evaluation Requirement
+
+- **User Input:** `"$ARGUMENTS"`
+- **Parsed Evaluation Requirements:** [Parsed from user input - highest priority, or "Not found"]
+
+---
+
+## Available Assets
+
+| **Asset Type** | **Path**                                        |
+| :------------- | :---------------------------------------------- |
+| **Agent Code** | [Path to agent code/repository, or "Not found"] |
+| **Test Cases** | [Path to existing test cases, or "Not found"]   |
+| **Traces**     | [Path to existing traces, or "Not found"]       |
