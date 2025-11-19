@@ -44,59 +44,58 @@
 
 ### 1. Install EvalKit
 
-Choose your preferred installation method:
-
-#### Option 1: Persistent Installation (Recommended)
-
 Install once and use everywhere:
 
 ```bash
-uv tool install evalkit-cli --from git+https://github.com/awslabs/Agent-EvalKit.git
+uv tool install evalkit --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
-Then use the tool directly:
+To upgrade evalkit later:
 
 ```bash
-evalkit init <PROJECT_NAME>
-evalkit check
-cd <PROJECT_NAME>
+uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
-(Optional) To upgrade evalkit run:
+To uninstall evalkit:
 
 ```bash
-uv tool install evalkit-cli --force --from git+https://github.com/awslabs/Agent-EvalKit.git
+uv tool uninstall evalkit
 ```
 
-#### Option 2: One-time Usage
+### 2. Best Practices: Before You Start
 
-Run directly without installing:
-
-```bash
-uvx --from git+https://github.com/awslabs/Agent-EvalKit.git evalkit init <PROJECT_NAME>
-cd <PROJECT_NAME>
-```
-
-**Benefits of persistent installation:**
-
-- Tool stays installed and available in PATH
-- No need to create shell aliases
-- Better tool management with `uv tool list`, `uv tool upgrade`, `uv tool uninstall`
-- Cleaner shell configuration
-
-#### Important: Agent Requirements
+#### 2.1 Ensure Agent Readiness
 
 **EvalKit requires your agent to be fully runnable with all dependencies and API keys available locally.** Our evaluation framework expects real agent behavior without mocking any components, as intermediate steps may require the agent to generate artifacts for following evaluation phases (such as generating execution traces).
 
 **Before starting the evaluation workflow, ensure:**
 - Your agent runs successfully in your local environment
-- All required dependencies are installed and configured
-- API keys and credentials are properly set up
-- The agent can execute its intended functionality without errors
+- All required dependencies are documented (e.g., in a `requirements.txt`)
+- API keys and credentials are properly set up (e.g., `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
 
-This requirement is essential because EvalKit's trace-based evaluation approach captures actual agent execution patterns and behaviors for comprehensive analysis.
+#### 2.2 Set Up Dedicated Evaluation Project
 
-### 2. Design evaluation strategy
+**Create a dedicated evaluation project to keep your agent code separate from evaluation artifacts.**
+
+```bash
+# Create and initialize a new evaluation project
+evalkit init my-agent-evaluation
+cd my-agent-evaluation
+
+# Copy your agent folder into the evaluation project
+cp -r /path/to/your/agent-folder .
+# This ensures the evaluation project can easily access your agent code
+```
+
+#### Why These Practices Matter
+
+These requirements are essential because EvalKit's trace-based evaluation approach captures actual agent execution patterns and behaviors for comprehensive analysis. The dedicated project structure:
+
+- Protects your original agent code by working with a copy that's safe to modify
+- Makes it easier to manage evaluation-specific dependencies and configurations
+- Ensures reliable path resolution and artifact management throughout the evaluation process
+
+### 3. Design evaluation strategy
 
 Use the **`/evalkit.plan`** command to analyze your agent and design a comprehensive evaluation strategy with trace-based evaluation architecture. **User input is required** to specify your evaluation goals.
 
@@ -104,7 +103,7 @@ Use the **`/evalkit.plan`** command to analyze your agent and design a comprehen
 /evalkit.plan Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
 ```
 
-### 3. Generate test cases (if needed)
+### 4. Generate test cases (if needed)
 
 Use **`/evalkit.data`** to generate comprehensive test cases for your evaluation scenarios. **User input is optional** - the command will use design specifications if no input provided.
 
@@ -117,7 +116,7 @@ Or simply:
 /evalkit.data
 ```
 
-### 4. Set up tracing instrumentation (if needed)
+### 5. Set up tracing instrumentation (if needed)
 
 Use **`/evalkit.trace`** to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional** - the command will use design specifications if no input provided.
 
@@ -130,7 +129,7 @@ Or simply:
 /evalkit.trace
 ```
 
-### 5. Implement evaluation pipeline
+### 6. Implement evaluation pipeline
 
 Use **`/evalkit.code`** to build your trace-based evaluation pipeline with normalized trace processing. **User input is optional** - the command will follow the established design and prerequisites.
 
@@ -138,7 +137,7 @@ Use **`/evalkit.code`** to build your trace-based evaluation pipeline with norma
 /evalkit.code
 ```
 
-### 6. Analyze results and get actionable recommendations (if needed)
+### 7. Analyze results and get actionable recommendations (if needed)
 
 Use **`/evalkit.report`** to analyze evaluation results and get actionable improvement recommendations. **User input is optional** - the command will analyze available results.
 
