@@ -2,8 +2,9 @@
 
 ## 1. Evaluation Requirements
 
-User input and interpreted evaluation requirements.
-<Defaults to 1-2 key metrics if unspecified.>
+<!-- 
+User input and interpreted evaluation requirements. Defaults to 1-2 key metrics if unspecified. 
+-->
 
 - **User Input:** `"$ARGUMENTS"` or "No Input"
 - **Interpreted Evaluation Requirements:** [Parsed from user input - highest priority]
@@ -53,7 +54,9 @@ User input and interpreted evaluation requirements.
 
 ## 3. Evaluation Metrics
 
-<Instruction: If no specific user requirements are provided, use a minimal number of metrics (1-2 metrics) focusing on the most critical aspects of agent performance.>
+<!-- 
+Instruction: If no specific user requirements are provided, use a minimal number of metrics (1-2 metrics) focusing on the most critical aspects of agent performance. 
+-->
 
 ### [Metric Name 1]
 
@@ -91,13 +94,13 @@ The code structure below will be adjusted based on your evaluation requirements 
 └── eval/                    # Evaluation workspace
     ├── README.md            # Running instructions and usage examples (always present)
     ├── metrics.py           # Core evaluation metrics implementation (always present)
-    ├── agent_runner.py      # Runs agent against test cases, agent execution logic (if needed)
+    ├── agent_runner.py      # Runs agent against test cases, agent execution logic (always present)
     ├── run_evaluation.py    # Main evaluation orchestration script (always present)
     ├── results/             # Evaluation outputs (always present)
     ├── eval-plan.md         # This evaluation specification and plan (always present)
     ├── test-cases.jsonl     # Generated test cases (from /evalkit.data)
     │
-    └── traces/              # Processed trace files for evaluation
+    └── traces/              # Processed trace files for evaluation (always present)
         └── <traceId>.json   # Individual processed trace files (from trace-processor.py)
 ```
 
