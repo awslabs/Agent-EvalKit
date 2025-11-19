@@ -1,22 +1,13 @@
-# Agent Evaluation Report: [AGENT NAME]
-
-**Branch:** `[###-eval-pipeline]` | **Date:** `[DATE]`
+# Agent Evaluation Report for [AGENT NAME]
 
 ## Executive Summary
 
-- **Overall Performance**: [Key evaluation metrics summary]
-- **Critical Issues**: [Top issues requiring immediate attention]
-- **Key Strengths**: [What works well in the agent]
+- **Test Scale**: [N] test cases
+- **Success Rate**: [XX.X%]
 - **Status**: [Production Ready / Needs Improvement / Not Ready]
 
-### Evaluation Overview
-- **Test Scale**: [N] test cases
-- **Evaluation Framework**: [DeepEval/RAGAS/Custom]
-- **Success Rate**: [XX.X%]
 
 ## Evaluation Results
-
-### Core Quality Metrics
 
 | **Metric** | **Score** | **Target** | **Status** |
 |------------|-----------|------------|------------|
@@ -24,70 +15,83 @@
 | [Metric Name] | [X.X/5] | [4.0+] | [Pass/Fail] |
 | [Metric Name] | [XX.X%] | [95%+] | [Pass/Fail] |
 
-### Key Patterns
+### Results Summary
 
-- **Success Patterns**: [What scenarios work well]
-- **Failure Patterns**: [Common error types and frequency]
-- **Quality Trends**: [Patterns in evaluation scores and response quality]
+[Brief description of overall performance and findings across metrics]
+
+
+## Success Analysis
+
+### Strengths to Preserve
+- **Strength**: [What the agent does exceptionally well]
+- **Evidence**: [Specific metrics and examples]
+- **Contributing Factors**: [Why this works well]
+
+### High-Performing Scenarios
+- **Scenario Type**: [Category of tasks where agent excels]
+- **Key Characteristics**: [What makes these scenarios successful]
+
 
 ## Failure Analysis
 
 ### Primary Issues
 - **Issue**: [Clear problem statement with evaluation metrics]
+- **Root Cause**: [Technical analysis of why this occurred — path/to/file.py:START-END]
 - **Evidence**: [Specific data points from results]
 - **Impact**: [Effect on overall performance]
 
-### Root Causes
-- **Root Cause 1**: [Why certain metrics underperform]
-- **Root Cause 2**: [Specific areas for enhancement]
-- **Root Cause 3**: [Quality trends and patterns]
+### Secondary Issues
+- **Issue**: [Additional problem statement]
+- **Root Cause**: [Technical analysis — path/to/file.py:START-END]
+- **Evidence**: [Supporting data]
+- **Impact**: [Performance effect]
 
-### Diagnostic Evidence
-- [Specific examples from test cases]
-- [Error patterns and frequencies]
-- [Performance data points]
 
 ## Improvement Recommendations
 
+*Strategic guidance and high-level approaches to address identified issues*
+
 ### Critical Issues (Immediate attention required)
-- **Issue**: [Problem description]
-  - **Evidence**: [Specific data points]
-  - **Recommended Actions**: [Specific improvement suggestions]
+- **For Issue**: [Reference to specific issue from Failure Analysis]
+  - **Strategic Approach**: [High-level improvement strategy]
   - **Expected Impact**: [Predicted improvements in evaluation scores]
 
 ### Quality Improvements (Medium-term enhancements)
-- **Issue**: [Problem description]
-  - **Evidence**: [Specific data points]
-  - **Recommended Actions**: [Specific improvement suggestions]
+- **For Issue**: [Reference to specific issue from Failure Analysis]
+  - **Strategic Approach**: [High-level improvement strategy]
   - **Expected Impact**: [Predicted improvements in evaluation scores]
 
 ### Enhancement Opportunities (Future improvements)
-- **Issue**: [Problem description]
-  - **Evidence**: [Specific data points]
-  - **Recommended Actions**: [Specific improvement suggestions]
+- **For Issue**: [Reference to specific issue from Failure Analysis or general improvement]
+  - **Strategic Approach**: [High-level improvement strategy]
   - **Expected Impact**: [Predicted improvements in evaluation scores]
+
 
 ## Action Items
 
+*Specific, implementable tasks with clear steps*
+
 ### Priority 1 (Critical)
-- [ ] [Action item with specific implementation steps]
-- [ ] [Action item with specific implementation steps]
+- [ ] [Specific task with implementation steps]
+- [ ] [Specific task with implementation steps]
 
 ### Priority 2 (Important)
-- [ ] [Action item with specific implementation steps]
-- [ ] [Action item with specific implementation steps]
+- [ ] [Specific task with implementation steps]
+- [ ] [Specific task with implementation steps]
 
 ### Priority 3 (Enhancement)
-- [ ] [Action item with specific implementation steps]
-- [ ] [Action item with specific implementation steps]
+- [ ] [Specific task with implementation steps]
+- [ ] [Specific task with implementation steps]
+
 
 ## Artifacts & Reproduction
 
-### Files
+### Reference Materials
+- **Agent Code**: [path to agent implementation]
 - **Test Cases**: [path to test cases]
 - **Traces**: [path to traces]
 - **Results**: [path to results files]
-
+- **Evaluation Code**: [path to evaluation implementation]
 
 ### Reproduction
 ```bash
@@ -101,7 +105,13 @@ python run_evaluation.py
 cat results/[results_file]
 ```
 
-### Limitations
-- [Evaluation scope limitations]
-- [Environment considerations]
-- [Data coverage gaps]
+## Evaluation Limitations
+
+### Scope Limitations
+- **Test Coverage**: [Evaluation scope limitations]
+
+### Data Limitations
+- **Coverage Gaps**: [Data coverage gaps]
+
+### Implementation Limitations
+- **Evaluation Code**: [Limitations of evaluation implementation and metrics]
