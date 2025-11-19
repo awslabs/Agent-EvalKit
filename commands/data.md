@@ -1,7 +1,7 @@
 ---
 description: Generate test cases for evaluation
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-section
+  sh: scripts/bash/check-prerequisites.sh --json --require-plan
 ---
 
 ## User Input
@@ -39,12 +39,12 @@ Given that context, do this:
 2. Run the script `{SCRIPT}` and parse its JSON output for BRANCH_NAME and PLAN_FILE. All file paths must be absolute.
    **IMPORTANT** You must only ever run this script once. The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for. If any error occurs, stop the process immediately and provide solving instructions for users.
 
-3. Load the current evaluation plan (`eval/eval-plan.md`) to understand evaluation areas and test data generation requirements.
+3. Load the current evaluation plan (`eval/eval-plan.md`) to understand evaluation areas and test data requirements.
 
 4. Follow this execution flow:
 
     1. Parse user context from user input (if provided)
-    2. Validate that the evaluation plan contains a "Test Data Generation" section; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
+    2. Validate that the evaluation plan contains test data requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
        - `/evalkit.data`: [User input from $ARGUMENTS, or "Not found"]
     3. Generate proper test cases covering all scenarios and meeting all requirements
     4. Structure test cases in JSONL format

@@ -12,7 +12,6 @@
 #   --require-plan          Require eval-plan.md to exist
 #   --require-tracing       Require tracing setup to be complete
 #   --require-test-data-file Require test data file to be available
-#   --require-test-data-section Require test data generation section in plan
 #   --require-processed-traces Require processed traces directory to exist and not be empty
 #   --require-results       Require results directory to exist and not be empty
 #   --include-plan          Include eval-plan.md in AVAILABLE_DOCS list
@@ -30,7 +29,6 @@ set -e
 JSON_MODE=false
 REQUIRE_PLAN=false
 REQUIRE_TEST_DATA_FILE=false
-REQUIRE_TEST_DATA_SECTION=false
 REQUIRE_TRACING=false
 REQUIRE_PROCESSED_TRACES=false
 REQUIRE_RESULTS=false
@@ -47,9 +45,6 @@ for arg in "$@"; do
             ;;
         --require-test-data-file)
             REQUIRE_TEST_DATA_FILE=true
-            ;;
-        --require-test-data-section)
-            REQUIRE_TEST_DATA_SECTION=true
             ;;
         --require-tracing)
             REQUIRE_TRACING=true
@@ -76,7 +71,6 @@ OPTIONS:
   --json              Output in JSON format
   --require-plan      Require eval-plan.md to exist
   --require-test-data-file Require test data file to be available
-  --require-test-data-section Require test data generation section in plan
   --require-processed-traces Require processed traces directory to exist and not be empty
   --require-results   Require results directory to exist and not be empty
   --include-plan      Include eval-plan.md in AVAILABLE_DOCS list
@@ -159,29 +153,6 @@ if $REQUIRE_TEST_DATA_FILE; then
     fi
 fi
 
-# Check for test data generation section in plan if required (for data generation phase)
-if $REQUIRE_TEST_DATA_SECTION; then
-    if [[ ! -f "$EVALUATION_DIR/eval-plan.md" ]]; then
-        echo "ERROR: eval-plan.md not found in $EVALUATION_DIR" >&2
-        echo "Run /evalkit.plan first to create the evaluation plan." >&2
-        exit 1
-    fi
-    
-    # Check if plan contains "## Test Data Generation" section
-    if ! grep -q "## Test Data Generation" "$EVALUATION_DIR/eval-plan.md" 2>/dev/null; then
-        echo "ERROR: eval-plan.md missing 'Test Data Generation' section" >&2
-        echo "Update eval-plan.md to include test data generation specifications, or run /evalkit.plan again." >&2
-        exit 1
-    fi
-    
-    # Check if test data generation section has content (not just placeholders)
-    test_data_content=$(sed -n '/## Test Data Generation/,/##\|^$/p' "$EVALUATION_DIR/eval-plan.md" | grep -v "^#" | grep -v "^<!--" | grep -v "^$" | wc -l)
-    if [[ $test_data_content -lt 5 ]]; then
-        echo "ERROR: 'Test Data Generation' section appears to be empty or contains only placeholders" >&2
-        echo "Please fill out the test scenarios and generation requirements in eval-plan.md before running /evalkit.data." >&2
-        exit 1
-    fi
-fi
 
 # Check for tracing setup if required (for implementation phase)
 if $REQUIRE_TRACING; then
