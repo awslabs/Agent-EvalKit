@@ -12,6 +12,13 @@ dependencies = [
     "truststore>=0.10.4",
 ]
 
+[project.optional-dependencies]
+generator = [
+    "strands-agents>=0.1.0",
+    "strands-agents-tools>=0.1.0",
+    "pydantic>=2.0.0",
+]
+
 [project.scripts]
 evalkit = "evalkit_cli:main"
 
