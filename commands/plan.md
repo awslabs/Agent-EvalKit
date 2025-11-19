@@ -63,7 +63,7 @@ Given that user evaluation requests or agent description, do this:
 
 5. Write the complete evaluation plan to PLAN_FILE (eval-plan.md) using the template structure, replacing placeholders with concrete details derived from the analysis while preserving section order and headings.
 
-6. Report completion with branch name, evaluation plan file path, and readiness for following data generation (`/evalkit.data` if needed), trace setup and collection `/evalkit.trace`, and core evaluation implementation (`/evalkit.code`).
+6. Report completion with branch name, evaluation plan file path, and readiness for following data generation (`/evalkit.data`), trace setup `/evalkit.trace`, agent execution and trace collection (`/evalkit.run_agent`), and core evaluation code implementation (`/evalkit.eval`).
 
 
 ## General Guidelines
@@ -105,7 +105,6 @@ Evaluation metrics must be:
 
 **Key Principles**:
 - **Simple Structure**: Use the flat `eval/` directory structure
-- **Configuration-Driven**: Externalize parameters in `eval/config.yaml`
 - **Real Agent Focus**: Always use actual agent execution, never simulation or mock
 - **Focused Implementation**: Avoid over-engineering, focus on core evaluation logic
 - **Minimal Viable Implementation**: Start with essential components, add complexity incrementally

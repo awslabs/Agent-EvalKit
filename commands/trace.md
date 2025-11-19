@@ -44,10 +44,10 @@ Given that context, do this:
 4. Follow this execution flow:
 
     1. Parse user context from user input (if provided)
-    2. Review the evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
-       - `/evalkit.trace`: [User input from $ARGUMENTS, or "Not found"]
+    2. Review the evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to User Requirements Log in eval-plan.md
     3. Analyze agent code for supported frameworks and existing instrumentation
     4. Add minimal tracing instrumentation to the original agent code (if needed)
+    5. Update Evaluation Progress section in eval-plan.md with completion status
 
 5. Report completion with tracing status, instrumentation details, and readiness for agent execution (`/evalkit.run_agent`).
 

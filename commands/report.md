@@ -45,14 +45,14 @@ Given that context, do this:
 
 5. Follow this execution flow:
 
-    1. Parse user context from user input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
-       - `/evalkit.report`: [User input from $ARGUMENTS, or "Not found"]
+    1. Parse user context from user input (if provided); add entry to User Requirements Log in eval-plan.md
     2. Load and validate evaluation results data
     3. Perform comprehensive results analysis
     4. Identify patterns, strengths, and weaknesses
     5. Generate actionable improvement recommendations
     6. Create detailed advisory report with evidence
     7. Provide prioritized action items for agent enhancement
+    8. Update Evaluation Progress section in eval-plan.md with completion status
 
 6. **Results Analysis Process**:
 
@@ -99,25 +99,7 @@ Given that context, do this:
    - Evaluation results analysis
    - Prioritized improvement recommendations with evidence
 
-9. **Report Structure**:
-   ```markdown
-   # Agent Evaluation Report
-   
-   ## Executive Summary
-   - Overall Performance: [Key evaluation metrics]
-   - Critical Issues: [Top issues requiring attention]
-   - Key Strengths: [What works well]
-   
-   ## Evaluation Results
-   - Success Rate: [X%]
-   - Quality Scores: [Metric breakdown]
-   - Key Patterns: [Notable findings]
-   
-   ## Improvement Recommendations
-   [Prioritized list with evidence and expected impact]
-   ```
-
-10. Report completion with actionable insights and recommendations.
+9. Report completion with actionable insights and recommendations.
 
 ## General Guidelines
 

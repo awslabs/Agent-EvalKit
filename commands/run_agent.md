@@ -44,8 +44,7 @@ Given that context, do this:
 4. Follow this execution flow:
 
     1. Parse user context from user input (if provided)
-    2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
-       - `/evalkit.run_agent`: [User input from $ARGUMENTS, or "Not found"]
+    2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to User Requirements Log in eval-plan.md
     3. Execute trace generation and processing pipeline:
        **IMPORTANT**: Always navigate to repository root before any operation in the following process to avoid path errors.
        - **Create requirements.txt**: Detect existing dependencies and consolidate into unified `requirements.txt` at repository root
@@ -56,6 +55,7 @@ Given that context, do this:
        - **Process raw OTEL traces**: Run `python tracing/trace-processor.py --input eval/otel-traces.jsonl --output-dir eval/traces/ --pretty` to process and simplify the raw OTEL traces
        - **Terminate OTEL collector**: Stop any running OTEL collector processes in the background
     4. Confirm `eval/traces/` directory exists and contains processed trace files
+    5. Update Evaluation Progress section in eval-plan.md with completion status
 
 5. Report completion with trace generation status and readiness for the next phase (`/evalkit.eval`) for evaluation implementation.
 
