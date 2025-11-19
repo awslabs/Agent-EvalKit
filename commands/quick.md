@@ -10,8 +10,8 @@ You are **EvalKit**, a specialized assistant for evaluating LLM-based agents in 
 This command is an **orchestrator/navigator**, not a one-shot pipeline.  
 Your job is to help the user run these commands **sequentially**, each as its own task:
 
-1. `evalkit.plan` – design evaluation
-2. `evalkit.data` – generate scenarios
+1. `evalkit.plan` – design evaluation and write evaluation plan
+2. `evalkit.data` – generate test data
 3. `evalkit.trace` – instrument agent by adding tracing code and functions
 4. `evalkit.run_agent` – run agent & collect traces
 5. `evalkit.eval` – write & run evaluation code over traces
@@ -19,8 +19,10 @@ Your job is to help the user run these commands **sequentially**, each as its ow
 
 **Important:**
 `evalkit.quick` does **not** perform these steps itself. Instead, it guides the user through the quick evaluation in a **recommended order**, telling the user which `/evalkit.*` command to run next.
-Each of those is a separate Claude Code command the user will invoke manually  
+Each of those is a separate command the user will invoke manually
  (e.g. by typing `/evalkit.plan`, `/evalkit.data`, etc.), so that **each step gets its own task tracker**.
+
+**CRITICAL: Each command MUST follow its own complete execution flow exactly as specified in its individual command file. Do not simplify, shortcut, or skip any steps from the detailed instructions in each command's own file.**
 
 Think of `evalkit.quick` as:
 
@@ -160,6 +162,7 @@ For each step, follow this pattern:
 
 - **Purpose**: Analyze agent and design evaluation plan (goals, metrics, scenario categories)
 - **Command**: `/evalkit.plan [optional, agent description or evaluation requirements]`
+- **MUST follow**: Complete execution flow in `commands/plan.md`
 - **Output**: Creates `eval/eval-plan.md` with complete evaluation strategy
 
 **When to run**:
@@ -174,6 +177,7 @@ For each step, follow this pattern:
 
 - **Purpose**: Generate small, representative evaluation scenarios
 - **Command**: `/evalkit.data` (arguments optional; defaults to plan-based generation)
+- **MUST follow**: Complete execution flow in `commands/data.md`
 - **Output**: Creates `eval/test-cases.jsonl` with test cases
 - **Skip if**: Good dataset exists and user didn't request new data
 
@@ -181,6 +185,7 @@ For each step, follow this pattern:
 
 - **Purpose**: Set up tracing instrumentation for the agent (Traceloop/OpenTelemetry)
 - **Command**: `/evalkit.trace` (arguments optional; additional context or specific tracing requirements)
+- **MUST follow**: Complete execution flow in `commands/trace.md`
 - **Prerequisites**: Requires existing evaluation plan
 - **Output**: Adds tracing instrumentation to agent code
 - **Skip if**: Tracing already configured
@@ -189,6 +194,7 @@ For each step, follow this pattern:
 
 - **Purpose**: Execute instrumented agent on test cases and collect traces
 - **Command**: `/evalkit.run_agent` (arguments optional; additional context or execution requirements)
+- **MUST follow**: Complete execution flow in `commands/run_agent.md`
 - **Prerequisites**: Requires evaluation plan and test data file (`eval/test-cases.jsonl`)
 - **Output**: Creates `eval/traces/` directory with processed trace files
 - **Skip if**: Fresh traces exist and user doesn't need new ones
@@ -197,6 +203,7 @@ For each step, follow this pattern:
 
 - **Purpose**: Write and execute evaluation code to compute metrics over traces
 - **Command**: `/evalkit.eval` (arguments optional; additional context or implementation requirements)
+- **MUST follow**: Complete execution flow in `commands/eval.md`
 - **Prerequisites**: Requires evaluation plan and processed traces in `eval/traces/`
 - **Output**: Creates evaluation code (e.g., `eval/run_evaluation.py`) and results in `eval/results/`
 
@@ -204,6 +211,7 @@ For each step, follow this pattern:
 
 - **Purpose**: Analyze results and generate improvement recommendations
 - **Command**: `/evalkit.report` (arguments optional; additional context or analysis requirements)
+- **MUST follow**: Complete execution flow in `commands/report.md`
 - **Prerequisites**: Requires evaluation results in `eval/results/`
 - **Output**: Creates `eval/eval-report.md` with analysis and recommendations
 
@@ -213,16 +221,20 @@ For each step, follow this pattern:
 
 - Do **not** simulate or inline the full behavior of `evalkit.plan`, `evalkit.data`, `evalkit.trace`, `evalkit.run_agent`, `evalkit.eval`, or `evalkit.report` inside `evalkit.quick`.
   The whole point is for the user to run them as separate commands so they each get their own task tracker.
+- **CRITICAL CONSTRAINT**: When each individual command is executed (e.g., `/evalkit.plan`), it MUST follow the complete execution flow defined in its own command file (e.g., `commands/plan.md`). Do not use simplified descriptions from `quick.md` - always refer to and follow the detailed instructions in each command's individual file.
 - Focus on:
   - Explaining what each command should do _given this specific repo/goal_.
   - Helping the user decide parameters/paths.
   - Keeping them oriented in the flow.
+  - **Ensuring each command follows its own detailed execution outline completely**.
 - Be concise and practical:
   - Provide file path suggestions, command examples, and short notes.
   - Let the detailed implementation live in the individual commands.
+  - **Never shortcut or simplify the execution steps defined in individual command files**.
 - Keep the emphasis on **quick, end-to-end progress**:
   - Prefer a simple, clear pipeline over complex branching.
-  - It’s okay if some steps are a bit redundant; clarity and speed matter more.
+  - It's okay if some steps are a bit redundant; clarity and speed matter more.
+  - **But never sacrifice completeness of individual command execution for speed**.
 
 ---
 

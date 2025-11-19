@@ -44,18 +44,18 @@ Given that context, do this:
 4. Follow this execution flow:
 
     1. Parse user context from user input (if provided)
-    2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to Appendix > User Input Tracker in eval-plan.md:
-       - `/evalkit.run_agent`: [User input from $ARGUMENTS, or "Not found"]
+    2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to User Requirements Log in eval-plan.md
     3. Execute trace generation and processing pipeline:
        **IMPORTANT**: Always navigate to repository root before any operation in the following process to avoid path errors.
        - **Create requirements.txt**: Detect existing dependencies and consolidate into unified `requirements.txt` at repository root
        - **Set up environment**: Use `uv` to create virtual environment, activate it, and install `requirements.txt`
        - **Clean up existing OTEL collectors**: Use `pkill -f otelcol-contrib` to terminate any running OTEL collector processes before starting new ones
        - **Set up local OTEL collector**: Run `tracing/setup-otelcol.sh` and `tracing/run-otelcol.sh &` to ensure `eval/otel-traces.jsonl` is created
-       - **Create test executor**: Create a script (e.g., `eval/test_executor.py`) to run instrumented agent on test cases (`eval/test-cases.jsonl`), then execute it (e.g., `python eval/test_executor.py --input eval/test-cases.jsonl`) to ensure it exports raw OTEL traces directly to `eval/otel-traces.jsonl` (do not allow custom output paths)
+       - **Create agent runner**: Create a script (e.g., `eval/agent_runner.py`) to run instrumented agent on test cases (`eval/test-cases.jsonl`), then execute it (e.g., `python eval/agent_runner.py --input eval/test-cases.jsonl`) to ensure it exports raw OTEL traces directly to `eval/otel-traces.jsonl` (do not allow custom output paths)
        - **Process raw OTEL traces**: Run `python tracing/trace-processor.py --input eval/otel-traces.jsonl --output-dir eval/traces/ --pretty` to process and simplify the raw OTEL traces
        - **Terminate OTEL collector**: Stop any running OTEL collector processes in the background
     4. Confirm `eval/traces/` directory exists and contains processed trace files
+    5. Update Evaluation Progress section in eval-plan.md with completion status
 
 5. Report completion with trace generation status and readiness for the next phase (`/evalkit.eval`) for evaluation implementation.
 

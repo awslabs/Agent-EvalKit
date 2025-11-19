@@ -1,107 +1,91 @@
-# Agent Evaluation Report: [AGENT NAME]
-
-**Branch:** `[###-eval-pipeline]` | **Date:** `[DATE]`
+# Agent Evaluation Report for [AGENT NAME]
 
 ## Executive Summary
 
-- **Overall Performance**: [Key evaluation metrics summary]
-- **Critical Issues**: [Top issues requiring immediate attention]
-- **Key Strengths**: [What works well in the agent]
+- **Test Scale**: [N] test cases
+- **Success Rate**: [XX.X%]
 - **Status**: [Production Ready / Needs Improvement / Not Ready]
 
-### Evaluation Overview
-- **Test Scale**: [N] test cases
-- **Evaluation Framework**: [DeepEval/RAGAS/Custom]
-- **Success Rate**: [XX.X%]
+- **Strengths**: <specific capability or metric> <performance highlight> <reliability aspect>
+- **Critical Issues**: <blocking issue + impact> <performance bottleneck> <safety/compliance concern>
+- **Action Priority**: <critical fixes> <improvements> <enhancements>
 
 ## Evaluation Results
 
-### Core Quality Metrics
+- **Test Case Coverage**:
+  <List test scenarios >
 
-| **Metric** | **Score** | **Target** | **Status** |
-|------------|-----------|------------|------------|
-| [Metric Name] | [XX.X%] | [XX%] | [Pass/Fail] |
-| [Metric Name] | [X.X/5] | [4.0+] | [Pass/Fail] |
-| [Metric Name] | [XX.X%] | [95%+] | [Pass/Fail] |
+- **Results**
 
-### Key Patterns
+| **Metric**    | **Score** | **Target** | **Status**  |
+| ------------- | --------- | ---------- | ----------- |
+| [Metric Name] | [XX.X%]   | [XX%]      | [Pass/Fail] |
+| [Metric Name] | [X.X/5]   | [4.0+]     | [Pass/Fail] |
+| [Metric Name] | [XX.X%]   | [95%+]     | [Pass/Fail] |
 
-- **Success Patterns**: [What scenarios work well]
-- **Failure Patterns**: [Common error types and frequency]
-- **Quality Trends**: [Patterns in evaluation scores and response quality]
+### Results Summary
 
-## Failure Analysis
+[Brief description of overall performance and findings across metrics]
 
-### Primary Issues
+## Agent Success Analysis
+
+<Instruction: Please focus on the agent performance analysis>
+
+### Strengths to Preserve
+
+- **Strength**: [What the agent does exceptionally well]
+- **Evidence**: [Specific metrics and examples]
+- **Contributing Factors**: [Why this works well]
+
+### High-Performing Scenarios
+
+- **Scenario Type**: [Category of tasks where agent excels]
+- **Key Characteristics**: [What makes these scenarios successful]
+
+## Agent Failure Analysis
+
+<Instruction: Please focus on the agent failure analysis>
+
+### Issue-1 <Priority-1>
+
 - **Issue**: [Clear problem statement with evaluation metrics]
+- **Root Cause**: [Technical analysis of why this occurred — path/to/file.py:START-END]
 - **Evidence**: [Specific data points from results]
 - **Impact**: [Effect on overall performance]
+- **Priority Fixes**
+  - P1 — <fix name>: <one‑line solution> → expected gain: <metric +X>
+  - P2 — <fix name>: <one‑line solution> → expected gain: <metric>
 
-### Root Causes
-- **Root Cause 1**: [Why certain metrics underperform]
-- **Root Cause 2**: [Specific areas for enhancement]
-- **Root Cause 3**: [Quality trends and patterns]
+<Repeat other issues here>
 
-### Diagnostic Evidence
-- [Specific examples from test cases]
-- [Error patterns and frequencies]
-- [Performance data points]
+## Action Items & Recommendations
 
-## Improvement Recommendations
+<Instruction: Specific, implementable tasks with clear steps>
 
-### Critical Issues (Immediate attention required)
-- **Issue**: [Problem description]
-  - **Evidence**: [Specific data points]
-  - **Recommended Actions**: [Specific improvement suggestions]
-  - **Expected Impact**: [Predicted improvements in evaluation scores]
+### <Item Name> Priority-<number> (Critical|Enhancement)
 
-### Quality Improvements (Medium-term enhancements)
-- **Issue**: [Problem description]
-  - **Evidence**: [Specific data points]
-  - **Recommended Actions**: [Specific improvement suggestions]
-  - **Expected Impact**: [Predicted improvements in evaluation scores]
+- <Description of this item>
+- Actions:
+  - [ ] [Specific task with implementation steps]
+  - [ ] [Specific task with implementation steps]
 
-### Enhancement Opportunities (Future improvements)
-- **Issue**: [Problem description]
-  - **Evidence**: [Specific data points]
-  - **Recommended Actions**: [Specific improvement suggestions]
-  - **Expected Impact**: [Predicted improvements in evaluation scores]
-
-## Action Items
-
-### Priority 1 (Critical)
-- [ ] [Action item with specific implementation steps]
-- [ ] [Action item with specific implementation steps]
-
-### Priority 2 (Important)
-- [ ] [Action item with specific implementation steps]
-- [ ] [Action item with specific implementation steps]
-
-### Priority 3 (Enhancement)
-- [ ] [Action item with specific implementation steps]
-- [ ] [Action item with specific implementation steps]
+<Repeat other items here>
 
 ## Artifacts & Reproduction
 
-### Files
+### Reference Materials
+
+- **Agent Code**: [path to agent implementation]
 - **Test Cases**: [path to test cases]
 - **Traces**: [path to traces]
 - **Results**: [path to results files]
+- **Evaluation Code**: [path to evaluation implementation]
 
+## Evaluation Limitations and Improvement
 
-### Reproduction
-```bash
-# Navigate to evaluation directory
-cd eval/
+<Instruction: Please focus on the evaluation improvement analysis>
 
-# Run evaluation
-python run_evaluation.py
+- **<Test Data Improvement>**: [Evaluation scope limitations and improvement]
+- **<Evaluation Code>**: [Limitations of evaluation implementation and metrics]
 
-# View results
-cat results/[results_file]
-```
-
-### Limitations
-- [Evaluation scope limitations]
-- [Environment considerations]
-- [Data coverage gaps]
+<Repeat for other evaluation improvement areas>

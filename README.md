@@ -4,205 +4,206 @@
 </div>
 
 <p align="center">
-    <strong>A toolkit for developers to quickly build agent evaluation pipelines with flexible evaluation SDK support.</strong>
+    <strong>A toolkit for developers to quickly build trace-based evaluation pipelines with flexible evaluation SDK support.</strong>
 </p>
 
 ---
 
 ## Table of Contents
 
-- [👨‍💻 For Developers](#-for-developers)
 - [⚡ Get started](#-get-started)
+- [📋 What to Expect from EvalKit](#-what-to-expect-from-evalkit)
 - [🤖 Supported AI Assistants](#-supported-ai-assistants)
-- [🔧 EvalKit CLI Reference](#-evalkit-cli-reference)
+- [📚 EvalKit Reference](#-evalkit-reference)
 - [🔧 Prerequisites](#-prerequisites)
+- [👨‍💻 For Developers](#-for-developers)
 - [🙏 Acknowledgements](#-acknowledgements)
-
-## 👨‍💻 For Developers
-
-If you want to contribute to EvalKit or modify templates/scripts, see the [Local Development Guide](./docs/local-development.md) for:
-
-- Authentication setup for private repository access
-- CLI development workflow and testing
-- Template/script modification workflow
-- Release process and best practices
 
 ## ⚡ Get started
 
 ### 0. Authentication Setup (Private Repository Only)
 
-**Note:** This step is only required when EvalKit is hosted in a private repository.
+**Note:** This step is only required when EvalKit is hosted in a private repository. 
 
 #### GitHub Personal Access Token Setup
 
 1. **Create a Personal Access Token:**
-
    - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
    - Click "Generate new token (classic)"
    - Select scopes: `repo` (full control of private repositories)
    - Copy the generated token
 
 2. **Configure Git credentials:**
-
    ```bash
    # Add to your shell profile (~/.zshrc, ~/.bashrc, or ~/.bash_profile)
    export GITHUB_TOKEN="your_personal_access_token_here"
-
+   
    # Reload your shell configuration
    source ~/.zshrc  # or source ~/.bashrc
    ```
 
 ### 1. Install EvalKit
 
-Choose your preferred installation method:
-
-#### Option 1: Persistent Installation (Recommended)
-
 Install once and use everywhere:
 
 ```bash
-uv tool install evalkit-cli --from git+https://github.com/awslabs/Agent-EvalKit.git
+uv tool install evalkit --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
-Then use the tool directly:
+To upgrade evalkit later:
 
 ```bash
-evalkit init <PROJECT_NAME>
-evalkit check
-cd <PROJECT_NAME>
+uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
-(Optional) To upgrade evalkit run:
+To uninstall evalkit:
 
 ```bash
-uv tool install evalkit-cli --force --from git+https://github.com/awslabs/Agent-EvalKit.git
+uv tool uninstall evalkit
 ```
 
-#### Option 2: One-time Usage
+### 2. Best Practices: Before You Start
 
-Run directly without installing:
+#### 2.1 Ensure Agent Readiness
+
+**EvalKit requires your agent to be fully runnable with all dependencies and API keys available locally.** Our evaluation framework expects real agent behavior without mocking any components, as intermediate steps may require the agent to generate artifacts for following evaluation phases (such as generating execution traces).
+
+**Before starting the evaluation workflow, ensure:**
+- Your agent runs successfully in your local environment
+- All required dependencies are documented (e.g., in a `requirements.txt`)
+- API keys and credentials are properly set up (e.g., `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
+
+#### 2.2 Set Up Dedicated Evaluation Project
+
+**Create a dedicated evaluation project to keep your agent code separate from evaluation artifacts.**
 
 ```bash
-uvx --from git+https://github.com/awslabs/Agent-EvalKit.git evalkit init <PROJECT_NAME>
-cd <PROJECT_NAME>
+# Create and initialize a new evaluation project
+evalkit init my-agent-evaluation
+cd my-agent-evaluation
+
+# Copy your agent folder into the evaluation project
+cp -r /path/to/your/agent-folder .
+# This ensures the evaluation project can easily access your agent code
 ```
 
-**Benefits of persistent installation:**
+#### Why These Practices Matter
 
-- Tool stays installed and available in PATH
-- No need to create shell aliases
-- Better tool management with `uv tool list`, `uv tool upgrade`, `uv tool uninstall`
-- Cleaner shell configuration
+These requirements are essential because EvalKit's trace-based evaluation approach captures actual agent execution patterns and behaviors for comprehensive analysis. The dedicated project structure:
 
-### 2. Run evaluation
+- Protects your original agent code by working with a copy that's safe to modify
+- Makes it easier to manage evaluation-specific dependencies and configurations
+- Ensures reliable path resolution and artifact management throughout the evaluation process
 
-#### Quick Start (Recommended for New Users)
+### 3. Build evaluation pipeline
 
-Use **`/evalkit.quick`** for a guided step-by-step evaluation flow:
+Choose your approach based on your experience level:
+
+#### Option A: Guided step-by-step workflow (recommended for first-time users)
+
+Use **`/evalkit.quick`** for an interactive, step-by-step guide through the complete evaluation pipeline:
 
 ```bash
-/evalkit.quick
+/evalkit.quick Evaluate my data analysis agent focusing on goal success
 ```
 
-This command will guide you through the complete evaluation pipeline: plan → data → trace → run_agent → eval → report.
+This will guide you through each step with confirmation prompts and progress tracking.
 
-#### Automatic Evaluation
+#### Option B: Individual commands (for experienced users)
 
-Use **`/evalkit.auto`** to automatically determine and execute needed steps:
-
-```bash
-/evalkit.auto
-```
-
-This command analyzes your current state and runs only the necessary evaluation steps.
-
-#### Manual Step-by-Step (Advanced)
-
-For fine-grained control, run individual commands:
+Run each command individually for more control:
 
 **Step 1: Design evaluation strategy**
-
-Use **`/evalkit.plan`** to analyze your agent and design a comprehensive evaluation strategy. **User input is required** to specify your evaluation goals.
-
 ```bash
-/evalkit.plan Analyze my customer service chatbot agent and design evaluation strategy focusing on response accuracy, latency, and user satisfaction
+/evalkit.plan Analyze my data analysis agent and design evaluation strategy focusing on goal success
 ```
 
-**Step 2: Generate test cases (if needed)**
-
-Use **`/evalkit.data`** to generate comprehensive test cases for your evaluation scenarios. **User input is optional**.
-
+**Step 2: Generate test cases** *(user input optional)*
 ```bash
-/evalkit.data Generate test cases covering customer service scenarios including edge cases
+/evalkit.data Generate test cases covering data analysis scenarios including edge cases
 ```
 
-**Step 3: Set up tracing instrumentation (if needed)**
-
-Use **`/evalkit.trace`** to add tracing instrumentation to your agent for trace-based evaluation. **User input is optional**.
-
+**Step 3: Set up tracing instrumentation** *(user input optional)*
 ```bash
 /evalkit.trace Add Traceloop instrumentation to capture agent execution traces
 ```
 
-**Step 4: Run agent and collect traces**
-
-Use **`/evalkit.run_agent`** to execute your instrumented agent on test cases and collect traces. **User input is optional**.
-
+**Step 4: Run agent and collect traces** *(user input optional)*
 ```bash
 /evalkit.run_agent
 ```
 
-**Step 5: Write and execute evaluation code**
-
-Use **`/evalkit.eval`** to write evaluation code that processes traces and computes metrics, then execute it. **User input is optional**.
-
+**Step 5: Implement evaluation code** *(user input optional)*
 ```bash
 /evalkit.eval
 ```
 
-**Step 6: Analyze results and get recommendations**
-
-Use **`/evalkit.report`** to analyze evaluation results and get actionable improvement recommendations. **User input is optional**.
-
+**Step 6: Analyze results and get recommendations** *(user input optional)*
 ```bash
 /evalkit.report
 ```
 
-For detailed instructions, see our [comprehensive guide](./docs/quickstart.md).
+## 📋 What to Expect from EvalKit
+
+**EvalKit provides a foundational trace-based evaluation pipeline designed for educational purposes and deployment alignment.**
+
+### Output Deliverables
+
+After completing the EvalKit workflow, you will have:
+
+- **Local trace-based evaluation pipeline**: A working evaluation system that processes agent execution traces
+- **Reusable evaluation metrics**: Trace-based metrics that can be directly applied in production deployment monitoring
+- **Basic working implementation**: Functional code that demonstrates trace-based evaluation concepts and patterns
+
+### Deployment Alignment
+
+The evaluation metrics generated by EvalKit are designed to align with deployment phase monitoring:
+- **Trace compatibility**: Metrics take traces as input, matching production trace generation
+- **Monitoring ready**: Same evaluation logic can be used for ongoing agent performance monitoring
+
+### Next Steps for Developers
+
+**EvalKit provides the educational foundation - you should:**
+- **Review generated artifacts**: Examine all code, configurations, and evaluation logic
+- **Customize metrics**: Update and refine evaluation metrics for your specific use case
+- **Finalize implementation**: Enhance the basic working version for production requirements
+- **Integrate with deployment**: Adapt the trace-based approach for your deployment monitoring if needed
+
+EvalKit teaches you how to build trace-based evaluation pipelines with a working baseline that you can extend and customize for your specific agent evaluation needs.
 
 ## 🤖 Supported AI Assistants
 
-| Assistant                                                                            | Support | Notes                   |
-| ------------------------------------------------------------------------------------ | ------- | ----------------------- |
-| [Claude Code](https://www.anthropic.com/claude-code)                                 | ✅      |                         |
-| [Kilo Code](https://kilocode.ai)                                                     | 🔄      | CLI support coming soon |
-| [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) | 🔄      | CLI support coming soon |
+| Assistant                                                     | Support | Notes                                             |
+|---------------------------------------------------------------|---------|---------------------------------------------------|
+| [Claude Code](https://www.anthropic.com/claude-code)         | ✅ |                                                   |
+| [Kilo Code](https://kilocode.ai)                              | 🔄 | Support coming soon                           |
+| [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) | 🔄 | Support coming soon                           |
 
-## 🔧 EvalKit CLI Reference
+## 📚 EvalKit Reference
 
 The `evalkit` command supports the following options:
 
 ### Commands
 
-| Command | Description                                                  |
-| ------- | ------------------------------------------------------------ |
-| `init`  | Initialize a new EvalKit project from the latest template    |
-| `check` | Check for installed tools (`git`, `claude`, `q`, `kilocode`) |
+| Command     | Description                                                    |
+|-------------|----------------------------------------------------------------|
+| `init`      | Initialize a new evaluation project from the latest template      |
+| `check`     | Check for installed tools (`git`, `claude`, `q`, `kilocode`)   |
 
 ### `evalkit init` Arguments & Options
 
-| Argument/Option        | Type     | Description                                                                                        |
-| ---------------------- | -------- | -------------------------------------------------------------------------------------------------- |
+| Argument/Option        | Type     | Description                                                                  |
+|------------------------|----------|------------------------------------------------------------------------------|
 | `<project-name>`       | Argument | Name for your new project directory (optional if using `--here`, or use `.` for current directory) |
-| `--ai`                 | Option   | AI assistant to use: `kilocode`, `claude`, or `q`                                                  |
-| `--script`             | Option   | Script variant to use: `sh` (bash/zsh) or `ps` (PowerShell)                                        |
-| `--ignore-agent-tools` | Flag     | Skip checks for AI agent tools like Claude Code                                                    |
-| `--no-git`             | Flag     | Skip git repository initialization                                                                 |
-| `--here`               | Flag     | Initialize project in the current directory instead of creating a new one                          |
-| `--force`              | Flag     | Force merge/overwrite when initializing in current directory (skip confirmation)                   |
-| `--skip-tls`           | Flag     | Skip SSL/TLS verification (not recommended)                                                        |
-| `--debug`              | Flag     | Enable detailed debug output for troubleshooting                                                   |
-| `--github-token`       | Option   | GitHub token for API requests (or set GH_TOKEN/GITHUB_TOKEN env variable)                          |
+| `--ai`                 | Option   | AI assistant to use: `kilocode`, `claude`, or `q`                           |
+| `--script`             | Option   | Script variant to use: `sh` (bash/zsh) or `ps` (PowerShell)                 |
+| `--ignore-agent-tools` | Flag     | Skip checks for AI agent tools like Claude Code                             |
+| `--no-git`             | Flag     | Skip git repository initialization                                          |
+| `--here`               | Flag     | Initialize project in the current directory instead of creating a new one   |
+| `--force`              | Flag     | Force merge/overwrite when initializing in current directory (skip confirmation) |
+| `--skip-tls`           | Flag     | Skip SSL/TLS verification (not recommended)                                 |
+| `--debug`              | Flag     | Enable detailed debug output for troubleshooting                            |
+| `--github-token`       | Option   | GitHub token for API requests (or set GH_TOKEN/GITHUB_TOKEN env variable)  |
 
 ### Examples
 
@@ -211,7 +212,7 @@ The `evalkit` command supports the following options:
 evalkit init my-agent-evaluation
 
 # Initialize with specific AI assistant
-evalkit init my-evaluation --ai claude
+evalkit init my-agent-evaluation --ai claude
 
 # Initialize in current directory
 evalkit init . --ai claude
@@ -220,11 +221,11 @@ evalkit init --here --ai claude
 
 # Force merge into current (non-empty) directory without confirmation
 evalkit init . --force --ai claude
-# or
+# or 
 evalkit init --here --force --ai claude
 
 # Skip git initialization
-evalkit init my-evaluation --ai claude --no-git
+evalkit init my-agent-evaluation --ai claude --no-git
 
 # Enable debug output for troubleshooting
 evalkit init my-agent-evaluation --ai claude --debug
@@ -244,39 +245,30 @@ After running `evalkit init`, your AI coding assistant will have access to these
 
 Essential commands for the trace-based Agent Evaluation workflow:
 
-| Command              | Description                                                        |
-| -------------------- | ------------------------------------------------------------------ |
-| `/evalkit.plan`      | Analyze agent and design trace-based evaluation strategy           |
-| `/evalkit.data`      | Generate comprehensive test cases for evaluation scenarios         |
-| `/evalkit.trace`     | Add tracing instrumentation to agent for trace-based evaluation    |
-| `/evalkit.run_agent` | Execute instrumented agent on test cases and collect traces        |
-| `/evalkit.eval`      | Write evaluation code taking traces as input, and execute it       |
-| `/evalkit.report`    | Analyze results and provide actionable improvement recommendations |
+| Command                  | Description                                                           |
+|--------------------------|-----------------------------------------------------------------------|
+| `/evalkit.quick`         | Interactive step-by-step guide through complete evaluation pipeline  |
+| `/evalkit.plan`          | Analyze agent and design trace-based evaluation strategy             |
+| `/evalkit.data`          | Generate comprehensive test cases for evaluation scenarios            |
+| `/evalkit.trace`         | Add tracing instrumentation to agent for trace-based evaluation      |
+| `/evalkit.run_agent`     | Execute instrumented agent on test cases and collect traces          |
+| `/evalkit.eval`          | Implement and execute evaluation code to compute metrics over traces |
+| `/evalkit.report`        | Analyze results and provide actionable improvement recommendations    |
 
-#### Automation Commands
-
-Streamlined commands for quick evaluation workflows:
-
-| Command          | Description                                                                                       |
-| ---------------- | ------------------------------------------------------------------------------------------------- |
-| `/evalkit.quick` | Guide through full evaluation flow step-by-step (plan → data → trace → run_agent → eval → report) |
-| `/evalkit.auto`  | Automatically determine and execute needed evaluation steps based on current state                |
-
-### Environment Variables
-
-| Variable          | Description                                                                                                                                                                                                                                                                                                     |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `EVALKIT_FEATURE` | Override feature detection for non-Git repositories. Set to the feature directory name (e.g., `001-chatbot-evaluation`) to work on a specific evaluation when not using Git branches.<br/>\*\*Must be set in the context of the agent you're working with prior to using `/evalkit.plan` or follow-up commands. |
 
 ## 🔧 Prerequisites
 
-- **Linux/macOS** (or WSL2 on Windows)
+- **Linux/macOS**
 - AI coding assistant: [Claude Code](https://www.anthropic.com/claude-code), [Kilo Code](https://kilocode.ai), or [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/)
 - [uv](https://docs.astral.sh/uv/) for package management
 - [Python 3.11+](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/downloads)
 
 If you encounter issues with an assistant, please open an issue so we can refine the integration.
+
+## 👨‍💻 For Developers
+
+If you want to contribute to EvalKit, see the [Local Development Guide](./docs/local-development.md).
 
 ---
 
