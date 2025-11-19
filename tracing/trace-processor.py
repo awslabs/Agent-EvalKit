@@ -183,11 +183,72 @@ def extract_http_attributes(attrs: Dict[str, Any]) -> Dict[str, Any]:
     return http_attrs
 
 
+def extract_otel_events(events: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Extract OpenTelemetry events (user messages, assistant messages, tool calls)."""
+    result = {}
+    prompts = []
+    completions = []
+
+    for event in events or []:
+        event_name = event.get("name", "")
+        event_attrs = attr_list_to_dict(event.get("attributes", []))
+
+        if event_name == "gen_ai.user.message":
+            content = event_attrs.get("content")
+            if content:
+                prompts.append({"role": "user", "content": content})
+        elif event_name == "gen_ai.assistant.message":
+            content = event_attrs.get("content")
+            if content:
+                completions.append({"role": "assistant", "content": content})
+        elif event_name == "gen_ai.choice":
+            message = event_attrs.get("message")
+            if message:
+                completions.append({"role": "assistant", "content": message})
+        elif event_name == "gen_ai.tool.message":
+            content = event_attrs.get("content")
+            role = event_attrs.get("role", "tool")
+            if content:
+                if role == "tool":
+                    completions.append({"role": "tool", "content": content})
+                else:
+                    prompts.append({"role": role, "content": content})
+
+    if prompts:
+        result["gen_ai_prompts"] = prompts
+    if completions:
+        result["gen_ai_completions"] = completions
+
+    return result
+
+
+def extract_additional_gen_ai_attrs(attrs: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract additional OpenTelemetry gen_ai attributes."""
+    additional = {}
+
+    # Tool information
+    if "gen_ai.tool.name" in attrs:
+        additional["gen_ai_tool_name"] = attrs["gen_ai.tool.name"]
+    if "gen_ai.tool.description" in attrs:
+        additional["gen_ai_tool_description"] = attrs["gen_ai.tool.description"]
+
+    # Agent information
+    if "gen_ai.agent.name" in attrs:
+        additional["gen_ai_agent_name"] = attrs["gen_ai.agent.name"]
+
+    return additional
+
+
 def is_agent_workflow_span(attrs: Dict[str, Any]) -> bool:
     """Check if span is part of agent workflow."""
     # Check for traceloop attributes (indicates agent workflow)
     for key in attrs:
         if key.startswith("traceloop."):
+            return True
+
+    # Also check for gen_ai or http attributes (OpenTelemetry agent workflows)
+    for key in attrs:
+        if key.startswith("gen_ai.") or key.startswith("http."):
             return True
 
     return False
@@ -222,10 +283,14 @@ def normalize_span_minimal(
     except Exception:
         pass
 
-    # Extract only the essential traceloop fields
+    # Extract traceloop fields (for traceloop traces)
     entity_name = attrs.get("traceloop.entity.name")
     entity_input_raw = attrs.get("traceloop.entity.input")
     entity_output_raw = attrs.get("traceloop.entity.output")
+
+    # Extract OpenTelemetry gen_ai operation name (fallback for entity_name)
+    if entity_name is None:
+        entity_name = attrs.get("gen_ai.operation.name")
 
     # Build minimal structure with only essential fields
     node = {
@@ -235,9 +300,11 @@ def normalize_span_minimal(
         "duration_ms": dur_ms,
     }
 
-    # Only add traceloop fields if they exist (keep as raw strings)
+    # Add entity name (from traceloop or gen_ai)
     if entity_name is not None:
         node["entity_name"] = entity_name
+
+    # Add traceloop fields if they exist (keep as raw strings)
     if entity_input_raw is not None:
         node["entity_input"] = entity_input_raw
     if entity_output_raw is not None:
@@ -248,7 +315,7 @@ def normalize_span_minimal(
     if gen_ai_metadata:
         node.update(gen_ai_metadata)
 
-    # Extract gen_ai prompts and completions if present
+    # Extract gen_ai prompts and completions from attributes (traceloop style)
     gen_ai_prompts = extract_gen_ai_prompts(attrs)
     gen_ai_completions = extract_gen_ai_completions(attrs)
 
@@ -256,6 +323,20 @@ def normalize_span_minimal(
         node["gen_ai_prompts"] = gen_ai_prompts
     if gen_ai_completions:
         node["gen_ai_completions"] = gen_ai_completions
+
+    # Extract OpenTelemetry events (user/assistant messages, tool calls)
+    otel_events = extract_otel_events(sp.get("events", []))
+    if otel_events:
+        # Merge with existing prompts/completions, prioritizing events
+        if "gen_ai_prompts" in otel_events:
+            node["gen_ai_prompts"] = otel_events["gen_ai_prompts"]
+        if "gen_ai_completions" in otel_events:
+            node["gen_ai_completions"] = otel_events["gen_ai_completions"]
+
+    # Extract additional gen_ai attributes (tool info, usage, etc.)
+    additional_attrs = extract_additional_gen_ai_attrs(attrs)
+    if additional_attrs:
+        node.update(additional_attrs)
 
     # Extract HTTP attributes if present (for POST/GET spans)
     http_attrs = extract_http_attributes(attrs)
@@ -358,15 +439,16 @@ def main():
     # Print summary of what was kept
     total_spans = sum(len(trace["spans"]) for trace in traces.values())
     print(f"Processed {total_spans} agent workflow spans in flat structure.")
-    print("Filtered out spans without traceloop.* attributes (non-agent workflow spans).")
+    print("Filtered out spans without traceloop.*, gen_ai.*, or http.* attributes (non-agent workflow spans).")
     print("Kept only essential evaluation fields:")
     print("  - spanId, parentSpanId, start_time, duration_ms")
-    print("  - entity_name (logical operation name)")
-    print("  - entity_input (raw JSON string)")
-    print("  - entity_output (raw JSON string)")
-    print("  - gen_ai_prompts (when present)")
-    print("  - gen_ai_completions (when present)")
+    print("  - entity_name (logical operation name from traceloop.entity.name or gen_ai.operation.name)")
+    print("  - entity_input (raw JSON string from traceloop.entity.input)")
+    print("  - entity_output (raw JSON string from traceloop.entity.output)")
+    print("  - gen_ai_prompts (when present, from attributes or events)")
+    print("  - gen_ai_completions (when present, from attributes or events)")
     print("  - gen_ai_system, gen_ai_model, llm_request_type (when present)")
+    print("  - gen_ai_tool_name, gen_ai_agent_name (when present)")
     print("  - http_method, http_url, http_status_code (for HTTP spans)")
     print(f"Each trace saved as: <traceId>.json in {out_dir}")
 
