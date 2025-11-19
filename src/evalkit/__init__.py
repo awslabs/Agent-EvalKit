@@ -10,15 +10,15 @@
 # ]
 # ///
 """
-EvalKit CLI - Agent Evaluation Framework
+EvalKit - Evaluate AI agents quickly
 
 Usage:
-    uvx evalkit-cli.py init <project-name>
-    uvx evalkit-cli.py init .
-    uvx evalkit-cli.py init --here
+    uvx evalkit init <project-name>
+    uvx evalkit init .
+    uvx evalkit init --here
 
 Or install globally:
-    uv tool install --from evalkit-cli.py evalkit
+    uv tool install evalkit
     evalkit init <project-name>
     evalkit init .
     evalkit init --here
@@ -1444,7 +1444,7 @@ def check():
 
     console.print(tracker.render())
 
-    console.print("\n[bold green]EvalKit CLI is ready to use![/bold green]")
+    console.print("\n[bold green]EvalKit is ready to use![/bold green]")
 
     if not git_ok:
         console.print("[dim]Tip: Install git for repository management[/dim]")
