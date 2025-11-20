@@ -1,5 +1,5 @@
 ---
-description: Write evaluation code taking traces as input, and execute it
+description: Evaluate agent test results with the generated traces
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-processed-traces
 ---

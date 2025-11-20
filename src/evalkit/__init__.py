@@ -1389,17 +1389,17 @@ def init(
 
     steps_lines.append(f"   {step_num}.1 [cyan]/evalkit.plan[/] - Analyze your agent and design evaluation strategy")
     steps_lines.append(f"   {step_num}.2 [cyan]/evalkit.data[/] - Generate test cases for evaluation")
-    steps_lines.append(f"   {step_num}.3 [cyan]/evalkit.trace[/] - Set up tracing instrumentation")
-    steps_lines.append(f"   {step_num}.4 [cyan]/evalkit.run_agent[/] - Run instrumented agent and collect traces")
+    steps_lines.append(f"   {step_num}.3 [cyan]/evalkit.trace[/] - Set up tracing")
+    steps_lines.append(f"   {step_num}.4 [cyan]/evalkit.run_agent[/] - Run agent tests and collect traces")
     steps_lines.append(
-        f"   {step_num}.5 [cyan]/evalkit.eval[/] - Write evaluation code taking traces as input, and execute it"
+        f"   {step_num}.5 [cyan]/evalkit.eval[/] - Evaluate agent test results with the generated traces"
     )
     steps_lines.append(
         f"   {step_num}.6 [cyan]/evalkit.report[/] - Analyze results and provide improvement recommendations"
     )
     steps_lines.append("")
     steps_lines.append("   [dim]Or run the complete pipeline automatically:[/dim]")
-    steps_lines.append("   [cyan]/evalkit.quick[/] - Run all commands above sequentially with auto-approval")
+    steps_lines.append("   [cyan]/evalkit.auto[/] - Run all commands above sequentially with auto-approval")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()

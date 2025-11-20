@@ -11,13 +11,32 @@
 
 ## Table of Contents
 
+- [🔧 Prerequisites](#-prerequisites)
+- [🤖 Supported AI Assistants](#-supported-ai-assistants)
 - [⚡ Get started](#-get-started)
 - [📋 What to Expect from EvalKit](#-what-to-expect-from-evalkit)
-- [🤖 Supported AI Assistants](#-supported-ai-assistants)
 - [📚 EvalKit Reference](#-evalkit-reference)
-- [🔧 Prerequisites](#-prerequisites)
 - [👨‍💻 For Developers](#-for-developers)
 - [🙏 Acknowledgements](#-acknowledgements)
+
+## 🔧 Prerequisites
+
+- **Linux/macOS**
+- AI coding assistant: [Claude Code](https://www.anthropic.com/claude-code), [Kilo Code](https://kilocode.ai), or [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/)
+- [uv](https://docs.astral.sh/uv/) for package management
+- [Python 3.11+](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/downloads)
+
+If you encounter issues with an assistant, please open an issue so we can refine the integration.
+
+## 🤖 Supported AI Assistants
+
+| Assistant                                                     | Support | Notes                                             |
+|---------------------------------------------------------------|---------|---------------------------------------------------|
+| [Claude Code](https://www.anthropic.com/claude-code)         | ✅ |                                                   |
+| [Kilo Code](https://kilocode.ai)                              | 🔄 | Support coming soon                           |
+| [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) | 🔄 | Support coming soon                           |
+
 
 ## ⚡ Get started
 
@@ -42,6 +61,11 @@
    source ~/.zshrc  # or source ~/.bashrc
    ```
 
+3. **Configure Git connection with 2FA:**
+   ```bash
+   git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+   ```
+
 ### 1. Install EvalKit
 
 Install once and use everywhere:
@@ -62,7 +86,7 @@ To uninstall evalkit:
 uv tool uninstall evalkit
 ```
 
-### 2. Best Practices: Before You Start
+### 2. Before You Start
 
 #### 2.1 Ensure Agent Readiness
 
@@ -75,7 +99,7 @@ uv tool uninstall evalkit
 
 #### 2.2 Set Up Dedicated Evaluation Project
 
-**Create a dedicated evaluation project to keep your agent code separate from evaluation artifacts.**
+**Create a dedicated evaluation project folder (in a non-git-init-ed parent folder) to keep your agent code separate from evaluation artifacts.**
 
 ```bash
 # Create and initialize a new evaluation project
@@ -95,51 +119,38 @@ These requirements are essential because EvalKit's trace-based evaluation approa
 - Makes it easier to manage evaluation-specific dependencies and configurations
 - Ensures reliable path resolution and artifact management throughout the evaluation process
 
-### 3. Build evaluation pipeline
+### 3. Test your agent!
 
-Choose your approach based on your experience level:
-
-#### Option A: Guided step-by-step workflow (recommended for first-time users)
-
-Use **`/evalkit.quick`** for an interactive, step-by-step guide through the complete evaluation pipeline:
-
+Run the AI agent of your choice, say
 ```bash
-/evalkit.quick Evaluate my data analysis agent focusing on goal success
+claude
 ```
-
-This will guide you through each step with confirmation prompts and progress tracking.
+, and agree to add the new Context7 MCP. Once done, type `/` to see all the supported commands:
+```bash
+#### Option A: Guided step-by-step workflow (recommended for first-time users)
+#### Use /evalkit.quick for an interactive, step-by-step guide through the complete evaluation pipeline.
+#### This will guide you through each step with confirmation prompts and progress tracking.
+/evalkit.quick Evaluate my data analysis agent focusing on goal success
 
 #### Option B: Individual commands (for experienced users)
+#### Run each command individually for more control:
 
-Run each command individually for more control:
-
-**Step 1: Design evaluation strategy**
-```bash
+#### Step 1: Design evaluation strategy
 /evalkit.plan Analyze my data analysis agent and design evaluation strategy focusing on goal success
-```
 
-**Step 2: Generate test cases** *(user input optional)*
-```bash
+#### Step 2: Generate test cases (user input optional)
 /evalkit.data Generate test cases covering data analysis scenarios including edge cases
-```
 
-**Step 3: Set up tracing instrumentation** *(user input optional)*
-```bash
+#### Step 3: Set up tracing instrumentation (user input optional)
 /evalkit.trace Add Traceloop instrumentation to capture agent execution traces
-```
 
-**Step 4: Run agent and collect traces** *(user input optional)*
-```bash
+#### Step 4: Run agent and collect traces (user input optional)
 /evalkit.run_agent
-```
 
-**Step 5: Implement evaluation code** *(user input optional)*
-```bash
+#### Step 5: Implement evaluation code (user input optional)
 /evalkit.eval
-```
 
-**Step 6: Analyze results and get recommendations** *(user input optional)*
-```bash
+#### Step 6: Analyze results and get recommendations (user input optional)
 /evalkit.report
 ```
 
@@ -171,13 +182,6 @@ The evaluation metrics generated by EvalKit are designed to align with deploymen
 
 EvalKit teaches you how to build trace-based evaluation pipelines with a working baseline that you can extend and customize for your specific agent evaluation needs.
 
-## 🤖 Supported AI Assistants
-
-| Assistant                                                     | Support | Notes                                             |
-|---------------------------------------------------------------|---------|---------------------------------------------------|
-| [Claude Code](https://www.anthropic.com/claude-code)         | ✅ |                                                   |
-| [Kilo Code](https://kilocode.ai)                              | 🔄 | Support coming soon                           |
-| [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) | 🔄 | Support coming soon                           |
 
 ## 📚 EvalKit Reference
 
@@ -256,15 +260,7 @@ Essential commands for the trace-based Agent Evaluation workflow:
 | `/evalkit.report`        | Analyze results and provide actionable improvement recommendations    |
 
 
-## 🔧 Prerequisites
 
-- **Linux/macOS**
-- AI coding assistant: [Claude Code](https://www.anthropic.com/claude-code), [Kilo Code](https://kilocode.ai), or [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/)
-- [uv](https://docs.astral.sh/uv/) for package management
-- [Python 3.11+](https://www.python.org/downloads/)
-- [Git](https://git-scm.com/downloads)
-
-If you encounter issues with an assistant, please open an issue so we can refine the integration.
 
 ## 👨‍💻 For Developers
 

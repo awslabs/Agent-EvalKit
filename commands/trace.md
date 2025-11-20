@@ -1,5 +1,5 @@
 ---
-description: Set up tracing instrumentation 
+description: Set up tracing
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan
 ---
