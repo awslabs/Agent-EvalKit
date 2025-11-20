@@ -43,15 +43,6 @@ env/
 .genreleases/
 *.zip
 sdd-*/
-transformation-plan.md
 .genlocal/
-strategic_pivot.md
-trace-based-eval-support*.md
-test_trace_normalization.py
-otel-traces.jsonl
-normalized-traces.jsonl
-test_env/
-single-normalized-trace.json
-raw-otel-trace.jsonl
-traces/
 legacy.md
+README-legacy.md

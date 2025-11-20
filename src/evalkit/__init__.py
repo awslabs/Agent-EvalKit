@@ -101,7 +101,7 @@ BANNER = """
 ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝
 """
 
-TAGLINE = "EvalKit - Agent Evaluation Tool Kit"
+TAGLINE = "EvalKit - Build evaluation pipelines for AI agents"
 
 
 class StepTracker:
@@ -1204,15 +1204,18 @@ def init(
             raise typer.Exit(1)
         selected_script = script_type
     else:
-        default_script = "ps" if os.name == "nt" else "sh"
+        # Currently only sh is supported (Linux/macOS)
+        selected_script = "sh"
 
-        if sys.stdin.isatty():
-            selected_script = select_with_arrows(SCRIPT_TYPE_CHOICES, "Choose script type", default_script)
-        else:
-            selected_script = default_script
+        # TODO: Re-enable when PowerShell support is added
+        # default_script = "ps" if os.name == "nt" else "sh"
+        # if sys.stdin.isatty():
+        #     selected_script = select_with_arrows(SCRIPT_TYPE_CHOICES, "Choose script type", default_script)
+        # else:
+        #     selected_script = default_script
 
     console.print(f"[cyan]Selected AI assistant:[/cyan] {selected_ai}")
-    console.print(f"[cyan]Selected script type:[/cyan] {selected_script}")
+    # console.print(f"[cyan]Selected script type:[/cyan] {selected_script}")
 
     tracker = StepTracker("Initialize EvalKit Project")
 
@@ -1337,26 +1340,37 @@ def init(
         console.print(git_error_panel)
 
     # Agent folder security notice
-    agent_config = AGENT_CONFIG.get(selected_ai)
-    if agent_config:
-        agent_folder = agent_config["folder"]
-        security_notice = Panel(
-            f"Some agents may store credentials, auth tokens, or other identifying and private artifacts in the agent folder within your project.\n"
-            f"Consider adding [cyan]{agent_folder}[/cyan] (or parts of it) to [cyan].gitignore[/cyan] to prevent accidental credential leakage.",
-            title="[yellow]Agent Folder Security[/yellow]",
-            border_style="yellow",
-            padding=(1, 2),
-        )
-        console.print()
-        console.print(security_notice)
+    # agent_config = AGENT_CONFIG.get(selected_ai)
+    # if agent_config:
+    #     agent_folder = agent_config["folder"]
+    #     security_notice = Panel(
+    #         f"Some agents may store credentials, auth tokens, or other identifying and private artifacts in the agent folder within your project.\n"
+    #         f"Consider adding [cyan]{agent_folder}[/cyan] (or parts of it) to [cyan].gitignore[/cyan] to prevent accidental credential leakage.",
+    #         title="[yellow]Agent Folder Security[/yellow]",
+    #         border_style="yellow",
+    #         padding=(1, 2),
+    #     )
+    #     console.print()
+    #     console.print(security_notice)
 
     steps_lines = []
     if not here:
-        steps_lines.append(f"1. Go to the project folder: [cyan]cd {project_name}[/cyan]")
+        steps_lines.append(f"1. Go to the evaluation project folder: [cyan]cd {project_name}[/cyan]")
         step_num = 2
     else:
-        steps_lines.append("1. You're already in the project directory!")
+        steps_lines.append("1. You're already in the evaluation project directory!")
         step_num = 2
+
+    # Add agent setup steps
+    steps_lines.append(
+        f"{step_num}. Copy your agent into the evaluation project: [cyan]cp -r /path/to/your/agent-folder .[/cyan]"
+    )
+    step_num += 1
+
+    steps_lines.append(
+        f"{step_num}. Open in your IDE (optional): [cyan]code .[/cyan] [dim](VS Code) or your preferred IDE[/dim]"
+    )
+    step_num += 1
 
     # Add Codex-specific setup step if needed
     if selected_ai == "codex":
@@ -1376,7 +1390,7 @@ def init(
     agent_config = AGENT_CONFIG.get(selected_ai)
     if agent_config:
         if selected_ai == "claude":
-            steps_lines.append(f"{step_num}. Start Claude Code by running: [cyan]claude[/cyan]")
+            steps_lines.append(f"{step_num}. Start Claude Code: [cyan]claude[/cyan]")
         elif selected_ai == "kilocode":
             steps_lines.append(f"{step_num}. Open your IDE with Kilo Code extension enabled")
         elif selected_ai == "q":
@@ -1385,7 +1399,10 @@ def init(
             steps_lines.append(f"{step_num}. Start your AI agent: [cyan]{selected_ai}[/cyan]")
         step_num += 1
 
-    steps_lines.append(f"{step_num}. Start using slash commands with your AI agent:")
+    steps_lines.append(f"{step_num}. Type [cyan]/[/cyan] to see available commands")
+    step_num += 1
+
+    steps_lines.append(f"{step_num}. Start with EvalKit commands:")
 
     steps_lines.append(f"   {step_num}.1 [cyan]/evalkit.plan[/] - Analyze your agent and design evaluation strategy")
     steps_lines.append(f"   {step_num}.2 [cyan]/evalkit.data[/] - Generate test cases for evaluation")
@@ -1417,38 +1434,47 @@ def init(
 
 @app.command()
 def check():
-    """Check that all required tools are installed."""
+    """Check that essential tools are installed."""
     show_banner()
-    console.print("[bold]Checking for installed tools...[/bold]\n")
+    console.print("[bold]Checking essential tools...[/bold]\n")
 
-    tracker = StepTracker("Check Available Tools")
+    tracker = StepTracker("Check Essential Tools")
 
+    # Check essential tools
     tracker.add("git", "Git version control")
     git_ok = check_tool("git", tracker=tracker)
 
-    agent_results = {}
-    for agent_key, agent_config in AGENT_CONFIG.items():
-        agent_name = agent_config["name"]
+    tracker.add("python", "Python 3.11+")
+    python_ok = check_tool("python", tracker=tracker)
 
-        tracker.add(agent_key, agent_name)
-        agent_results[agent_key] = check_tool(agent_key, tracker=tracker)
+    tracker.add("uv", "UV package manager")
+    uv_ok = check_tool("uv", tracker=tracker)
 
-    # Check VS Code variants (not in agent config)
+    tracker.add("claude", "Claude Code")
+    claude_ok = check_tool("claude", tracker=tracker)
+
     tracker.add("code", "Visual Studio Code")
     code_ok = check_tool("code", tracker=tracker)
-
-    tracker.add("code-insiders", "Visual Studio Code Insiders")
-    code_insiders_ok = check_tool("code-insiders", tracker=tracker)
 
     console.print(tracker.render())
 
     console.print("\n[bold green]EvalKit is ready to use![/bold green]")
 
+    # Provide helpful tips for missing tools
     if not git_ok:
         console.print("[dim]Tip: Install git for repository management[/dim]")
 
-    if not any(agent_results.values()):
-        console.print("[dim]Tip: Install an AI assistant for the best experience[/dim]")
+    if not python_ok:
+        console.print("[dim]Tip: Install Python 3.11+ from https://www.python.org/downloads/[/dim]")
+
+    if not uv_ok:
+        console.print("[dim]Tip: Install uv from https://docs.astral.sh/uv/[/dim]")
+
+    if not claude_ok:
+        console.print("[dim]Tip: Install Claude Code from https://docs.anthropic.com/en/docs/claude-code/setup[/dim]")
+
+    if not code_ok:
+        console.print("[dim]Tip: Install VS Code from https://code.visualstudio.com/[/dim]")
 
 
 def main():
