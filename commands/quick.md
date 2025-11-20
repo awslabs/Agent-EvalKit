@@ -1,6 +1,6 @@
 ---
 argument-hint: "[optional goal, e.g. 'quick eval on tool-calling accuracy', or leave empty]"
-description: "Guide the user through a quick full EvalKit flow step-by-step (plan → data → trace → run_agent → eval → report), with each evalkit.\* command run as its own task."
+description: "Step-by-step evaluation guide"
 ---
 
 # evalkit.quick – Guided EvalKit flow (step-by-step)

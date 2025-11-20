@@ -1,5 +1,5 @@
 ---
-description: Run instrumented agent and collect traces
+description: Run agent and collect traces
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-test-data-file
 ---

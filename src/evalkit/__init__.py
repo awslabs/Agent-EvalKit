@@ -1389,17 +1389,15 @@ def init(
 
     steps_lines.append(f"   {step_num}.1 [cyan]/evalkit.plan[/] - Analyze your agent and design evaluation strategy")
     steps_lines.append(f"   {step_num}.2 [cyan]/evalkit.data[/] - Generate test cases for evaluation")
-    steps_lines.append(f"   {step_num}.3 [cyan]/evalkit.trace[/] - Set up tracing instrumentation")
-    steps_lines.append(f"   {step_num}.4 [cyan]/evalkit.run_agent[/] - Run instrumented agent and collect traces")
-    steps_lines.append(
-        f"   {step_num}.5 [cyan]/evalkit.eval[/] - Write evaluation code taking traces as input, and execute it"
-    )
+    steps_lines.append(f"   {step_num}.3 [cyan]/evalkit.trace[/] - Add tracing to your agent")
+    steps_lines.append(f"   {step_num}.4 [cyan]/evalkit.run_agent[/] - Run agent and collect traces")
+    steps_lines.append(f"   {step_num}.5 [cyan]/evalkit.eval[/] - Write and execute evaluation code over traces")
     steps_lines.append(
         f"   {step_num}.6 [cyan]/evalkit.report[/] - Analyze results and provide improvement recommendations"
     )
     steps_lines.append("")
-    steps_lines.append("   [dim]Or run the complete pipeline automatically:[/dim]")
-    steps_lines.append("   [cyan]/evalkit.quick[/] - Run all commands above sequentially with auto-approval")
+    steps_lines.append("   [dim]Or get guided through the complete pipeline step-by-step:[/dim]")
+    steps_lines.append("   [cyan]/evalkit.quick[/] - Step-by-step evaluation guide")
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()

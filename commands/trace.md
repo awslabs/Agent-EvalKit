@@ -1,5 +1,5 @@
 ---
-description: Set up tracing instrumentation 
+description: Add tracing to your agent
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan
 ---
@@ -117,8 +117,14 @@ def custom_tool_usage():
 **Note**: The `Traceloop.init()` initialization is still required regardless of instrumentation approach. Does instrumention by directly modifying the original agent code (do not create new agent files).
 
 ### Strands Framework
-If the agent is built on the Strands framework, note that **Strands is not supported by Traceloop's auto-instrumentation**. For Strands-based agents, you must implement custom instrumentation using separate approaches. Please check the Strands-specific instrumentation reference in `reference/strands` for detailed implementation guidance.
+If the agent is built on the Strands framework, note that **Strands is not supported by Traceloop's auto-instrumentation**. For Strands-based agents, use the built-in telemetry setup:
 
+```python
+from strands.telemetry import StrandsTelemetry
+
+strands_telemetry = StrandsTelemetry()
+strands_telemetry.setup_otlp_exporter()
+```
 
 
 ## Instrumentation Guidelines

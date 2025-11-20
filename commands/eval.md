@@ -1,5 +1,5 @@
 ---
-description: Write evaluation code taking traces as input, and execute it
+description: Write and execute evaluation code over traces
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-plan --require-processed-traces
 ---
