@@ -3,7 +3,7 @@
 ## 1. Evaluation Requirements
 
 <!--
-User input and interpreted evaluation requirements. Defaults to 1-2 key metrics if unspecified.
+ACTION REQUIRED: User input and interpreted evaluation requirements. Defaults to 1-2 key metrics if unspecified.
 -->
 
 - **User Input:** `"$ARGUMENTS"` or "No Input"
@@ -55,7 +55,7 @@ User input and interpreted evaluation requirements. Defaults to 1-2 key metrics 
 ## 3. Evaluation Metrics
 
 <!--
-Instruction: If no specific user requirements are provided, use a minimal number of metrics (1-2 metrics) focusing on the most critical aspects of agent performance.
+ACTION REQUIRED: If no specific user requirements are provided, use a minimal number of metrics (1-2 metrics) focusing on the most critical aspects of agent performance.
 -->
 
 ### [Metric Name 1]
@@ -73,14 +73,12 @@ Instruction: If no specific user requirements are provided, use a minimal number
 ## 4. Test Data Generation
 
 <!--
-Instruction: When no specific user requirement is provided, generate 2-3 test cases TOTAL across all scenarios (not per scenario). Distribute these test cases evenly among the different test scenarios.
+  ACTION REQUIRED: Keep scenarios minimal and focused. Do not propose more than 3 scenarios.
 -->
 
-- Total number of test cases: [Count]
-- **[Test Scenario 1]:** [Description and purpose, complexity]
-  - Number of test cases: [Count]
-- **[Test scenario 2]:** [Description and purpose, complexity]
-  - Number of test cases: [Count]
+- **[Test Scenario 1]**: [Description and purpose, complexity]
+- **[Test scenario 2]**: [Description and purpose, complexity]
+- **Total number of test cases**: [MUST be less than 3]
 
 ---
 
@@ -89,7 +87,7 @@ Instruction: When no specific user requirement is provided, generate 2-3 test ca
 ### 5.1 Evaluation Code Structure
 
 <!--
-The code structure below will be adjusted based on your evaluation requirements and existing agent codebase. This is the recommended starting structure. Only adjust it if necessary.
+ACTION REQUIRED: The code structure below will be adjusted based on your evaluation requirements and existing agent codebase. This is the recommended starting structure. Only adjust it if necessary.
 -->
 
 ```Recommended evaluation code structure.
@@ -115,7 +113,7 @@ The code structure below will be adjusted based on your evaluation requirements 
 | **Component**            | **Selection**                                          |
 | :----------------------- | :----------------------------------------------------- |
 | **Language/Version**     | [e.g., Python 3.11, Node.js 18+]                       |
-| **Tracing Libraries**    | [e.g., Traceloop (default), OpenTelemetry]             |
+| **Tracing Libraries**    | [e.g., Traceloop (default), Strands Telemetry (for Strands-based agents)]             |
 | **OTEL Infrastructure**  | [Local collector with file export (default)]           |
 | **Evaluation Libraries** | [e.g., DeepEval (default), RAGAS, Custom]              |
 | **LLM Service**          | [LiteLLM (default)]                                    |

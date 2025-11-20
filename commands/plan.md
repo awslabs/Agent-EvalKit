@@ -53,15 +53,11 @@ Given that user evaluation requests or agent description, do this:
        - Check for existing test cases and trace files
     3. Design evaluation strategy:
        - Define evaluation areas and metrics (user-request-driven with agent-aware defaults)
-       - Identify test scenarios and data requirements
-       - Select technology stack and integration approach
-    4. Create implementation plan:
-       - Design evaluation pipeline architecture
-       - Define file structure and implementation tasks
-       - Choose configuration and execution approach
-    5. Return: SUCCESS (evaluation plan ready for implementation)
+       - Identify test data requirements
+       - Define file structure
+       - Select technology stack
 
-5. Write the complete evaluation plan to PLAN_FILE (eval-plan.md) using the template structure, replacing placeholders with concrete details derived from the analysis while preserving section order and headings.
+5. Write the complete evaluation plan to PLAN_FILE (eval-plan.md) using the template structure, replacing placeholders with concrete details derived from the analysis while preserving section order and headings. **IMPORTANT**: Follow all HTML comment instructions (<!-- ACTION REQUIRED: ... -->) in the template when generating content, then remove these comment instructions from the final plan - they are template guidance only and should not appear in the generated plan.
 
 6. Report completion with branch name, evaluation plan file path, and readiness for following data generation (`/evalkit.data`), trace setup `/evalkit.trace`, agent execution and trace collection (`/evalkit.run_agent`), and core evaluation code implementation (`/evalkit.eval`).
 

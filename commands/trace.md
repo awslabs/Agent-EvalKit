@@ -117,7 +117,7 @@ def custom_tool_usage():
 **Note**: The `Traceloop.init()` initialization is still required regardless of instrumentation approach. Does instrumention by directly modifying the original agent code (do not create new agent files).
 
 ### Strands Framework
-If the agent is built on the Strands framework, note that **Strands is not supported by Traceloop's auto-instrumentation**. For Strands-based agents, use the built-in telemetry setup:
+**IMPORTANT**: If the agent is built on the Strands framework, note that **Strands is not supported by Traceloop's auto-instrumentation**. For Strands-based agents, use the built-in telemetry setup:
 
 ```python
 from strands.telemetry import StrandsTelemetry
