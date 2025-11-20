@@ -2,8 +2,8 @@
 
 ## 1. Evaluation Requirements
 
-<!-- 
-User input and interpreted evaluation requirements. Defaults to 1-2 key metrics if unspecified. 
+<!--
+User input and interpreted evaluation requirements. Defaults to 1-2 key metrics if unspecified.
 -->
 
 - **User Input:** `"$ARGUMENTS"` or "No Input"
@@ -39,7 +39,7 @@ User input and interpreted evaluation requirements. Defaults to 1-2 key metrics 
 - **[Component Name 2]:** [Brief description of purpose and functionality]
 - [Additional components as needed]
 
-**Available Tools:** [REQUIRED for tool coverage metrics]
+**Available Tools:**
 
 - **[Tool Name 1]:** [Purpose and usage]
 - **[Tool Name 2]:** [Purpose and usage]
@@ -54,8 +54,8 @@ User input and interpreted evaluation requirements. Defaults to 1-2 key metrics 
 
 ## 3. Evaluation Metrics
 
-<!-- 
-Instruction: If no specific user requirements are provided, use a minimal number of metrics (1-2 metrics) focusing on the most critical aspects of agent performance. 
+<!--
+Instruction: If no specific user requirements are provided, use a minimal number of metrics (1-2 metrics) focusing on the most critical aspects of agent performance.
 -->
 
 ### [Metric Name 1]
@@ -72,11 +72,17 @@ Instruction: If no specific user requirements are provided, use a minimal number
 
 ## 4. Test Data Generation
 
-- Total number of test cases: [Count; default to 2-3 test cases total when no specific user requirement is provided]
+<!--
+Instruction: When no specific user requirement is provided, generate 2-3 test cases TOTAL across all scenarios (not per scenario). Distribute these test cases evenly among the different test scenarios.
+-->
+
+- Total number of test cases: [Count]
 - **[Test Scenario 1]:** [Description and purpose, complexity]
   - Number of test cases: [Count]
 - **[Test scenario 2]:** [Description and purpose, complexity]
   - Number of test cases: [Count]
+
+---
 
 ## 5. Evaluation Implementation Design
 
