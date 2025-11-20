@@ -47,11 +47,11 @@ Given that context, do this:
     2. Review evaluation plan to understand requirements; update the evaluation plan if it does not align with the user's input (if provided); add entry to User Requirements Log in eval-plan.md
     3. Conduct evaluation pipeline implementation:
        **IMPORTANT**: Always navigate to repository root before any operation in the following process to avoid path errors.
-       - **Implement metrics** (critical step): Evaluation input will be the processed traces from `eval/traces/<traceId>.json` files. The script (e.g., `eval/metrics.py`) should include both metric classes and necessary extraction functions to extract evaluation-required information from processed traces. **MUST** examine processed trace structure by loading a trace file before implementing
-       - **Build evaluation main entry function**: Create `eval/run_evaluation.py` to coordinate the pipeline. Ensure evaluation results are saved to `eval/results/`.
+       - **Implement metrics** (critical step): Evaluation target will be the processed traces from `eval/traces/<traceId>.json` files. The script (e.g., `eval/metrics.py`) should include both metric classes and necessary extraction functions to extract evaluation-required information from processed traces. **MUST** examine processed trace structure by loading a trace file before implementing
+       - **Build evaluation main entry function**: Create `eval/run_evaluation.py` to coordinate the pipeline. Ensure it reads traces from `eval/traces/` and saves evaluation results to `eval/results/`.
        - **Code review**: Identify and fix critical issues
        - **Update requirements and environment**: Add additional evaluation dependencies to `requirements.txt` and reinstall if needed
-       - **Execute evaluation**: Run `python eval/run_evaluation.py` to execute the evaluation code and generate results
+       - **Execute evaluation**: Run `python eval/run_evaluation.py --input eval/traces/ --output eval/results/` to execute the evaluation code and generate results
        - **Create documentation**: Create `eval/README.md` with running instructions for users
    4. Update Evaluation Progress section in eval-plan.md with completion status
 
