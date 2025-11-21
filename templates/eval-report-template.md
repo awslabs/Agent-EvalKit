@@ -49,14 +49,25 @@ ACTION REQUIRED: Focus on what the agent does well. Provide specific evidence an
 
 ### Strengths
 
-- **[Strength Category]**: [What the agent does exceptionally well]
+- **[Strength Name 1]**: [What the agent does exceptionally well]
 - **Evidence**: [Specific metrics and examples]
 - **Contributing Factors**: [Why this works well]
 
+- **[Strength Name 2]**: [What the agent does exceptionally well]
+- **Evidence**: [Specific metrics and examples]
+- **Contributing Factors**: [Why this works well]
+
+[Repeat pattern for additional strengths]
+
 ### High-Performing Scenarios
 
-- **[Scenario Type]**: [Category of tasks where agent excels]
+- **[Scenario Type 1]**: [Category of tasks where agent excels]
 - **Key Characteristics**: [What makes these scenarios successful]
+
+- **[Scenario Type 2]**: [Category of tasks where agent excels]
+- **Key Characteristics**: [What makes these scenarios successful]
+
+[Repeat pattern for additional scenarios]
 
 ---
 
