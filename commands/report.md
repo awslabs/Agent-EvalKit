@@ -99,7 +99,9 @@ Given that context, do this:
    - Evaluation results analysis
    - Prioritized improvement recommendations with evidence
 
-9. Report completion with actionable insights and recommendations.
+9. **IMPORTANT**: Follow all HTML comment instructions (<!-- ACTION REQUIRED: ... -->) in the template when generating content, then remove these comment instructions from the final report - they are template guidance only and should not appear in the generated report.
+
+10. Report completion with actionable insights and recommendations.
 
 ## General Guidelines
 

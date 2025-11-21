@@ -2,90 +2,134 @@
 
 ## Executive Summary
 
+<!--
+ACTION REQUIRED: Provide high-level evaluation results and key findings. Focus on actionable insights for stakeholders.
+-->
+
 - **Test Scale**: [N] test cases
 - **Success Rate**: [XX.X%]
-- **Status**: [Production Ready / Needs Improvement / Not Ready]
+- **Status**: [Excellent/Good/Poor]
+- **Strengths**: [Specific capability or metric] [Performance highlight] [Reliability aspect]
+- **Critical Issues**: [Blocking issue + impact] [Performance bottleneck] [Safety/compliance concern]
+- **Action Priority**: [Critical fixes] [Improvements] [Enhancements]
 
-- **Strengths**: <specific capability or metric> <performance highlight> <reliability aspect>
-- **Critical Issues**: <blocking issue + impact> <performance bottleneck> <safety/compliance concern>
-- **Action Priority**: <critical fixes> <improvements> <enhancements>
+---
 
 ## Evaluation Results
 
-- **Test Case Coverage**:
-  <List test scenarios >
+### Test Case Coverage
 
-- **Results**
+<!--
+ACTION REQUIRED: List all test scenarios that were evaluated, providing context for the results.
+-->
 
-| **Metric**    | **Score** | **Target** | **Status**  |
-| ------------- | --------- | ---------- | ----------- |
-| [Metric Name] | [XX.X%]   | [XX%]      | [Pass/Fail] |
-| [Metric Name] | [X.X/5]   | [4.0+]     | [Pass/Fail] |
-| [Metric Name] | [XX.X%]   | [95%+]     | [Pass/Fail] |
+- **[Test Scenario 1]**: [Description and coverage]
+- **[Test Scenario 2]**: [Description and coverage]
+- [Additional scenarios as needed]
+
+### Results
+
+| **Metric**        | **Score** | **Target** | **Status**  |
+| :---------------- | :-------- | :--------- | :---------- |
+| [Metric Name 1]   | [XX.X%]   | [XX%]      | [Pass/Fail] |
+| [Metric Name 2]   | [X.X/5]   | [4.0+]     | [Pass/Fail] |
+| [Metric Name 3]   | [XX.X%]   | [95%+]     | [Pass/Fail] |
 
 ### Results Summary
 
 [Brief description of overall performance and findings across metrics]
 
+---
+
 ## Agent Success Analysis
 
-<Instruction: Please focus on the agent performance analysis>
+<!--
+ACTION REQUIRED: Focus on what the agent does well. Provide specific evidence and contributing factors for successful performance.
+-->
 
-### Strengths to Preserve
+### Strengths
 
-- **Strength**: [What the agent does exceptionally well]
+- **[Strength Category]**: [What the agent does exceptionally well]
 - **Evidence**: [Specific metrics and examples]
 - **Contributing Factors**: [Why this works well]
 
 ### High-Performing Scenarios
 
-- **Scenario Type**: [Category of tasks where agent excels]
+- **[Scenario Type]**: [Category of tasks where agent excels]
 - **Key Characteristics**: [What makes these scenarios successful]
+
+---
 
 ## Agent Failure Analysis
 
-<Instruction: Please focus on the agent failure analysis>
+<!--
+ACTION REQUIRED: Analyze failures systematically. Provide root cause analysis and specific improvement recommendations with expected impact.
+-->
 
-### Issue-1 <Priority-1>
+### Issue 1 - [Priority Level]
 
 - **Issue**: [Clear problem statement with evaluation metrics]
 - **Root Cause**: [Technical analysis of why this occurred — path/to/file.py:START-END]
 - **Evidence**: [Specific data points from results]
 - **Impact**: [Effect on overall performance]
-- **Priority Fixes**
-  - P1 — <fix name>: <one‑line solution> → expected gain: <metric +X>
-  - P2 — <fix name>: <one‑line solution> → expected gain: <metric>
+- **Priority Fixes**:
+  - P1 — [Fix name]: [One-line solution] → Expected gain: [Metric +X]
+  - P2 — [Fix name]: [One-line solution] → Expected gain: [Metric improvement]
 
-<Repeat other issues here>
+### Issue 2 - [Priority Level]
+
+[Repeat structure for additional issues]
+
+---
 
 ## Action Items & Recommendations
 
-<Instruction: Specific, implementable tasks with clear steps>
+<!--
+ACTION REQUIRED: Provide specific, implementable tasks with clear steps. Prioritize by impact and effort required.
+-->
 
-### <Item Name> Priority-<number> (Critical|Enhancement)
+### [Item Name] - Priority [Number] ([Critical/Enhancement])
 
-- <Description of this item>
-- Actions:
+- **Description**: [Description of this item]
+- **Actions**:
   - [ ] [Specific task with implementation steps]
   - [ ] [Specific task with implementation steps]
+  - [ ] [Additional tasks as needed]
 
-<Repeat other items here>
+### [Additional Item Name] - Priority [Number] ([Critical/Enhancement])
+
+[Repeat structure for additional action items]
+
+---
 
 ## Artifacts & Reproduction
 
 ### Reference Materials
 
-- **Agent Code**: [path to agent implementation]
-- **Test Cases**: [path to test cases]
-- **Traces**: [path to traces]
-- **Results**: [path to results files]
-- **Evaluation Code**: [path to evaluation implementation]
+- **Agent Code**: [Path to agent implementation]
+- **Test Cases**: [Path to test cases]
+- **Traces**: [Path to traces]
+- **Results**: [Path to results files]
+- **Evaluation Code**: [Path to evaluation implementation]
+
+---
 
 ## Evaluation Limitations and Improvement
 
-<Instruction: Please focus on the evaluation improvement analysis>
+<!--
+ACTION REQUIRED: Identify limitations in the current evaluation approach and suggest improvements for future iterations.
+-->
 
-- **<Test Data Improvement>**: [Evaluation scope limitations and improvement]
-- **<Evaluation Code>**: [Limitations of evaluation implementation and metrics]
+### Test Data Improvement
 
-<Repeat for other evaluation improvement areas>
+- **Current Limitations**: [Evaluation scope limitations]
+- **Recommended Improvements**: [Specific suggestions for test data enhancement]
+
+### Evaluation Code Enhancement
+
+- **Current Limitations**: [Limitations of evaluation implementation and metrics]
+- **Recommended Improvements**: [Specific suggestions for evaluation code improvement]
+
+### [Additional Improvement Area]
+
+[Repeat structure for other evaluation improvement areas]
