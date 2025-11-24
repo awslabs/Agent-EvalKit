@@ -1,0 +1,68 @@
+{
+  "evaluation_timestamp": "2025-11-20T21:47:56.629957",
+  "total_test_cases": 2,
+  "metrics_used": [
+    "FaithfulnessMetric",
+    "AnswerRelevancyMetric"
+  ],
+  "test_cases": [
+    {
+      "test_case_id": 0,
+      "trace_id": "05f8f5effca77791fc8d37f391a088ce",
+      "trace_file": "eval/traces/05f8f5effca77791fc8d37f391a088ce.json",
+      "input": "What are the latest developments in artificial intelligence?",
+      "actual_output": "Based on my search results, here are the latest developments in artificial intelligence:\n\n## Recent AI Breakthroughs and Developments\n\n### **Major Model Releases and Advances**\n\n1. **Google's Gemini 3** - Just launched on November 19, 2025, Google DeepMind's latest AI model is being called their \"most intelligent\" system yet, featuring enhanced reasoning, multimodal understanding, and \"agentic\" task execution capabilities.\n\n2. **DeepMind's AlphaProof** - A groundbreaking AI system that matched s...",
+      "retrieval_context_count": 17,
+      "metrics": {
+        "FaithfulnessMetric": {
+          "score": 0.8333333333333334,
+          "threshold": 0.7,
+          "passed": true,
+          "reason": "The score is 0.83 because the actual output contains two notable contradictions: it incorrectly states Gemini 3 was launched on November 19, 2025 (a future date that contradicts the context indicating it's already live), and it fabricates a specific $6.2 billion funding figure for Project Prometheus that is not mentioned anywhere in the retrieval context."
+        },
+        "AnswerRelevancyMetric": {
+          "score": 1.0,
+          "threshold": 0.7,
+          "passed": true,
+          "reason": "The score is 1.00 because the response perfectly addresses the question about latest AI developments with no irrelevant content - excellent work staying completely on topic!"
+        }
+      }
+    },
+    {
+      "test_case_id": 1,
+      "trace_id": "74f9ded6061ab3db136c09341e19676a",
+      "trace_file": "eval/traces/74f9ded6061ab3db136c09341e19676a.json",
+      "input": "What are the recent AI news and announcements?",
+      "actual_output": "Based on my search results, here are the most recent AI news and announcements:\n\n## Major Recent AI Announcements\n\n### **Google's Latest Releases**\n- **Gemini 3 Launch** (November 19, 2025) - Google's newest and most advanced AI model, featuring enhanced reasoning capabilities and integrated directly into Google Search from launch\n- **Nano Banana Pro** (November 20, 2025) - Google's updated AI image generator powered by Gemini 3, available in the Gemini app with limited free quotas\n- **Gemini Ag...",
+      "retrieval_context_count": 18,
+      "metrics": {
+        "FaithfulnessMetric": {
+          "score": 0.7307692307692307,
+          "threshold": 0.7,
+          "passed": true,
+          "reason": "The score is 0.73 because the actual output contains multiple factual inaccuracies including fabricated specific dates (November 18-20, 2025), incorrect product names (Gemini 3 instead of Gemini), wrong financial figures ($22.4 billion vs $6.5 billion for CoreWeave's deal), unsupported claims about target audiences (WeatherNext 2 targeting energy traders), and omission of key details (Oracle's $300 billion cloud contract being specifically with OpenAI). While some core information aligns with the retrieval context, these significant contradictions substantially reduce faithfulness."
+        },
+        "AnswerRelevancyMetric": {
+          "score": 1.0,
+          "threshold": 0.7,
+          "passed": true,
+          "reason": "The score is 1.00 because the response perfectly addresses the question about recent AI news and announcements with no irrelevant content detected. Great job staying completely on topic!"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "faithfulness": {
+      "avg_score": 0.782051282051282,
+      "min_score": 0.7307692307692307,
+      "max_score": 0.8333333333333334,
+      "pass_rate": 1.0
+    },
+    "relevancy": {
+      "avg_score": 1.0,
+      "min_score": 1.0,
+      "max_score": 1.0,
+      "pass_rate": 1.0
+    }
+  }
+}
