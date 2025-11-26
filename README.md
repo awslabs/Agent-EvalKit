@@ -54,10 +54,10 @@ uv tool install evalkit --from git+https://github.com/awslabs/Agent-EvalKit.git
 uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-EvalKit.git
 ```
 
-> **IMPORTANT**
-> **Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.**
-
 ### 2. Initialize Evaluation Project
+
+> **IMPORTANT**:
+> **Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.**
 
 ```bash
 # Create dedicated evaluation project
