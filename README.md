@@ -15,7 +15,6 @@
 - [Quick Start](#quick-start)
 - [What to Expect](#what-to-expect-from-evalkit)
 - [Reference](#reference)
-- [For Developers](#for-developers)
 - [Acknowledgements](#acknowledgements)
 
 ## Overview
@@ -75,6 +74,8 @@ claude
 ```
 
 ### 3. Evaluate Your Agent
+
+> **See Complete Example**: Check out [`examples/qa_agent_evaluation/`](examples/qa_agent_evaluation/) for a full evaluation workflow demonstration.
 
 **Option A: Guided workflow (recommended for first-time users)**
 ```bash
@@ -143,11 +144,6 @@ claude
 | `/evalkit.run_agent` | Run agent and collect traces |
 | `/evalkit.eval` | Write and execute evaluation code over traces |
 | `/evalkit.report` | Analyze results and provide improvement recommendations |
-
-
-## For Developers
-
-If you want to contribute to EvalKit, see the [Local Development Guide](./docs/local-development.md).
 
 ---
 

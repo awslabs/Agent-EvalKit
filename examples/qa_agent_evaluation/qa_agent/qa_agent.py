@@ -10,7 +10,7 @@ strands_telemetry = StrandsTelemetry()
 strands_telemetry.setup_otlp_exporter()
 
 # --- set up Tavily once ---
-TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "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")
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 if not TAVILY_API_KEY:
     raise RuntimeError("Please set TAVILY_API_KEY env var (format starts with tvly-).")
 
