@@ -56,6 +56,9 @@ uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-Eval
 
 ### 2. Initialize Evaluation Project
 
+> **IMPORTANT**:
+> **Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.**
+
 ```bash
 # Create dedicated evaluation project
 evalkit init my-agent-evaluation
@@ -70,8 +73,6 @@ claude
 # When prompted, agree to use Context7 MCP for documentation access
 # Type / to see available commands
 ```
-
-**Important**: Ensure your agent runs successfully with all dependencies and API keys available locally.
 
 ### 3. Evaluate Your Agent
 
@@ -116,7 +117,7 @@ claude
 
 ## What to Expect from EvalKit
 
-**EvalKit provides a basic working evaluation pipeline that you can further develope for your specific needs.**
+**EvalKit provides a basic working evaluation pipeline that you can further develop for your specific needs.**
 
 ### What You Do Next
 - **Review the code**: Check if it works as expected for your agent
