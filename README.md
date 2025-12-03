@@ -37,7 +37,7 @@
 3. Add tracing instrumentation to your agent (Optional)
 4. Run your agent and collect execution traces
 5. Write and run evaluation code to assess performance
-6. Generate report with agent improvement recommendations.
+6. Generate report with agent improvement recommendations
 ```
 
 ## Requirements
@@ -133,7 +133,7 @@ claude
 
 ## What to Expect from EvalKit
 
-EvalKit automatically generates an evaluation pipeline that you can further refine according your specific requirements.
+EvalKit automatically generates an evaluation pipeline that you can further refine according to your specific requirements.
 
 ### What You Do Next
 
@@ -165,4 +165,4 @@ EvalKit automatically generates an evaluation pipeline that you can further refi
 
 ## Acknowledgements
 
-We initially developed a fully autonomous agent called Evalution Agent to help developer to automate evaluation process. Inspired by [spec-kit](https://github.com/github/spec-kit), we package it as a toolkit that can be used together with multiple coding assistant.
+Agent-EvalKit evolved from our autonomous Evaluation Agent project. Inspired by [spec-kit](https://github.com/github/spec-kit), we packaged it as a toolkit compatible with multiple coding assistants.
