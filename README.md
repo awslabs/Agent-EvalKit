@@ -2,13 +2,14 @@
     <h1>Agent-EvalKit</h1>
 </div>
 
+<p align="center">
+    <strong>AI assistant that automates evaluation processes for your AI agents.</strong>
+</p>
+
 <div align="center">
     <img src="media/agent-evalkit.gif" alt="Agent-EvalKit demo" width="720" />
 </div>
 
-<p align="center">
-    <strong>AI assistant that automates evaluation processes for your AI agents.</strong>
-</p>
 
 ---
 
@@ -56,8 +57,7 @@ uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-Eval
 
 ### 2. Initialize Evaluation Project
 
-> **Important**:
-> Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.
+> **Important**: Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.
 
 ```bash
 # Create dedicated evaluation project
@@ -84,8 +84,9 @@ claude
 **Option A: Guided workflow (recommended for first-time users)**
 
 ```bash
-/evalkit.quick
-# This command will guide you through the whole evaluation process.
+/evalkit.quick  # user input required
+# Example: /evalkit.quick Evaluate my search agent at ./search_agent for final response quality
+# This command will guide you through the entire evaluation process
 ```
 
 **Option B: Individual commands (for experienced users)**
@@ -130,7 +131,7 @@ claude
 
 ## What to Expect from EvalKit
 
-EvalKit automatically generates an evaluation pipeline that you can further refine according to your specific requirements.
+EvalKit helps you quickly generate an evaluation pipeline that you can further refine according to your specific requirements.
 
 ### What You Do Next
 
