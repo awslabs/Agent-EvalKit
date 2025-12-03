@@ -18,6 +18,6 @@ VERSION_NO_V=${VERSION#v}
 gh release create "$VERSION" \
   .genreleases/evalkit-template-kilocode-sh-"$VERSION".zip \
   .genreleases/evalkit-template-claude-sh-"$VERSION".zip \
-  .genreleases/evalkit-template-q-sh-"$VERSION".zip \
+  .genreleases/evalkit-template-kiro-sh-"$VERSION".zip \
   --title "Agent-EvalKit - $VERSION_NO_V" \
   --notes-file release_notes.md
