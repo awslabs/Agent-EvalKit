@@ -1510,14 +1510,20 @@ def init(
 
 
 @app.command()
-def check():
+def check(
+    ai_assistant: str = typer.Option(
+        None,
+        "--ai",
+        help="AI assistant to check: claude, kilocode, or kiro (checks all if not specified)",
+    ),
+):
     """Check that essential tools are installed."""
     show_banner()
     console.print("[bold]Checking essential tools...[/bold]\n")
 
     tracker = StepTracker("Check Essential Tools")
 
-    # Check essential tools
+    # Check essential tools (always check these)
     tracker.add("git", "Git version control")
     git_ok = check_tool("git", tracker=tracker)
 
@@ -1527,15 +1533,38 @@ def check():
     tracker.add("uv", "UV package manager")
     uv_ok = check_tool("uv", tracker=tracker)
 
-    tracker.add("claude", "Claude Code")
-    claude_ok = check_tool("claude", tracker=tracker)
+    # Check AI assistant tools based on selection
+    ai_checks = {}
+    if ai_assistant:
+        # Check only the specified assistant
+        if ai_assistant not in AGENT_CONFIG:
+            console.print(
+                f"[red]Error:[/red] Invalid AI assistant '{ai_assistant}'. Choose from: {', '.join(AGENT_CONFIG.keys())}"
+            )
+            raise typer.Exit(1)
 
-    tracker.add("code", "Visual Studio Code")
-    code_ok = check_tool("code", tracker=tracker)
+        config = AGENT_CONFIG[ai_assistant]
+        if config["requires_cli"]:
+            tracker.add(ai_assistant, config["name"])
+            ai_checks[ai_assistant] = check_tool(ai_assistant, tracker=tracker)
+        else:
+            # For IDE-based assistants like Kilo Code, check VS Code
+            tracker.add("code", "Visual Studio Code (for Kilo Code)")
+            ai_checks["code"] = check_tool("code", tracker=tracker)
+    else:
+        # Check all AI assistants
+        for key, config in AGENT_CONFIG.items():
+            if config["requires_cli"]:
+                tracker.add(key, config["name"])
+                ai_checks[key] = check_tool(key, tracker=tracker)
+
+        # Also check VS Code for IDE-based assistants
+        tracker.add("code", "Visual Studio Code")
+        ai_checks["code"] = check_tool("code", tracker=tracker)
 
     console.print(tracker.render())
 
-    console.print("\n[bold green]EvalKit is ready to use![/bold green]")
+    console.print("\n[bold green]Tool check complete![/bold green]")
 
     # Provide helpful tips for missing tools
     if not git_ok:
@@ -1547,11 +1576,15 @@ def check():
     if not uv_ok:
         console.print("[dim]Tip: Install uv from https://docs.astral.sh/uv/[/dim]")
 
-    if not claude_ok:
-        console.print("[dim]Tip: Install Claude Code from https://docs.anthropic.com/en/docs/claude-code/setup[/dim]")
-
-    if not code_ok:
-        console.print("[dim]Tip: Install VS Code from https://code.visualstudio.com/[/dim]")
+    # Provide tips for missing AI assistant tools
+    for key, is_ok in ai_checks.items():
+        if not is_ok:
+            if key == "code":
+                console.print("[dim]Tip: Install VS Code from https://code.visualstudio.com/[/dim]")
+            else:
+                config = AGENT_CONFIG.get(key)
+                if config and config["install_url"]:
+                    console.print(f"[dim]Tip: Install {config['name']} from {config['install_url']}[/dim]")
 
 
 def main():
