@@ -2,16 +2,12 @@
     <h1>Agent-EvalKit</h1>
 </div>
 
-<p align="center">
-    <strong>A build-time assistant for creating agent evaluation systems.</strong>
-</p>
-
 <div align="center">
     <img src="media/agent-evalkit.gif" alt="Agent-EvalKit demo" width="720" />
 </div>
 
 <p align="center">
-    <strong>A build-time assistant for creating agent evaluation systems.</strong>
+    <strong>AI assistant that automates evaluation processes for your AI agents.</strong>
 </p>
 
 ---
@@ -44,7 +40,7 @@
 
 **System:** Linux/macOS • [Python 3.11+](https://www.python.org/downloads/) • [uv](https://docs.astral.sh/uv/) • [Git](https://git-scm.com/downloads)
 
-**AI Assistant:** Currently supports [Claude Code](https://www.anthropic.com/claude-code). Support for [Kilo Code](https://kilocode.ai) and [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) coming soon.
+**AI Assistant:** Currently supports [Kiro CLI](https://kiro.dev/cli/), [Claude Code](https://www.anthropic.com/claude-code), and [Kilo Code](https://kilocode.ai).
 
 ## Quick Start
 
@@ -60,8 +56,8 @@ uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-Eval
 
 ### 2. Initialize Evaluation Project
 
-> **IMPORTANT**:
-> **Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.**
+> **Important**:
+> Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.
 
 ```bash
 # Create dedicated evaluation project
@@ -89,6 +85,7 @@ claude
 
 ```bash
 /evalkit.quick
+# This command will guide you through the whole evaluation process.
 ```
 
 **Option B: Individual commands (for experienced users)**
