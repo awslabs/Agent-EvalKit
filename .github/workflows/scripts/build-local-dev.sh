@@ -4,13 +4,13 @@
 # This script reuses the existing release build logic but for local development testing
 #
 # Usage: .github/workflows/scripts/build-local-dev.sh [agent] [script_type]
-#   agent: kilocode, claude, or q (default: kilocode)
+#   agent: kilocode, claude, or kiro (default: kilocode)
 #   script_type: sh or ps (default: sh)
 #
 # Examples:
 #   .github/workflows/scripts/build-local-dev.sh kilocode sh
 #   .github/workflows/scripts/build-local-dev.sh claude sh
-#   .github/workflows/scripts/build-local-dev.sh q ps
+#   .github/workflows/scripts/build-local-dev.sh kiro sh
 
 set -euo pipefail
 
@@ -25,8 +25,8 @@ VERSION="local-dev"
 
 # Validate agent
 case "$AGENT" in
-    kilocode|claude|q) ;;
-    *) echo "Error: Invalid agent '$AGENT'. Must be: kilocode, claude, or q" >&2; exit 1 ;;
+    kilocode|claude|kiro) ;;
+    *) echo "Error: Invalid agent '$AGENT'. Must be: kilocode, claude, or kiro" >&2; exit 1 ;;
 esac
 
 # Validate script type

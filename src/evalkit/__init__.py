@@ -75,15 +75,15 @@ AGENT_CONFIG = {
         "requires_cli": True,
     },
     "kilocode": {
-        "name": "Kilo Code (support soon)",
+        "name": "Kilo Code",
         "folder": ".kilocode/",
         "install_url": None,  # IDE-based
         "requires_cli": False,
     },
-    "q": {
-        "name": "Amazon Q Developer CLI (support soon)",
-        "folder": ".amazonq/",
-        "install_url": "https://aws.amazon.com/developer/learning/q-developer-cli/",
+    "kiro": {
+        "name": "Kiro CLI",
+        "folder": ".kiro/",
+        "install_url": "https://kiro.dev/cli/",
         "requires_cli": True,
     },
 }
@@ -369,7 +369,11 @@ def check_tool(tool: str, tracker: StepTracker = None) -> bool:
                 tracker.complete(tool, "available")
             return True
 
-    found = shutil.which(tool) is not None
+    # Special handling for Kiro CLI - the executable is named 'kiro-cli'
+    if tool == "kiro":
+        found = shutil.which("kiro-cli") is not None
+    else:
+        found = shutil.which(tool) is not None
 
     if tracker:
         if found:
@@ -949,9 +953,9 @@ def copy_mcp_config_local_dev(
     elif ai_assistant == "kilocode":
         mcp_dest = project_path / ".kilocode" / "mcp.json"
         location_desc = ".kilocode/mcp.json (Kilo Code)"
-    elif ai_assistant == "q":
-        mcp_dest = project_path / ".amazonq" / "mcp.json"
-        location_desc = ".amazonq/mcp.json (Amazon Q)"
+    elif ai_assistant == "kiro":
+        mcp_dest = project_path / ".kiro" / "settings" / "mcp.json"
+        location_desc = ".kiro/settings/mcp.json (Kiro CLI)"
     else:
         if tracker:
             tracker.skip("mcp-config", f"unsupported assistant: {ai_assistant}")
@@ -1040,7 +1044,7 @@ def init(
     ai_assistant: str = typer.Option(
         None,
         "--ai",
-        help="AI assistant to use: kilocode, claude, or q",
+        help="AI assistant to use: claude, kilocode, or kiro",
     ),
     script_type: str = typer.Option(None, "--script", help="Script type to use: sh or ps"),
     ignore_agent_tools: bool = typer.Option(
@@ -1083,7 +1087,7 @@ def init(
         evalkit init . --ai claude         # Initialize in current directory
         evalkit init .                     # Initialize in current directory (interactive AI selection)
         evalkit init --here --ai claude    # Alternative syntax for current directory
-        evalkit init --here --ai q
+        evalkit init --here --ai kiro
         evalkit init --here --ai kilocode
         evalkit init --here
         evalkit init --here --force        # Skip confirmation when current directory not empty
@@ -1393,28 +1397,101 @@ def init(
             steps_lines.append(f"{step_num}. Start Claude Code: [cyan]claude[/cyan]")
         elif selected_ai == "kilocode":
             steps_lines.append(f"{step_num}. Open your IDE with Kilo Code extension enabled")
-        elif selected_ai == "q":
-            steps_lines.append(f"{step_num}. Start Amazon Q Developer CLI by running: [cyan]q[/cyan]")
+        elif selected_ai == "kiro":
+            steps_lines.append(f"{step_num}. Start Kiro CLI by running: [cyan]kiro-cli[/cyan]")
         else:
             steps_lines.append(f"{step_num}. Start your AI agent: [cyan]{selected_ai}[/cyan]")
         step_num += 1
 
-    steps_lines.append(f"{step_num}. Type [cyan]/[/cyan] to see available commands")
-    step_num += 1
+    # Step 5: How to see available commands (assistant-specific)
+    if selected_ai == "claude":
+        steps_lines.append(f"{step_num}. Type [cyan]/evalkit[/cyan] to see available EvalKit commands")
+        step_num += 1
+    elif selected_ai == "kilocode":
+        # Kilo Code shows commands with .md suffix automatically
+        steps_lines.append(
+            f"{step_num}. Type [cyan]/evalkit[/cyan] to see available EvalKit commands (commands will show with .md suffix)"
+        )
+        step_num += 1
+    elif selected_ai == "kiro":
+        # Kiro CLI requires manual typing of full command names
+        pass  # Skip step 5 for Kiro CLI as it doesn't auto-list commands
 
+    # Step 6: Start with EvalKit commands (assistant-specific)
     steps_lines.append(f"{step_num}. Start with EvalKit commands:")
 
-    steps_lines.append(f"   {step_num}.1 [cyan]/evalkit.plan[/] - Analyze your agent and design evaluation strategy")
-    steps_lines.append(f"   {step_num}.2 [cyan]/evalkit.data[/] - Generate test cases for evaluation")
-    steps_lines.append(f"   {step_num}.3 [cyan]/evalkit.trace[/] - Add tracing to your agent")
-    steps_lines.append(f"   {step_num}.4 [cyan]/evalkit.run_agent[/] - Run agent and collect traces")
-    steps_lines.append(f"   {step_num}.5 [cyan]/evalkit.eval[/] - Write and execute evaluation code over traces")
-    steps_lines.append(
-        f"   {step_num}.6 [cyan]/evalkit.report[/] - Analyze results and provide improvement recommendations"
-    )
+    if selected_ai == "claude":
+        steps_lines.append(
+            f"   {step_num}.1 [cyan]/evalkit.plan[/] [bright_black](user input required)[/bright_black] - Analyze your agent and design evaluation strategy"
+        )
+        steps_lines.append(
+            f"   {step_num}.2 [cyan]/evalkit.data[/] [bright_black](user input optional)[/bright_black] - Generate test cases for evaluation"
+        )
+        steps_lines.append(
+            f"   {step_num}.3 [cyan]/evalkit.trace[/] [bright_black](user input optional)[/bright_black] - Add tracing to your agent"
+        )
+        steps_lines.append(
+            f"   {step_num}.4 [cyan]/evalkit.run_agent[/] [bright_black](user input optional)[/bright_black] - Run agent and collect traces"
+        )
+        steps_lines.append(
+            f"   {step_num}.5 [cyan]/evalkit.eval[/] [bright_black](user input optional)[/bright_black] - Write and execute evaluation code over traces"
+        )
+        steps_lines.append(
+            f"   {step_num}.6 [cyan]/evalkit.report[/] [bright_black](user input optional)[/bright_black] - Analyze results and provide improvement recommendations"
+        )
+    elif selected_ai == "kilocode":
+        steps_lines.append(
+            f"   {step_num}.1 [cyan]/evalkit.plan.md[/] [bright_black](user input required)[/bright_black] - Analyze your agent and design evaluation strategy"
+        )
+        steps_lines.append(
+            f"   {step_num}.2 [cyan]/evalkit.data.md[/] [bright_black](user input required)[/bright_black] - Generate test cases for evaluation"
+        )
+        steps_lines.append(
+            f"   {step_num}.3 [cyan]/evalkit.trace.md[/] [bright_black](user input required)[/bright_black] - Add tracing to your agent"
+        )
+        steps_lines.append(
+            f"   {step_num}.4 [cyan]/evalkit.run_agent.md[/] [bright_black](user input required)[/bright_black] - Run agent and collect traces"
+        )
+        steps_lines.append(
+            f"   {step_num}.5 [cyan]/evalkit.eval.md[/] [bright_black](user input required)[/bright_black] - Write and execute evaluation code over traces"
+        )
+        steps_lines.append(
+            f"   {step_num}.6 [cyan]/evalkit.report.md[/] [bright_black](user input required)[/bright_black] - Analyze results and provide improvement recommendations"
+        )
+    elif selected_ai == "kiro":
+        steps_lines.append(
+            f"   {step_num}.1 [cyan]/evalkit.plan[/] [bright_black](user input required)[/bright_black] - Analyze your agent and design evaluation strategy"
+        )
+        steps_lines.append(
+            f"   {step_num}.2 [cyan]/evalkit.data[/] [bright_black](user input optional)[/bright_black] - Generate test cases for evaluation"
+        )
+        steps_lines.append(
+            f"   {step_num}.3 [cyan]/evalkit.trace[/] [bright_black](user input optional)[/bright_black] - Add tracing to your agent"
+        )
+        steps_lines.append(
+            f"   {step_num}.4 [cyan]/evalkit.run_agent[/] [bright_black](user input optional)[/bright_black] - Run agent and collect traces"
+        )
+        steps_lines.append(
+            f"   {step_num}.5 [cyan]/evalkit.eval[/] [bright_black](user input optional)[/bright_black] - Write and execute evaluation code over traces"
+        )
+        steps_lines.append(
+            f"   {step_num}.6 [cyan]/evalkit.report[/] [bright_black](user input optional)[/bright_black] - Analyze results and provide improvement recommendations"
+        )
+
     steps_lines.append("")
     steps_lines.append("   [dim]Or get guided through the complete pipeline step-by-step:[/dim]")
-    steps_lines.append("   [cyan]/evalkit.quick[/] - Step-by-step evaluation guide")
+    if selected_ai == "claude":
+        steps_lines.append(
+            "   [cyan]/evalkit.quick[/] [bright_black](user input optional)[/bright_black] - Step-by-step evaluation guide"
+        )
+    elif selected_ai == "kilocode":
+        steps_lines.append(
+            "   [cyan]/evalkit.quick.md[/] [bright_black](user input required)[/bright_black] - Step-by-step evaluation guide"
+        )
+    else:
+        steps_lines.append(
+            "   [cyan]/evalkit.quick[/] [bright_black](user input required)[/bright_black] - Step-by-step evaluation guide"
+        )
 
     steps_panel = Panel("\n".join(steps_lines), title="Next Steps", border_style="cyan", padding=(1, 2))
     console.print()

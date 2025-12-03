@@ -1,6 +1,6 @@
 [project]
 name = "evalkit"
-version = "0.0.1"
+version = "0.1.0"
 description = "EvalKit - Evaluate AI agents quickly."
 requires-python = ">=3.11"
 dependencies = [

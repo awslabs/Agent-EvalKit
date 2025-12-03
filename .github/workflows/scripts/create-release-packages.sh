@@ -6,11 +6,11 @@ set -euo pipefail
 # Usage: .github/workflows/scripts/create-release-packages.sh <version>
 #   Version argument should include leading 'v'.
 #   Optionally set AGENTS and/or SCRIPTS env vars to limit what gets built.
-#     AGENTS  : space or comma separated subset of: kilocode claude q (default: all)
+#     AGENTS  : space or comma separated subset of: kilocode claude kiro (default: all)
 #     SCRIPTS : space or comma separated subset of: sh ps (default: both)
 #   Examples:
 #     AGENTS=claude SCRIPTS=sh $0 v0.2.0
-#     AGENTS="kilocode,q" $0 v0.2.0
+#     AGENTS="kilocode,kiro" $0 v0.2.0
 #     SCRIPTS=ps $0 v0.2.0
 
 if [[ $# -ne 1 ]]; then
@@ -148,10 +148,10 @@ build_variant() {
         mkdir -p "$base_dir/.kilocode"
         cp mcps/mcp.json "$base_dir/.kilocode/mcp.json"
         echo "Copied mcps/mcp.json -> .kilocode/mcp.json (Kilo Code)" ;;
-      q)
-        mkdir -p "$base_dir/.amazonq"
-        cp mcps/mcp.json "$base_dir/.amazonq/mcp.json"
-        echo "Copied mcps/mcp.json -> .amazonq/mcp.json (Amazon Q)" ;;
+      kiro)
+        mkdir -p "$base_dir/.kiro/settings"
+        cp mcps/mcp.json "$base_dir/.kiro/settings/mcp.json"
+        echo "Copied mcps/mcp.json -> .kiro/settings/mcp.json (Kiro CLI)" ;;
     esac
   fi
   
@@ -167,16 +167,16 @@ build_variant() {
     kilocode)
       mkdir -p "$base_dir/.kilocode/workflows"
       generate_commands kilocode md "\$ARGUMENTS" "$base_dir/.kilocode/workflows" "$script" ;;
-    q)
-      mkdir -p "$base_dir/.amazonq/prompts"
-      generate_commands q md "\$ARGUMENTS" "$base_dir/.amazonq/prompts" "$script" ;;
+    kiro)
+      mkdir -p "$base_dir/.kiro/prompts"
+      generate_commands kiro md "\$ARGUMENTS" "$base_dir/.kiro/prompts" "$script" ;;
   esac
   ( cd "$base_dir" && zip -r "../evalkit-template-${agent}-${script}-${NEW_VERSION}.zip" . )
   echo "Created $GENRELEASES_DIR/evalkit-template-${agent}-${script}-${NEW_VERSION}.zip"
 }
 
 # Determine agent list
-ALL_AGENTS=(kilocode claude q)
+ALL_AGENTS=(kilocode claude kiro)
 ALL_SCRIPTS=(sh ps)
 
 norm_list() {

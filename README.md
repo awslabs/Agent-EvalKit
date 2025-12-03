@@ -2,13 +2,13 @@
     <h1>Agent-EvalKit</h1>
 </div>
 
-<div align="center">
-    <img src="media/agent-evalkit.gif" alt="Agent-EvalKit demo" width="720" />
-</div>
-
 <p align="center">
     <strong>A build-time assistant for creating agent evaluation systems.</strong>
 </p>
+
+<div align="center">
+    <img src="media/agent-evalkit.gif" alt="Agent-EvalKit demo" width="720" />
+</div>
 
 ---
 
@@ -43,7 +43,7 @@
 
 **System:** Linux/macOS • [Python 3.11+](https://www.python.org/downloads/) • [uv](https://docs.astral.sh/uv/) • [Git](https://git-scm.com/downloads)
 
-**AI Assistant:** Currently supports [Claude Code](https://www.anthropic.com/claude-code). Support for [Kilo Code](https://kilocode.ai) and [Amazon Q Developer CLI](https://aws.amazon.com/developer/learning/q-developer-cli/) coming soon.
+**AI Assistant:** Currently supports [Claude Code](https://www.anthropic.com/claude-code), [Kilo Code](https://kilocode.ai), and [Kiro CLI](https://kiro.dev/cli/).
 
 ## Quick Start
 
@@ -59,8 +59,7 @@ uv tool install evalkit --force --from git+https://github.com/awslabs/Agent-Eval
 
 ### 2. Initialize Evaluation Project
 
-> **IMPORTANT**:
-> **Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.**
+> **IMPORTANT**: Ensure your agent to be evaluated runs successfully with all dependencies and API keys available locally before proceeding with evaluation using EvalKit.
 
 ```bash
 # Create dedicated evaluation project
@@ -71,10 +70,13 @@ cd my-agent-evaluation
 cp -r /path/to/your/agent-folder .
 # This ensures reliable path resolution and artifact management throughout the evaluation process
 
-# Start Claude Code and connect to Context7 MCP
+# Start your AI assistant (example shown for Claude Code)
 claude
 # When prompted, agree to use Context7 MCP for documentation access
-# Type / to see available commands
+# Type /evalkit to see available commands
+
+# Note: For Kilo Code and Kiro CLI, detailed setup instructions will be shown
+# in the terminal after running 'evalkit init my-agent-evaluation'
 ```
 
 ### 3. Evaluate Your Agent
@@ -83,7 +85,7 @@ claude
 
 **Option A: Guided workflow (recommended for first-time users)**
 ```bash
-/evalkit.quick
+/evalkit.quick  # user input optional
 ```
 
 **Option B: Individual commands (for experienced users)**
