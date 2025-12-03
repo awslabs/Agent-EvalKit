@@ -1482,7 +1482,7 @@ def init(
     steps_lines.append("   [dim]Or get guided through the complete pipeline step-by-step:[/dim]")
     if selected_ai == "claude":
         steps_lines.append(
-            "   [cyan]/evalkit.quick[/] [bright_black](user input optional)[/bright_black] - Step-by-step evaluation guide"
+            "   [cyan]/evalkit.quick[/] [bright_black](user input required)[/bright_black] - Step-by-step evaluation guide"
         )
     elif selected_ai == "kilocode":
         steps_lines.append(

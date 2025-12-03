@@ -1,5 +1,5 @@
 ---
-argument-hint: "[optional goal, e.g. 'quick eval on tool-calling accuracy', or leave empty]"
+argument-hint: "[required: e.g. 'evaluate the agent at ./qa_agent focusing on final response quality']"
 description: "Step-by-step evaluation guide"
 ---
 
