@@ -2,6 +2,10 @@
     <h1>Agent-EvalKit</h1>
 </div>
 
+<div align="center">
+    <img src="media/agent-evalkit.gif" alt="Agent-EvalKit demo" width="720" />
+</div>
+
 <p align="center">
     <strong>A build-time assistant for creating agent evaluation systems.</strong>
 </p>
