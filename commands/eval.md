@@ -66,14 +66,14 @@ Given that context, do this:
 
 **MANDATORY**: Before implementing functionality from any publicly available evaluation library, validate its current API usage with Context7 MCP:
 
-- "What's the current DeepEval LLMTestCase constructor signature and parameters?"
-- "Show me the latest DeepEval BaseMetric implementation patterns"
-- "What are the current built-in metrics available in DeepEval?"
+- "What's the current Ragas evaluate() function signature and parameters?"
+- "Show me the latest Ragas metric implementation patterns"
+- "What are the current built-in metrics available in Ragas?"
 
 This ensures production-ready code that follows current best practices and avoids deprecated patterns.
 
 ### Code Patterns/Examples
-- If using DeepEval, please refer to `reference/deepeval/` for implementation patterns and examples.
+- If using Ragas, please refer to `reference/ragas/` for implementation patterns and examples.
 - If using Strands Evals SDK, please refer to `reference/strands/` for implementation patterns and examples.
 
 
@@ -90,7 +90,7 @@ This ensures production-ready code that follows current best practices and avoid
 2. **Add Evaluation Dependencies**: Update existing requirements.txt with additional evaluation dependencies as needed
    ```bash
    # Check if evaluation dependencies are already present
-   grep -q "deepeval" requirements.txt || echo "deepeval>=0.21.0" >> requirements.txt
+   grep -q "ragas" requirements.txt || echo "ragas>=0.2.0" >> requirements.txt
    grep -q "boto3" requirements.txt || echo "boto3>=1.35.0" >> requirements.txt
    grep -q "litellm" requirements.txt || echo "litellm>=1.0.0" >> requirements.txt
    # Add other evaluation-specific dependencies as needed based on evaluation plan

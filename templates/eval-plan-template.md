@@ -115,7 +115,7 @@ ACTION REQUIRED: The code structure below will be adjusted based on your evaluat
 | **Language/Version**     | [e.g., Python 3.11, Node.js 18+]                       |
 | **Tracing Libraries**    | [e.g., Traceloop (default), Strands Telemetry (for Strands-based agents)]             |
 | **OTEL Infrastructure**  | [Local collector with file export (default)]           |
-| **Evaluation Libraries** | [e.g., DeepEval (default), RAGAS, Custom]              |
+| **Evaluation Libraries** | [e.g., RAGAS (default), DeepEval, Custom]              |
 | **LLM Service**          | [LiteLLM (default)]                                    |
 | **LLM Provider**         | [Bedrock (default)]                                    |
 | **LLM Model**            | [us.anthropic.claude-sonnet-4-20250514-v1:0 (default)] |

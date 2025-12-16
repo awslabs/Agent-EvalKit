@@ -112,7 +112,7 @@ Evaluation metrics must be:
 **Examples of reasonable defaults**:
 
 - **Tracing instrumentation**: Traceloop library
-- **Evaluation frameworks**: DeepEval library
+- **Evaluation frameworks**: Ragas library
 - **LLM calling service**: LiteLLM library
 - **LLM provider**: Amazon Bedrock
 - **Data processing**: JSON or JSONL
