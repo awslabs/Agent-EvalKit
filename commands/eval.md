@@ -60,18 +60,6 @@ Given that context, do this:
 
 ## Implementation Guidelines
 
-**CRITICAL: Always Create Minimal Working Version**: Implement the most basic version that works
-
-### Context7 Validation
-
-**MANDATORY**: Before implementing functionality from any publicly available evaluation library, validate its current API usage with Context7 MCP:
-
-- "What's the current DeepEval LLMTestCase constructor signature and parameters?"
-- "Show me the latest DeepEval BaseMetric implementation patterns"
-- "What are the current built-in metrics available in DeepEval?"
-
-This ensures production-ready code that follows current best practices and avoids deprecated patterns.
-
 ### Code Patterns/Examples
 - If using DeepEval, please refer to `reference/deepeval/` for implementation patterns and examples.
 - If using Strands Evals SDK, please refer to `reference/strands/` for implementation patterns and examples.
