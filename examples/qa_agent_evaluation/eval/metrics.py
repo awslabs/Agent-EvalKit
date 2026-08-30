@@ -7,6 +7,7 @@ metrics for measuring answer faithfulness and relevancy.
 
 import json
 import ast
+import logging
 from typing import Dict, List, Optional
 from pathlib import Path
 
@@ -15,6 +16,8 @@ from deepeval.test_case import LLMTestCase
 from deepeval.models.base_model import DeepEvalBaseLLM
 
 from litellm import completion
+
+logger = logging.getLogger(__name__)
 
 
 class BedrockLLM(DeepEvalBaseLLM):
@@ -108,10 +111,9 @@ def create_test_case_from_trace(trace_file: Path) -> Optional[LLMTestCase]:
         query = extract_query_from_trace(trace_data)
         answer = extract_answer_from_trace(trace_data)
         search_results = extract_search_results_from_trace(trace_data)
-        print(f"  Extracted query: {query}")
-        print(f"  Extracted answer: {answer}")
-        print(f"  Extracted search results: {search_results}")
-        exit()
+        logger.debug("Extracted query: %s", query)
+        logger.debug("Extracted answer: %s", answer)
+        logger.debug("Extracted search results: %s", search_results)
 
         if not query or not answer:
             print(f"Warning: Could not extract query or answer from {trace_file.name}")
