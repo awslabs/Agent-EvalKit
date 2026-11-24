@@ -1,0 +1,184 @@
+---
+// The judge data pipeline as a left-to-right flow. Steps 2a and 2b are alternatives.
+const steps = [
+	{ n: 'Input', title: 'Concepts or seed rubrics', sub: 'what the judge should measure', kind: 'input' },
+	{ n: 'Step 1', title: 'Rubric library', sub: 'scales, presentations, output contracts', pkg: 'rubric_build' },
+	{
+		n: 'Step 2',
+		alts: [
+			{ n: '2a', title: 'Match traces you have', pkg: 'rubric_trace_match' },
+			{ n: '2b', title: 'Synthesize traces at a target level', pkg: 'trace_synth' },
+		],
+	},
+	{ n: 'Step 3', title: 'Annotate with a teacher', sub: 'the fully assembled judge prompt', pkg: 'annotate' },
+	{ n: 'Step 4', title: 'Fine-tune', sub: 'completion-only loss', pkg: 'judge_train' },
+	{ n: 'Output', title: 'Serve the judge', sub: 'vLLM, OpenAI-compatible', kind: 'output' },
+];
+---
+
+<figure class="ev-fig ev-fig--wide viz-root not-content">
+	<ol class="ev-flow" aria-label="Judge training pipeline">
+		{
+			steps.map((s) => (
+				<li class:list={['ev-flow__step', s.kind && `ev-flow__step--${s.kind}`]}>
+					<span class="ev-flow__n">{s.n}</span>
+					{s.alts ? (
+						<div class="ev-flow__alts">
+							{s.alts.map((a, i) => (
+								<>
+									{i > 0 && <span class="ev-flow__or">or</span>}
+									<div class="ev-flow__alt">
+										<span class="ev-flow__title">
+											<span class="ev-flow__tag">{a.n}</span> {a.title}
+										</span>
+										<code class="ev-flow__pkg">{a.pkg}</code>
+									</div>
+								</>
+							))}
+						</div>
+					) : (
+						<>
+							<span class="ev-flow__title">{s.title}</span>
+							{s.sub && <span class="ev-flow__sub">{s.sub}</span>}
+							{s.pkg && <code class="ev-flow__pkg">{s.pkg}</code>}
+						</>
+					)}
+				</li>
+			))
+		}
+	</ol>
+	<figcaption>
+		<strong>Figure 1.</strong> The pipeline. Every stage that calls a model takes the same backend flags, so one
+		teacher serves the whole run. Use matching when you already have a large trace pool, and synthesis when you have
+		rubrics but not traces that exercise them.
+	</figcaption>
+</figure>
+
+<style>
+	.ev-flow {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: 0.9fr 1fr 1.25fr 1fr 0.9fr 0.9fr;
+		gap: 1.75rem;
+		align-items: stretch;
+	}
+	.ev-flow__step {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		margin: 0 !important;
+		padding: 1rem;
+		border-radius: 14px;
+		background: var(--viz-card);
+		border: 1px solid var(--sl-color-hairline-shade);
+		min-height: 8.5rem;
+	}
+	.ev-flow__step:not(:last-child)::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: -1.45rem;
+		width: 1.1rem;
+		height: 1px;
+		background: var(--viz-axis);
+	}
+	.ev-flow__step:not(:last-child)::before {
+		content: '';
+		position: absolute;
+		top: calc(50% - 3px);
+		right: -1.5rem;
+		border: 3.5px solid transparent;
+		border-left: 5px solid var(--viz-axis);
+		border-right: 0;
+	}
+	.ev-flow__step--input,
+	.ev-flow__step--output {
+		background: transparent;
+		border-style: dashed;
+	}
+	.ev-flow__n {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--viz-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+	.ev-flow__title {
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--viz-ink);
+	}
+	.ev-flow__sub {
+		font-size: 0.8125rem;
+		line-height: 1.4;
+		color: var(--viz-ink-2);
+	}
+	.ev-flow__pkg {
+		margin-top: auto;
+		font-size: 0.75rem !important;
+		color: var(--viz-ink-2);
+		background: transparent !important;
+		padding: 0 !important;
+	}
+	.ev-flow__alts {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		flex: 1;
+	}
+	.ev-flow__alt {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		padding: 0.6rem 0.7rem;
+		border-radius: 10px;
+		background: var(--viz-surface);
+		border: 1px solid var(--sl-color-hairline-shade);
+	}
+	.ev-flow__tag {
+		display: inline-block;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		color: var(--viz-surface);
+		background: var(--viz-ink);
+		border-radius: 999px;
+		padding: 0.05rem 0.4rem;
+		margin-right: 0.15rem;
+		vertical-align: 0.1em;
+	}
+	.ev-flow__or {
+		align-self: center;
+		font-size: 0.75rem;
+		color: var(--viz-muted);
+	}
+	@media (max-width: 52rem) {
+		.ev-flow {
+			grid-template-columns: 1fr;
+			gap: 1.25rem;
+		}
+		.ev-flow__step {
+			min-height: 0;
+		}
+		.ev-flow__step:not(:last-child)::after {
+			top: auto;
+			bottom: -0.95rem;
+			right: auto;
+			left: 50%;
+			width: 1px;
+			height: 0.7rem;
+		}
+		.ev-flow__step:not(:last-child)::before {
+			top: auto;
+			bottom: -1.05rem;
+			right: auto;
+			left: calc(50% - 3.5px);
+			border: 3.5px solid transparent;
+			border-top: 5px solid var(--viz-axis);
+			border-bottom: 0;
+		}
+	}
+</style>

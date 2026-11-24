@@ -1,0 +1,319 @@
+---
+// Cover art: a soft gradient field, optionally with a scene of three floating cards that tells the
+// post's story in one picture (a rubric, the trace it judges, the judge's verdict). Everything is
+// sized in container units, so the scene scales from a full-width banner down to a card thumbnail.
+interface Props {
+	tone?: 'teal' | 'violet' | 'amber';
+	small?: boolean;
+	scene?: boolean;
+}
+const { tone = 'teal', small = false, scene = false } = Astro.props;
+---
+
+<div class:list={['ev-cover', `ev-cover--${tone}`, { 'ev-cover--small': small }]} aria-hidden="true">
+	<div class="ev-cover__grain"></div>
+	{
+		scene && (
+			<div class="ev-scene">
+				<svg class="ev-scene__links" viewBox="0 0 800 300" preserveAspectRatio="none">
+					<path d="M262 157 C 290 157, 292 147, 318 147" />
+					<path d="M520 179 C 548 179, 552 189, 578 189" />
+				</svg>
+
+				<div class="ev-card3 ev-card3--rubric">
+					<span class="ev-card3__kicker">Rubric · session</span>
+					<span class="ev-card3__title">The agent kept acting after the task was already complete</span>
+					<span class="ev-chips">
+						<span class="ev-chip">Stopped correctly</span>
+						<span class="ev-chip">Stopped early</span>
+						<span class="ev-chip ev-chip--on">Looped</span>
+					</span>
+				</div>
+
+				<div class="ev-card3 ev-card3--trace">
+					<span class="ev-card3__kicker">Trace</span>
+					<span class="ev-msg ev-msg--user">Book the 15:40 to Denver.</span>
+					<span class="ev-tool"><b>book_flight</b>(flight="UA 2210")</span>
+					<span class="ev-tool ev-tool--ok">→ confirmed, seat 14C</span>
+					<span class="ev-msg">Booked. Let me check other options too.</span>
+					<span class="ev-tool"><b>search_flights</b>(dest="DEN")</span>
+					<span class="ev-tool"><b>search_flights</b>(dest="DEN")</span>
+				</div>
+
+				<div class="ev-card3 ev-card3--judge">
+					<span class="ev-card3__kicker">Judge</span>
+					<span class="ev-verdict">Looped</span>
+					<span class="ev-lines"><i></i><i></i><i></i></span>
+					<span class="ev-meta">short reasoning, then the score</span>
+				</div>
+			</div>
+		)
+	}
+</div>
+
+<style>
+	.ev-cover {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 8 / 3;
+		border-radius: 16px;
+		overflow: hidden;
+		margin-top: 2.5rem;
+		container-type: inline-size;
+		background-color: var(--ev-cover-base);
+		background-image:
+			radial-gradient(60% 90% at 18% 30%, var(--ev-cover-a) 0%, transparent 62%),
+			radial-gradient(55% 80% at 78% 22%, var(--ev-cover-b) 0%, transparent 60%),
+			radial-gradient(70% 90% at 62% 92%, var(--ev-cover-c) 0%, transparent 65%),
+			radial-gradient(40% 60% at 40% 70%, var(--ev-cover-d) 0%, transparent 70%);
+	}
+	.ev-cover--small {
+		margin-top: 0;
+		aspect-ratio: 16 / 9;
+		border-radius: 12px;
+	}
+	.ev-cover__grain {
+		position: absolute;
+		inset: 0;
+		opacity: 0.18;
+		mix-blend-mode: overlay;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+	}
+
+	/* ----- scene ----- */
+	.ev-scene {
+		position: absolute;
+		inset: 0;
+		text-align: left;
+		--card-bg: rgb(255 255 255 / 0.78);
+		--card-line: rgb(255 255 255 / 0.9);
+		--card-ink: #0d0d0d;
+		--card-ink-2: #5d5d5d;
+		--card-soft: rgb(13 13 13 / 0.06);
+		--card-mono: #414141;
+		--card-accent: #2a78d6;
+		--card-shadow: 0 1.6cqw 4cqw rgb(16 40 60 / 0.16), 0 0.3cqw 0.8cqw rgb(16 40 60 / 0.08);
+	}
+	/* The 16:9 thumbnail is taller than the 8:3 banner, so its scene sits a little lower to stay centered. */
+	.ev-cover--small .ev-scene {
+		transform: translateY(6.75%);
+	}
+	.ev-scene__links {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		fill: none;
+		stroke: rgb(255 255 255 / 0.85);
+		stroke-width: 2;
+		vector-effect: non-scaling-stroke;
+	}
+	.ev-card3 {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75cqw;
+		padding: 1.6cqw 1.8cqw;
+		border-radius: 1.6cqw;
+		background: var(--card-bg);
+		border: 1px solid var(--card-line);
+		box-shadow: var(--card-shadow);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		color: var(--card-ink);
+		line-height: 1.25;
+	}
+	.ev-card3--rubric {
+		left: 5%;
+		top: 30.5%;
+		width: 27%;
+		transform: rotate(-1.5deg);
+	}
+	.ev-card3--trace {
+		left: 37.5%;
+		top: 18.5%;
+		width: 27%;
+		gap: 0.6cqw;
+	}
+	.ev-card3--judge {
+		left: 70%;
+		top: 39.5%;
+		width: 22%;
+		transform: rotate(1.5deg);
+	}
+	.ev-card3__kicker {
+		font-size: 0.95cqw;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--card-ink-2);
+	}
+	.ev-card3__title {
+		font-size: 1.6cqw;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+	.ev-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5cqw;
+		margin-top: 0.3cqw;
+	}
+	.ev-chip {
+		font-size: 1.05cqw;
+		padding: 0.35cqw 0.8cqw;
+		border-radius: 999px;
+		background: var(--card-soft);
+		color: var(--card-ink-2);
+	}
+	.ev-chip--on {
+		background: var(--card-ink);
+		color: #ffffff;
+	}
+	.ev-msg {
+		align-self: flex-start;
+		max-width: 92%;
+		font-size: 1.1cqw;
+		padding: 0.55cqw 0.9cqw;
+		border-radius: 1cqw;
+		background: var(--card-soft);
+	}
+	.ev-msg--user {
+		align-self: flex-end;
+		background: var(--card-ink);
+		color: #ffffff;
+	}
+	.ev-tool {
+		font-family: var(--sl-font-system-mono);
+		font-size: 0.95cqw;
+		color: var(--card-mono);
+		padding-left: 0.9cqw;
+		border-left: 2px solid var(--card-soft);
+	}
+	.ev-tool b {
+		font-weight: 600;
+		color: var(--card-ink);
+	}
+	.ev-tool--ok {
+		color: #1a7f52;
+	}
+	.ev-verdict {
+		align-self: flex-start;
+		font-size: 2.2cqw;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		padding: 0.4cqw 1.2cqw;
+		border-radius: 999px;
+		color: var(--card-accent-ink, #ffffff);
+		background: var(--card-accent);
+	}
+	.ev-lines {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6cqw;
+		margin-top: 0.4cqw;
+	}
+	.ev-lines i {
+		display: block;
+		height: 0.7cqw;
+		border-radius: 999px;
+		background: var(--card-soft);
+	}
+	.ev-lines i:nth-child(1) {
+		width: 100%;
+	}
+	.ev-lines i:nth-child(2) {
+		width: 86%;
+	}
+	.ev-lines i:nth-child(3) {
+		width: 62%;
+	}
+	.ev-meta {
+		font-size: 0.95cqw;
+		color: var(--card-ink-2);
+	}
+
+	/* ----- tones ----- */
+	.ev-cover--teal {
+		--ev-cover-base: #d7ece8;
+		--ev-cover-a: #7fd4ae;
+		--ev-cover-b: #86b6ef;
+		--ev-cover-c: #b7d3f6;
+		--ev-cover-d: #e9f6ef;
+	}
+	.ev-cover--violet {
+		--ev-cover-base: #e3e0f7;
+		--ev-cover-a: #b9b0f0;
+		--ev-cover-b: #86b6ef;
+		--ev-cover-c: #f3c8da;
+		--ev-cover-d: #f4f2fd;
+	}
+	/* Warm yellow and orange, after Amazon's orange (#ff9900) and squid ink (#232f3e). */
+	.ev-cover--amber {
+		--ev-cover-base: #fff1cc;
+		--ev-cover-a: #ffc93c;
+		--ev-cover-b: #ffa31a;
+		--ev-cover-c: #ffe08a;
+		--ev-cover-d: #fff8e5;
+	}
+	.ev-cover--amber .ev-scene {
+		--card-accent: #ff9900;
+		--card-accent-ink: #232f3e;
+		--card-ink: #232f3e;
+		--card-shadow: 0 1.6cqw 4cqw rgb(120 70 0 / 0.16), 0 0.3cqw 0.8cqw rgb(120 70 0 / 0.08);
+	}
+	.ev-cover--amber .ev-chip--on,
+	.ev-cover--amber .ev-msg--user {
+		background: #232f3e;
+	}
+	:global(:root[data-theme='dark']) .ev-cover--teal {
+		--ev-cover-base: #0f2a2a;
+		--ev-cover-a: #1f7a5e;
+		--ev-cover-b: #1c5cab;
+		--ev-cover-c: #184f95;
+		--ev-cover-d: #12352f;
+	}
+	:global(:root[data-theme='dark']) .ev-cover--violet {
+		--ev-cover-base: #1d1a33;
+		--ev-cover-a: #4a3aa7;
+		--ev-cover-b: #1c5cab;
+		--ev-cover-c: #7a3355;
+		--ev-cover-d: #241f3d;
+	}
+	:global(:root[data-theme='dark']) .ev-cover--amber {
+		--ev-cover-base: #1f1a10;
+		--ev-cover-a: #8f6200;
+		--ev-cover-b: #a35a00;
+		--ev-cover-c: #5c4310;
+		--ev-cover-d: #2a2213;
+	}
+	:global(:root[data-theme='dark']) .ev-scene {
+		--card-bg: rgb(22 22 22 / 0.72);
+		--card-line: rgb(255 255 255 / 0.1);
+		--card-ink: #ececec;
+		--card-ink-2: #9f9f9f;
+		--card-soft: rgb(255 255 255 / 0.08);
+		--card-mono: #c4c4c4;
+		--card-accent: #3987e5;
+		--card-shadow: 0 1.6cqw 4cqw rgb(0 0 0 / 0.45);
+	}
+	:global(:root[data-theme='dark']) .ev-cover--amber .ev-scene {
+		--card-accent: #ff9900;
+		--card-accent-ink: #232f3e;
+		--card-shadow: 0 1.6cqw 4cqw rgb(0 0 0 / 0.5);
+	}
+	:global(:root[data-theme='dark']) .ev-cover--amber .ev-chip--on,
+	:global(:root[data-theme='dark']) .ev-cover--amber .ev-msg--user {
+		background: #ececec;
+	}
+	:global(:root[data-theme='dark']) .ev-scene__links {
+		stroke: rgb(255 255 255 / 0.25);
+	}
+	:global(:root[data-theme='dark']) .ev-msg--user,
+	:global(:root[data-theme='dark']) .ev-chip--on {
+		color: #0d0d0d;
+	}
+	:global(:root[data-theme='dark']) .ev-tool--ok {
+		color: #5fd39c;
+	}
+</style>

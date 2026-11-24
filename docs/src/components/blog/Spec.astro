@@ -1,0 +1,44 @@
+---
+// Key-value spec list, for settings that read better as a grid than as a table.
+interface Props {
+	items: [string, string][];
+}
+const { items } = Astro.props;
+---
+
+<dl class="ev-spec viz-root not-content">
+	{
+		items.map(([k, v]) => (
+			<div>
+				<dt>{k}</dt>
+				<dd>{v}</dd>
+			</div>
+		))
+	}
+</dl>
+
+<style>
+	.ev-spec {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+		gap: 1.25rem 1.5rem;
+		margin: 1.75rem 0 2rem;
+		padding: 1.25rem 0;
+		border-top: 1px solid var(--sl-color-hairline-shade);
+		border-bottom: 1px solid var(--sl-color-hairline-shade);
+	}
+	.ev-spec div {
+		margin: 0 !important;
+	}
+	.ev-spec dt {
+		font-size: 0.8125rem;
+		color: var(--viz-ink-2);
+		font-weight: 400;
+	}
+	.ev-spec dd {
+		margin: 0.2rem 0 0 !important;
+		font-size: 1.0625rem;
+		font-weight: 600;
+		color: var(--viz-ink);
+	}
+</style>

@@ -1,0 +1,42 @@
+---
+// Header navigation: a few text links before Starlight's social icons.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const here = Astro.url.pathname.replace(base, '');
+const links = [
+	{ label: 'Docs', href: '/guides/overview/', match: '/guides/' },
+	{ label: 'Examples', href: '/examples/qa-agent-evaluation/', match: '/examples/' },
+	{ label: 'Blog', href: '/blog/', match: '/blog/' },
+];
+---
+
+<nav class="ev-topnav" aria-label="Site">
+	{
+		links.map((l) => (
+			<a href={`${base}${l.href}`} aria-current={here.startsWith(l.match) ? 'page' : undefined}>
+				{l.label}
+			</a>
+		))
+	}
+</nav>
+<Default />
+
+<style>
+	.ev-topnav {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		margin-right: 1.25rem;
+	}
+	.ev-topnav a {
+		font-size: 0.875rem;
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		transition: color 120ms ease;
+	}
+	.ev-topnav a:hover,
+	.ev-topnav a[aria-current='page'] {
+		color: var(--sl-color-white);
+	}
+</style>

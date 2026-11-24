@@ -1,0 +1,59 @@
+---
+// A row of headline figures. Values use proportional digits at display size.
+interface Stat {
+	value: string;
+	label: string;
+}
+interface Props {
+	items: Stat[];
+}
+const { items } = Astro.props;
+---
+
+<dl class="ev-stats viz-root not-content">
+	{
+		items.map((s) => (
+			<div class="ev-stat">
+				<dt>{s.label}</dt>
+				<dd>{s.value}</dd>
+			</div>
+		))
+	}
+</dl>
+
+<style>
+	.ev-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+		gap: 1px;
+		margin: 2.25rem 0;
+		border-radius: 14px;
+		overflow: hidden;
+		background: var(--sl-color-hairline-shade);
+		border: 1px solid var(--sl-color-hairline-shade);
+	}
+	.ev-stat {
+		display: flex;
+		flex-direction: column-reverse;
+		justify-content: flex-end;
+		gap: 0.35rem;
+		padding: 1.1rem 1.2rem 1.2rem;
+		margin: 0 !important;
+		background: var(--viz-surface);
+	}
+	.ev-stat dd {
+		margin: 0 !important;
+		font-size: 2rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.1;
+		color: var(--viz-ink);
+	}
+	.ev-stat dt {
+		margin: 0 !important;
+		font-size: 0.8125rem;
+		font-weight: 400;
+		line-height: 1.35;
+		color: var(--viz-ink-2);
+	}
+</style>

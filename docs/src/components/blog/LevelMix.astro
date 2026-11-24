@@ -1,0 +1,133 @@
+---
+// Training records by evaluation level: one whole split into three parts (tall segmented bar).
+const parts = [
+	{ name: 'Trace', what: 'one turn', n: 283398, c: 'var(--viz-c1)' },
+	{ name: 'Session', what: 'a whole conversation', n: 135666, c: 'var(--viz-c2)' },
+	{ name: 'Tool call', what: 'one call inside a turn', n: 73377, c: 'var(--viz-c3)' },
+];
+const total = parts.reduce((a, p) => a + p.n, 0);
+const fmt = (n: number) => n.toLocaleString('en-US');
+const pct = (n: number) => `${((100 * n) / total).toFixed(1)}%`;
+---
+
+<figure class="ev-fig viz-root not-content" aria-label={`Training records by level, ${fmt(total)} in total`}>
+	<div class="ev-mix__head">
+		<span class="ev-mix__total">{fmt(total)}</span>
+		<span class="ev-mix__unit">training records from the MiMo run</span>
+	</div>
+	<div class="ev-mix__bar" role="img" aria-label={parts.map((p) => `${p.name} ${fmt(p.n)} (${pct(p.n)})`).join(', ')}>
+		{
+			parts.map((p) => (
+				<span
+					class="ev-mix__part"
+					style={`flex:${p.n};background:${p.c}`}
+					tabindex="0"
+					data-tip-value={`${fmt(p.n)} records · ${pct(p.n)}`}
+					data-tip-label={`${p.name}: ${p.what}`}
+				>
+					{pct(p.n)}
+				</span>
+			))
+		}
+	</div>
+	<ul class="ev-legend">
+		{
+			parts.map((p) => (
+				<li>
+					<span class="ev-key" style={`background:${p.c}`} />
+					<span class="ev-legend__name">{p.name}</span>
+					<span class="ev-legend__what">{p.what} · {fmt(p.n)}</span>
+				</li>
+			))
+		}
+	</ul>
+	<figcaption>
+		<strong>Figure 2.</strong> Records by the level the rubric judges. Synthesis lets every level get examples across
+		its whole scale, including the rare failures a collected pool almost never contains.
+	</figcaption>
+	<details class="ev-datatable">
+		<summary>Data table</summary>
+		<table>
+			<thead><tr><th>Level</th><th>Judges</th><th>Records</th><th>Share</th></tr></thead>
+			<tbody>
+				{parts.map((p) => <tr><td>{p.name}</td><td>{p.what}</td><td>{fmt(p.n)}</td><td>{pct(p.n)}</td></tr>)}
+				<tr><td>Total</td><td></td><td>{fmt(total)}</td><td>100%</td></tr>
+			</tbody>
+		</table>
+	</details>
+</figure>
+
+<script>
+	import { bindTips } from './tip';
+	bindTips();
+</script>
+
+<style>
+	.ev-mix__head {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		margin-bottom: 0.85rem;
+	}
+	.ev-mix__total {
+		font-size: 2rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		color: var(--viz-ink);
+	}
+	.ev-mix__unit {
+		font-size: 0.875rem;
+		color: var(--viz-ink-2);
+	}
+	.ev-mix__bar {
+		display: flex;
+		gap: 2px;
+		height: 28px;
+	}
+	.ev-mix__part {
+		display: flex;
+		align-items: center;
+		padding-left: 0.55rem;
+		border-radius: 4px;
+		color: #ffffff;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		cursor: default;
+		outline-offset: 2px;
+		transition: filter 80ms ease;
+	}
+	.ev-mix__part:hover,
+	.ev-mix__part:focus-visible {
+		filter: brightness(1.08);
+	}
+	.ev-legend {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		margin: 0.9rem 0 0 !important;
+		padding: 0;
+		font-size: 0.8125rem;
+	}
+	.ev-legend li {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin: 0 !important;
+	}
+	.ev-key {
+		width: 10px;
+		height: 10px;
+		border-radius: 3px;
+		flex: none;
+	}
+	.ev-legend__name {
+		font-weight: 600;
+		color: var(--viz-ink);
+	}
+	.ev-legend__what {
+		color: var(--viz-ink-2);
+	}
+</style>

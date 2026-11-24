@@ -1,0 +1,346 @@
+/* Site theme: a neutral, near-monochrome palette with one blue reserved for data and links on hover.
+   Starlight inverts its gray scale between themes, so each theme lists its own steps. */
+
+:root {
+  --sl-font: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --sl-font-system-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sl-content-width: 46rem;
+  --sl-text-h1: 2.5rem;
+  --sl-text-h2: 1.625rem;
+  --sl-text-h3: 1.25rem;
+  --sl-line-height: 1.7;
+  --sl-line-height-headings: 1.2;
+
+  /* dark theme (Starlight's default scale) */
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #ececec;
+  --sl-color-gray-2: #c4c4c4;
+  --sl-color-gray-3: #9f9f9f;
+  --sl-color-gray-4: #5d5d5d;
+  --sl-color-gray-5: #303030;
+  --sl-color-gray-6: #1c1c1c;
+  --sl-color-black: #0d0d0d;
+  --sl-color-accent-low: #212121;
+  --sl-color-accent: #ececec;
+  --sl-color-accent-high: #ffffff;
+  --sl-color-text-accent: #ffffff;
+  --sl-color-bg-nav: #0d0d0d;
+  --sl-color-bg-sidebar: #0d0d0d;
+  --sl-color-hairline: #262626;
+  --sl-color-hairline-light: #303030;
+  --sl-color-hairline-shade: #1c1c1c;
+}
+
+:root[data-theme='light'] {
+  --sl-color-white: #0d0d0d;
+  --sl-color-gray-1: #181818;
+  --sl-color-gray-2: #414141;
+  --sl-color-gray-3: #5d5d5d;
+  --sl-color-gray-4: #8f8f8f;
+  --sl-color-gray-5: #dfdfdf;
+  --sl-color-gray-6: #f3f3f3;
+  --sl-color-gray-7: #f9f9f9;
+  --sl-color-black: #ffffff;
+  --sl-color-accent-low: #ededed;
+  --sl-color-accent: #0d0d0d;
+  --sl-color-accent-high: #0d0d0d;
+  --sl-color-text-accent: #0d0d0d;
+  --sl-color-bg-nav: #ffffff;
+  --sl-color-bg-sidebar: #ffffff;
+  --sl-color-hairline: #ededed;
+  --sl-color-hairline-light: #ededed;
+  --sl-color-hairline-shade: #dfdfdf;
+}
+
+/* Quiet chrome: no colored header band, hairline separators only. */
+header.header {
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+.sl-markdown-content a:not(.not-content a) {
+  color: var(--sl-color-white);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--sl-color-gray-4);
+}
+.sl-markdown-content a:not(.not-content a):hover {
+  text-decoration-color: currentColor;
+}
+.sl-markdown-content :is(h2, h3) {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.sl-markdown-content h2 {
+  margin-top: 3rem;
+}
+.sl-markdown-content code:not(pre code) {
+  background: var(--sl-color-gray-6);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+}
+.sl-markdown-content table {
+  font-size: 0.9375rem;
+}
+
+/* ---------- Blog article layout ---------- */
+
+/* Posts drop the sidebar and table of contents (template: splash) and read in a centered column. */
+main:has(.ev-post-header) .sl-markdown-content,
+main:has(.ev-post-header) .content-panel > .sl-container {
+  max-width: 44rem;
+  margin-inline: auto;
+}
+main:has(.ev-post-header) .content-panel:first-of-type {
+  border-bottom: 0;
+}
+
+.ev-post-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 3.5rem;
+  max-width: 64rem;
+  margin-inline: auto;
+}
+.ev-post-header h1 {
+  font-size: clamp(2.125rem, 4.5vw, 3.25rem);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--sl-color-white);
+  margin: 0.75rem 0 0;
+  max-width: 22ch;
+}
+.ev-dateline {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9375rem;
+  margin: 0;
+}
+.ev-date {
+  color: var(--sl-color-white);
+  font-weight: 500;
+}
+.ev-category {
+  color: var(--sl-color-gray-3);
+}
+.ev-standfirst {
+  max-width: 36rem;
+  margin: 1.25rem auto 0;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--sl-color-gray-3);
+}
+.ev-authors {
+  margin: 1.25rem auto 0;
+  max-width: 34rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--sl-color-gray-3);
+  text-wrap: balance;
+}
+.ev-authors .ev-author {
+  white-space: nowrap;
+  color: var(--sl-color-gray-3);
+  font-weight: 400;
+}
+.ev-authors span:first-child {
+  color: var(--sl-color-white);
+  font-weight: 500;
+}
+main:has(.ev-post-header) .sl-markdown-content > p:first-child {
+  margin-top: 0.5rem;
+}
+
+/* ---------- Figures ---------- */
+
+.ev-fig {
+  margin: 2.5rem 0 2.75rem;
+}
+.ev-fig--wide {
+  margin-inline: calc(min(0px, (44rem - min(64rem, 100vw - 3rem)) / 2));
+}
+.ev-fig figcaption,
+.ev-figcap {
+  color: var(--sl-color-gray-3);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin-top: 0.9rem;
+}
+.ev-fig figcaption strong {
+  color: var(--sl-color-white);
+  font-weight: 600;
+}
+
+/* Data table behind every chart. */
+.ev-datatable {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--sl-color-gray-3);
+}
+.ev-datatable summary {
+  cursor: pointer;
+  width: fit-content;
+}
+.ev-datatable table {
+  margin-top: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chart tokens, shared by every figure. Light first, dark below. */
+.viz-root {
+  --viz-surface: #ffffff;
+  --viz-ink: #0d0d0d;
+  --viz-ink-2: #5d5d5d;
+  --viz-muted: #8f8f8f;
+  --viz-grid: #ededed;
+  --viz-axis: #cdcdcd;
+  --viz-base: #86b6ef;   /* not fine-tuned */
+  --viz-tuned: #2a78d6;  /* fine-tuned, fully open data */
+  --viz-ref: #104281;    /* fine-tuned, stronger teacher */
+  --viz-c1: #2a78d6;
+  --viz-c2: #eb6834;
+  --viz-c3: #1baf7a;
+  --viz-card: #f9f9f9;
+}
+:root[data-theme='dark'] .viz-root {
+  --viz-surface: #0d0d0d;
+  --viz-ink: #ececec;
+  --viz-ink-2: #b9b9b9;
+  --viz-muted: #8f8f8f;
+  --viz-grid: #1c1c1c;
+  --viz-axis: #393939;
+  --viz-base: #184f95;
+  --viz-tuned: #3987e5;
+  --viz-ref: #9ec5f4;
+  --viz-c1: #3987e5;
+  --viz-c2: #d95926;
+  --viz-c3: #199e70;
+  --viz-card: #161616;
+}
+
+/* Shared hover tooltip. */
+.ev-tip {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  background: var(--sl-color-black);
+  color: var(--sl-color-white);
+  border: 1px solid var(--sl-color-gray-5);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.12);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  opacity: 0;
+  transition: opacity 80ms ease;
+  max-width: 260px;
+}
+.ev-tip strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ev-tip.is-on {
+  opacity: 1;
+}
+
+/* ---------- Blog index cards ---------- */
+
+.ev-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2.5rem 1.5rem;
+  margin-top: 2rem;
+}
+.ev-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+.ev-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--sl-color-white);
+}
+.ev-card:hover .ev-card__title {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.ev-card__meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--sl-color-gray-3);
+}
+.ev-card__meta span:first-child {
+  color: var(--sl-color-white);
+  font-weight: 500;
+}
+
+/* Figures opt out of markdown spacing (not-content), so their captions and data tables are styled here. */
+.ev-fig figcaption {
+  display: block;
+}
+.ev-datatable table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.ev-datatable th,
+.ev-datatable td {
+  text-align: left;
+  padding: 0.35rem 0.75rem 0.35rem 0;
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+  color: var(--sl-color-gray-2);
+}
+.ev-datatable th {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+
+/* Wide screens: shift the post left so the sticky "On this page" rail fits beside wide figures. */
+@media (min-width: 80rem) {
+  main:has(.ev-post-header) .content-panel > .sl-container {
+    position: relative;
+    left: -7rem;
+  }
+}
+.ev-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1.75rem;
+  font-size: 0.875rem;
+  color: var(--sl-color-gray-3);
+  text-decoration: none;
+}
+.ev-back:hover {
+  color: var(--sl-color-white);
+}
+
+/* The cover runs wider than the reading column, like the wide figures. */
+.ev-post-header .ev-cover {
+  width: auto;
+  align-self: stretch;
+  margin-inline: calc(min(0px, (44rem - min(64rem, 100vw - 3rem)) / 2));
+}
+main:has(.ev-post-header) .content-panel + .content-panel {
+  border-top: 0;
+}
+
+/* Asides in the same neutral palette as the rest of the site. */
+.starlight-aside {
+  border-radius: 12px;
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-inline-start: 3px solid var(--sl-color-white);
+  background-color: var(--sl-color-gray-6);
+  --sl-color-asides-text-accent: var(--sl-color-white);
+  --sl-color-asides-border: var(--sl-color-white);
+}
+.starlight-aside__title {
+  font-size: 0.9375rem;
+}

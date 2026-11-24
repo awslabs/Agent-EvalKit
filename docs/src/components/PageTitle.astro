@@ -1,0 +1,55 @@
+---
+// Blog posts get a centered article header: dateline, title, standfirst, authors, and a cover.
+// Every other page keeps Starlight's default title.
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+const PAGE_TITLE_ID = '_top'; // matches Starlight's constant, which the package does not export
+import Cover from './blog/Cover.astro';
+import PostRail from './blog/PostRail.astro';
+
+const route = Astro.locals.starlightRoute;
+const data = route.entry.data as typeof route.entry.data & {
+	date?: string;
+	category?: string;
+	authors?: string;
+	cover?: 'teal' | 'violet' | 'amber';
+};
+const isPost = route.id.startsWith('blog/') && route.id !== 'blog';
+// Split "A, B, and C" into names so each one wraps as a unit in the byline.
+const authorNames = (data.authors ?? '')
+	.split(/,\s*(?:and\s+)?|\s+and\s+/)
+	.map((n) => n.trim())
+	.filter(Boolean);
+const blogHref = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/blog/`;
+---
+
+{
+	isPost ? (
+		<header class="ev-post-header not-content">
+			<a class="ev-back" href={blogHref}>
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+				All posts
+			</a>
+			<p class="ev-dateline">
+				{data.date && <span class="ev-date">{data.date}</span>}
+				{data.category && <span class="ev-category">{data.category}</span>}
+			</p>
+			<h1 id={PAGE_TITLE_ID}>{data.title}</h1>
+			{data.description && <p class="ev-standfirst">{data.description}</p>}
+			{data.authors && (
+				<p class="ev-authors">
+					<span>By</span>{' '}
+					{authorNames.map((n, i) => (
+						<>
+							<span class="ev-author">{n}</span>
+							{i < authorNames.length - 2 ? ', ' : i === authorNames.length - 2 ? (authorNames.length > 2 ? ', and ' : ' and ') : ''}
+						</>
+					))}
+				</p>
+			)}
+			<Cover tone={data.cover ?? 'teal'} scene />
+			<PostRail headings={route.headings} />
+		</header>
+	) : (
+		<Default />
+	)
+}

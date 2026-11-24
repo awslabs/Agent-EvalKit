@@ -1,0 +1,153 @@
+---
+// Sticky "On this page" rail for blog posts on wide screens, with an active-section marker and a
+// copy-link action. Hidden below 80rem, where the post reads as a single column.
+interface Props {
+	headings: { depth: number; slug: string; text: string }[];
+}
+const items = Astro.props.headings.filter((h) => h.depth === 2);
+---
+
+<aside class="ev-rail" aria-label="On this page">
+	<p class="ev-rail__title">On this page</p>
+	<div class="ev-rail__track">
+		<span class="ev-rail__marker" aria-hidden="true"></span>
+		<ul>
+			{
+				items.map((h) => (
+					<li>
+						<a href={`#${h.slug}`} data-rail-link={h.slug}>
+							{h.text}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+	<button type="button" class="ev-rail__copy" data-copy-link>
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" /><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" /></svg>
+		<span data-copy-label>Copy link</span>
+	</button>
+</aside>
+
+<script>
+	const rail = document.querySelector<HTMLElement>('.ev-rail');
+	if (rail) {
+		const links = [...rail.querySelectorAll<HTMLAnchorElement>('[data-rail-link]')];
+		const marker = rail.querySelector<HTMLElement>('.ev-rail__marker')!;
+		const targets = links
+			.map((a) => document.getElementById(a.dataset.railLink!))
+			.filter((el): el is HTMLElement => !!el);
+		const setActive = (id: string) => {
+			links.forEach((a) => {
+				const on = a.dataset.railLink === id;
+				a.toggleAttribute('data-active', on);
+				if (on) {
+					marker.style.transform = `translateY(${a.offsetTop}px)`;
+					marker.style.height = `${a.offsetHeight}px`;
+				}
+			});
+		};
+		const onScroll = () => {
+			let current = targets[0]?.id;
+			for (const t of targets) if (t.getBoundingClientRect().top < 140) current = t.id;
+			if (current) setActive(current);
+		};
+		document.addEventListener('scroll', onScroll, { passive: true });
+		onScroll();
+		const btn = rail.querySelector<HTMLButtonElement>('[data-copy-link]')!;
+		const label = btn.querySelector<HTMLElement>('[data-copy-label]')!;
+		btn.addEventListener('click', async () => {
+			await navigator.clipboard.writeText(location.href.split('#')[0]);
+			label.textContent = 'Copied';
+			setTimeout(() => (label.textContent = 'Copy link'), 1500);
+		});
+	}
+</script>
+
+<style>
+	.ev-rail {
+		display: none;
+	}
+	@media (min-width: 80rem) {
+		.ev-rail {
+			display: block;
+			position: fixed;
+			top: calc(var(--sl-nav-height) + 2.5rem);
+			left: calc(50% + 26.5rem);
+			width: 12.5rem;
+			z-index: 5;
+			text-align: left;
+		}
+	}
+	.ev-rail__title {
+		margin: 0 0 0.75rem;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--sl-color-white);
+	}
+	.ev-rail__track {
+		position: relative;
+		padding-left: 0.85rem;
+	}
+	.ev-rail__track::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		border-radius: 2px;
+		background: var(--sl-color-gray-5);
+	}
+	.ev-rail__marker {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 2px;
+		height: 0;
+		border-radius: 2px;
+		background: var(--sl-color-white);
+		transition: transform 200ms ease, height 200ms ease;
+	}
+	.ev-rail ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.65rem;
+	}
+	.ev-rail li {
+		margin: 0;
+	}
+	.ev-rail a {
+		display: block;
+		font-size: 0.8125rem;
+		line-height: 1.35;
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		transition: color 120ms ease;
+	}
+	.ev-rail a:hover,
+	.ev-rail a[data-active] {
+		color: var(--sl-color-white);
+	}
+	.ev-rail__copy {
+		margin-top: 1.25rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.35rem 0.7rem;
+		font: inherit;
+		font-size: 0.8125rem;
+		color: var(--sl-color-gray-2);
+		background: transparent;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 999px;
+		cursor: pointer;
+	}
+	.ev-rail__copy:hover {
+		color: var(--sl-color-white);
+		border-color: var(--sl-color-gray-4);
+	}
+</style>

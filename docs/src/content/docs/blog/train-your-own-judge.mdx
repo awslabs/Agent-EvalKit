@@ -1,0 +1,283 @@
+---
+title: "How we train small judges for agent traces"
+description: "Open-source pipelines and a training recipe for a small judge that scores agent traces against any rubric you write."
+date: "Nov 23, 2026"
+authors: "Kang Zhou, Sungyeon Kim, Aosong Feng, Sangmin Woo, Abhishek Kumar, Yun Zhou, Kiran Ramnath, Soumya Smruti Mishra, Gouri Pandeshwar, and Haibo Ding"
+cover: amber
+template: splash
+---
+
+import Pipeline from '../../../components/blog/Pipeline.astro';
+import Stats from '../../../components/blog/Stats.astro';
+import LevelMix from '../../../components/blog/LevelMix.astro';
+import SizeSweep from '../../../components/blog/SizeSweep.astro';
+import Spec from '../../../components/blog/Spec.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+[Agent-EvalKit](https://github.com/awslabs/Agent-EvalKit) helps you plan an evaluation, collect traces, and score them with LLM-as-a-judge. Most teams use a
+frontier model as that judge. A small model fine-tuned for judging can come close to a frontier judge at a
+fraction of the cost, and you can host it next to your agents. The hard part is the training data: you need many
+rubrics, many traces, and a trusted score for every pair.
+
+This post walks through the pipelines we built to make that data, and the recipe we used to train on it. We are
+releasing the code under [`judge/`](https://github.com/awslabs/Agent-EvalKit/tree/main/judge) in this repository, together with [sample records, a sample of the rubric
+library, and the list of rubric concepts](https://github.com/awslabs/Agent-EvalKit/tree/main/judge/examples). Everything here runs with any teacher model you can call. In the example
+run below, the teacher is [MiMo-V2.6-Pro](https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-MOPD), an open-weight model under
+the MIT license, served with [vLLM](https://docs.vllm.ai/en/latest/).
+
+## Why train a small judge
+
+Frontier models such as Claude can already judge agent traces against almost any rubric. The cost is the catch.
+Every judgment is billed per token, so teams often score only a sample of their traffic, and the rare failures that
+matter most go unread. A small judge you host yourself can afford to read every trace.
+
+Open judge models exist, but each is trained for a narrower job.
+[Prometheus 2](https://arxiv.org/abs/2405.01535) scores a single response against a custom rubric.
+[ToolRM](https://arxiv.org/abs/2509.11963) scores individual tool calls.
+[Web-Shepherd](https://arxiv.org/abs/2505.15277) scores the steps of web tasks.
+[Agent-RRM](https://arxiv.org/abs/2601.22154) scores and critiques whole trajectories so that agents can be trained on
+the feedback, and [AgentDoG](https://arxiv.org/abs/2601.18491) flags safety risks. Each learns one kind of target
+with one kind of label.
+
+What agent evaluation needs is the job a frontier judge does today: read whatever rubric a team writes, yes-or-no or
+graded, and apply it to a whole conversation, a single turn, or a single tool call, in the reply format the
+evaluation service expects. We could not find an open model trained for that, so we built the training data for one.
+
+## What a judge has to learn
+
+A judge reads three things: a rubric, the evidence the rubric points at, and an output contract. It returns a score,
+usually after a short justification. Some contracts ask for the score alone.
+
+- **The rubric** says what to check and how to score it. Some are yes-or-no. Others are graded on scales of three
+  levels or more. Teams write their own, so wording, length, and quality vary widely.
+- **The evidence** depends on the level the rubric applies to. A session-level rubric reads a whole conversation.
+  A trace-level rubric reads one turn: the user's request and the agent's answer, with the tool calls in between. A
+  tool-call-level rubric reads one call, the tools the agent could have used, and the context that led to it.
+- **The output contract** fixes the reply format: a JSON object, key-value lines, XML tags, or a bare score, depending
+  on what the evaluation service parses.
+
+So the training data needs breadth on all three axes. That is what the pipelines are for.
+
+<Aside title="A note on terms">
+We use **trace** the way Agent-EvalKit always has: the record of one request and everything the agent did to answer
+it, including its tool calls. Research papers usually call this a **trajectory**. A **session** is a conversation
+made of several traces, and a **tool call** is one step inside a trace. These are the units
+[Amazon Bedrock AgentCore Evaluations](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/evaluations-terminology.html) scores at, and they match what tracing tools
+already use: [OpenTelemetry](https://github.com/open-telemetry/semantic-conventions-genai) records agent work as
+traces with `invoke_agent` and `execute_tool` spans and identifies a conversation with `gen_ai.conversation.id`, and
+[Langfuse](https://langfuse.com/docs/observability/data-model) groups traces into sessions. In rubric files the three
+levels are the values `SESSION`, `TRACE`, and `TOOL_CALL`.
+</Aside>
+
+## The pipelines at a glance
+
+<Pipeline />
+
+Steps 2a and 2b are alternatives. In our experience synthesis is the one you need most of the time, because few
+teams have traces that exercise every rubric they care about.
+
+We call the model that extracts concepts, writes rubrics and traces, and scores the pairs the **teacher**. In our
+run one model, MiMo, did every stage, but each command can point at a different model. Any OpenAI-compatible
+endpoint works as the teacher,
+and so does [Amazon Bedrock](https://aws.amazon.com/bedrock/). The [one-shot recipe](https://github.com/awslabs/Agent-EvalKit/blob/main/judge/datagen/recipes/README.md) runs
+steps 1, 2b, and 3 in order:
+
+```bash title="Generate training data in one run"
+cd judge/datagen
+# Backend flags that every stage takes: which endpoint and which teacher model to call
+B="--backend vllm --base-url http://localhost:8000/v1 --model-id MiMo-V2.6-Pro-MOPD"
+
+bash recipes/build_training_data.sh --concepts concepts.jsonl --agents agent_registry.jsonl \
+    --out out --presentations 3 --traces-per-level 2 --verify $B
+```
+
+`$B` stands in for those flags in every command in this post. The command above is sized for a quick check. At full
+scale, with MiMo as the teacher, our example run produced:
+
+<Stats items={[
+  { value: '2,320', label: 'rubric concepts' },
+  { value: '4,597', label: 'rubrics written from them' },
+  { value: '492K', label: 'training records' },
+  { value: '618', label: 'open-source agent profiles' },
+]} />
+
+## Step 1: Build a rubric library
+
+To judge rubrics it has never seen, a model has to train on many different ones. Ours has 4,597 rubrics over 2,320
+concepts, across 16 application domains. It is built in three moves:
+
+1. **Collect seed rubrics.** We gathered about 2,000 from public evaluation datasets and repositories, using Claude
+   Code to find and extract them.
+2. **Reduce them to concepts.** A concept is one sentence that says what to measure, such as "the agent kept acting
+   after the task was already complete". The teacher extracts one from each seed, tags it as session, trace, or tool
+   call, and merges duplicates.
+3. **Write new rubrics from each concept.** The pipeline samples a scale, label words, a domain, and a writing style,
+   and the teacher writes several rubrics per concept in one call, each different from the last.
+
+Why not train on the seeds directly? Public rubrics mostly share one shape: about 90% use a numeric scale, and
+only about 6% judge an agent rather than a single response. Rewriting from
+concepts lets us choose the shape and the level. The level also tells step 2 what kind of trace to find or write.
+
+Two steps are optional. `gapfill` writes session and tool-call concepts when your seeds lack them, and
+`--functional-test` runs a sample of rubrics through the teacher and flags any that give every trace the same score.
+
+```bash title="Step 1 · rubric_build"
+# From a concept list, such as the one we release
+python -m judge_data.rubric_build --concepts concepts.jsonl --out out/rubric_library.jsonl \
+    --presentations 3 $B
+
+# Or from seed rubrics of your own: extract concepts, merge duplicates, then write rubrics
+python -m judge_data.rubric_build --seeds seed_rubrics.jsonl --out out/rubric_library.jsonl \
+    --filter-unjudgeable --functional-test 20 $B
+
+# Add session and tool-call concepts the library lacks
+python -m judge_data.rubric_build.gapfill --library out/rubric_library.jsonl \
+    --out out/gapfill_library.jsonl --presentations 5 $B
+```
+
+We release the 2,320 concepts and a sample of 104 rubrics. Point the pipeline at the concept list to rebuild a library
+like ours with your own teacher.
+
+## Step 2a: Pair rubrics with traces you already have
+
+If you have a pool of agent traces, `rubric_trace_match` picks traces for each rubric. A rubric about refund limits
+should see conversations about refunds, so sampling is stratified to give each rubric a spread of relevant traces. The output is a list of rubric-trace pairs that goes straight to annotation.
+
+```bash title="Step 2a · rubric_trace_match"
+python -m judge_data.rubric_trace_match.run --rubric-library out/rubric_library.jsonl \
+    --traces trace_pool.jsonl --cap 6 --out out/match $B
+```
+
+The trace pool is any JSONL file in the pipeline's trace schema, which the
+[datagen README](https://github.com/awslabs/Agent-EvalKit/blob/main/judge/datagen/README.md) documents.
+
+The catch is coverage. A pool collected for other purposes rarely contains the failures a specific rubric is
+looking for, so most pairs end up at the same, unremarkable score. That is the main reason we moved to synthesis.
+
+## Step 2b: Synthesize traces for each rubric
+
+`trace_synth` writes traces for every level of each rubric's scale. Each trace conditions on three things:
+
+- **An agent profile**, which is a real system prompt and tool catalogue. Our run drew on 618 open-source agent
+  repositories, so the traces look like what deployed agents do.
+- **The rubric's concept**, so the trace exercises the behavior being judged.
+- **A target score level** from that rubric's scale, such as "partially grounded" or "looped", given by name and by
+  its position on the scale.
+
+With `--verify`, a separate call that is not told the target reads the trace and places it on the scale. With
+`--drop-mismatch`, traces that miss their target are dropped.
+Because the pipeline picks the level, every rubric gets examples across its whole scale, including the rare failures
+that a collected pool almost never contains.
+
+```bash title="Step 2b · trace_synth"
+python -m judge_data.trace_synth --rubric-library out/rubric_library.jsonl \
+    --agent-registry agent_registry.jsonl --out out/pairs.jsonl \
+    --traces-per-level 2 --verify --drop-mismatch $B
+```
+
+## Step 3: Annotate
+
+`annotate` takes the pairs from either step 2a or step 2b and assembles the complete judge prompt for each one: the
+rubric, the evidence, the tool list, and the output contract. The teacher scores that prompt, and its reply becomes
+the training target.
+
+```bash title="Step 3 · annotate"
+# Pairs from step 2b: a JSONL file
+python -m judge_data.annotate --pairs out/pairs.jsonl --out out/output.jsonl \
+    --rubric-library out/rubric_library.jsonl --agent-registry agent_registry.jsonl $B
+
+# Pairs from step 2a: a directory, then split into train and test files
+python -m judge_data.annotate --pairs out/match --out out/annotated \
+    --rubric-library out/rubric_library.jsonl --strip-pct 30 $B
+python -m judge_data.rubric_trace_match.assemble --annotated out/annotated \
+    --rubric-library out/rubric_library.jsonl --out out/training
+```
+
+For synthesized pairs, annotation also varies how the conversation is serialized and which output contract each
+record asks for, so the judge does not tie itself to one layout.
+
+Our example run used MiMo as both the trace writer and the annotator.
+
+<LevelMix />
+
+We release a sample of 118 records that spans every level and output contract.
+
+We checked the license file of all 618 repositories we drew agent profiles from. The released samples come only from
+agents whose repository is under the MIT or Apache-2.0 license. The sample traces carry no copyleft,
+non-commercial, or unlicensed material. [`THIRD_PARTY_NOTICES.md`](https://github.com/awslabs/Agent-EvalKit/blob/main/judge/examples/THIRD_PARTY_NOTICES.md) lists the 76 repositories
+behind the samples, each with its license and copyright notice.
+
+## Step 4: Train
+
+[`judge_train`](https://github.com/awslabs/Agent-EvalKit/tree/main/judge/train) is full fine-tuning with [Hugging Face TRL](https://huggingface.co/docs/trl/index) and
+[FSDP](https://docs.pytorch.org/docs/stable/fsdp.html), with loss on the completion only. One recipe worked
+across every size we tried:
+
+<Spec items={[
+  ['Epochs', '1'],
+  ['Learning rate', '5e-6, cosine'],
+  ['Warmup', '5%'],
+  ['Global batch', '128'],
+  ['Context', '8,192 tokens'],
+  ['Thinking', 'off'],
+]} />
+
+```bash title="Step 4 · judge_train"
+cd judge/train
+bash scripts/setup.sh
+
+# Tokenize once on CPU, then train from the Arrow dataset
+python -m judge_train.data.prepare --config configs/examples/qwen3.5-9b.yaml --num-proc 32
+bash scripts/launch.sh configs/examples/qwen3.5-9b.yaml
+
+# Multi-node: run on every node with its rank
+NUM_NODES=4 NODE_RANK=0 MASTER_ADDR=10.0.0.1 bash scripts/launch.sh configs/examples/qwen3.5-9b.yaml
+```
+
+The example configs assume 8 GPUs per node and keep the global batch at 128: nodes × 8 × gradient accumulation. If
+you run on a different number of nodes or GPUs, change gradient accumulation to keep the product at 128.
+
+On 8-GPU nodes, one epoch over the 492K records took about 5 hours for a 9B model on 4 nodes and about 6 hours
+for a 27B model on 16 nodes. The checkpoint serves with vLLM like any other model.
+
+## What we found
+
+We trained [Qwen3.5](https://huggingface.co/Qwen/Qwen3.5-9B) at 0.8B, 2B, 4B, and 9B, and
+[Qwen3.8](https://huggingface.co/Qwen/Qwen3.8-27B) at 27B, all on the MiMo data with the same recipe. We scored
+every judge on 58,197 held-out judgments: 25,765 on yes-or-no rubrics and 32,432 on graded ones. For
+yes-or-no rubrics we report accuracy. For graded rubrics we report how often the judge picks the exact level, and how
+often it lands within one level of it.
+
+<SizeSweep />
+
+**Fine-tuning lifts every size.** Every fine-tuned model scores above its untuned base on yes-or-no accuracy and on
+graded agreement within one level. The gains are largest in the middle of the range. At 2B, yes-or-no accuracy rises by 15 points, and at 9B a 95% bootstrap interval
+excludes zero for all three gains. At 0.8B the gains are small, which suggests a floor on how much judging a model
+that size can learn.
+
+**A fine-tuned 4B judges like a fine-tuned 9B.** The two land within about a point of each other, and both beat the
+untuned 9B everywhere. If you need a judge cheap enough to run on every trace, start at 4B.
+
+**Fine-tuning mostly removes far misses.** At 27B the exact-level rate barely moves, but the share of graded
+judgments within one level rises from 0.776 to 0.813. The untuned model is not much worse at picking the right
+level. It is worse at avoiding answers that are two or more levels off, and those are the errors that mislead.
+
+**The teacher sets the ceiling.** The same pipeline with labels from a stronger proprietary teacher brings the 27B
+close to [Claude Sonnet 5.5](https://www.anthropic.com/claude/sonnet) on all three metrics. The 27B trained on MiMo data sits
+between the untuned model and that reference. A stronger open teacher should close more of the gap, and the pipelines do not
+need to change to use one.
+
+**Short replies come for free.** The fine-tuned judges answer in 150 to 190 output tokens on average. Most training
+prompts cap the reasoning at 250 words and some ask for the score alone, and the judges learn that habit. Fewer
+output tokens make a self-hosted judge cheaper and faster.
+
+## Try it
+
+1. Read the sample records in [`judge/examples/`](https://github.com/awslabs/Agent-EvalKit/tree/main/judge/examples) to see exactly what the judge trains on.
+2. Run the recipe with the sample concepts and agents in `judge/examples/` and a small teacher to check the pipeline
+   end to end.
+3. Add concepts for your own domain and agents. The rubric library is where your requirements enter the data.
+4. Fine-tune with one of the [example configs](https://github.com/awslabs/Agent-EvalKit/tree/main/judge/train/configs/examples). Start at 4B, which judged about as well as 9B in our runs.
+5. Serve the checkpoint with vLLM and score your own traces with [`judge/serve/score.py`](https://github.com/awslabs/Agent-EvalKit/blob/main/judge/serve/score.py).
+
+The numbers above come from our held-out benchmark, which is not public yet.

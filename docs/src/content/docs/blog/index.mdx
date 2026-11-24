@@ -1,0 +1,17 @@
+---
+title: Blog
+description: Notes, deep dives, and experimental results on evaluating AI agents.
+template: splash
+---
+
+import Cover from '../../../components/blog/Cover.astro';
+
+export const href = (p) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${p}`;
+
+<div class="ev-cards not-content">
+  <a class="ev-card" href={href('blog/train-your-own-judge/')}>
+    <Cover tone="amber" small scene />
+    <span class="ev-card__title">How we train small judges for agent traces</span>
+    <span class="ev-card__meta"><span>Nov 23, 2026</span></span>
+  </a>
+</div>

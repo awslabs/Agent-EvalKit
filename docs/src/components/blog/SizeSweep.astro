@@ -1,0 +1,312 @@
+---
+// Fine-tuning gain at every size: a dumbbell per (size, metric), untuned -> fine-tuned, with the
+// stronger-teacher 27B as a ring and Claude Sonnet 5.5 as a reference line in each panel.
+type Row = { size: string; base: string; v: Record<string, [number, number]> };
+const rows: Row[] = [
+	{ size: '0.8B', base: 'Qwen3.5', v: { acc: [0.571, 0.652], exact: [0.302, 0.333], w1: [0.638, 0.656] } },
+	{ size: '2B', base: 'Qwen3.5', v: { acc: [0.574, 0.729], exact: [0.26, 0.36], w1: [0.529, 0.7] } },
+	{ size: '4B', base: 'Qwen3.5', v: { acc: [0.753, 0.8], exact: [0.351, 0.412], w1: [0.657, 0.763] } },
+	{ size: '9B', base: 'Qwen3.5', v: { acc: [0.765, 0.812], exact: [0.36, 0.417], w1: [0.683, 0.763] } },
+	{ size: '27B', base: 'Qwen3.8', v: { acc: [0.847, 0.852], exact: [0.458, 0.466], w1: [0.776, 0.813] } },
+];
+const teacher: Record<string, number> = { acc: 0.87, exact: 0.475, w1: 0.828 };
+const sonnet: Record<string, number> = { acc: 0.871, exact: 0.468, w1: 0.831 };
+const panels = [
+	{ k: 'acc', title: 'Yes-or-no rubrics', sub: 'accuracy', lo: 0.5, hi: 0.96, ticks: [0.5, 0.6, 0.7, 0.8, 0.9] },
+	{ k: 'exact', title: 'Graded rubrics', sub: 'exact level', lo: 0.2, hi: 0.56, ticks: [0.2, 0.3, 0.4, 0.5] },
+	{ k: 'w1', title: 'Graded rubrics', sub: 'within one level', lo: 0.5, hi: 0.9, ticks: [0.5, 0.6, 0.7, 0.8, 0.9] },
+];
+const x = (p: (typeof panels)[number], v: number) => `${((100 * (v - p.lo)) / (p.hi - p.lo)).toFixed(2)}%`;
+const f3 = (v: number) => v.toFixed(3);
+const d3 = (a: number, b: number) => `${b - a >= 0 ? '+' : '−'}${Math.abs(b - a).toFixed(3)}`;
+---
+
+<figure class="ev-fig ev-fig--wide viz-root not-content">
+	<ul class="ev-legend ev-sweep__legend">
+		<li><span class="ev-dot" style="background:var(--viz-base)"></span>Not fine-tuned</li>
+		<li><span class="ev-dot" style="background:var(--viz-tuned)"></span>Fine-tuned on MiMo data</li>
+		<li><span class="ev-dot ev-dot--ring"></span>27B fine-tuned with a stronger proprietary teacher</li>
+		<li><span class="ev-refkey"></span>Claude Sonnet 5.5</li>
+	</ul>
+	<div class="ev-sweep__scroll">
+		<div class="ev-sweep" role="img" aria-label="Judge agreement before and after fine-tuning at five model sizes, on three metrics, with Claude Sonnet 5.5 as a reference. Values are in the data table below.">
+			<div class="ev-sweep__labels">
+				<div class="ev-sweep__head"></div>
+				{
+					rows.map((r) => (
+						<div class="ev-sweep__row ev-sweep__rowlabel">
+							<span class="ev-sweep__size">{r.size}</span>
+							<span class="ev-sweep__base">{r.base}</span>
+						</div>
+					))
+				}
+				<div class="ev-sweep__axis"></div>
+			</div>
+			{
+				panels.map((p) => (
+					<div class="ev-sweep__panel">
+						<div class="ev-sweep__head">
+							<span class="ev-sweep__title">{p.title}</span>
+							<span class="ev-sweep__sub">{p.sub}</span>
+						</div>
+						<div class="ev-sweep__plot">
+							{p.ticks.map((t) => <span class="ev-sweep__grid" style={`left:${x(p, t)}`} />)}
+							<span
+								class="ev-sweep__ref"
+								style={`left:${x(p, sonnet[p.k])}`}
+								tabindex="0"
+								data-tip-value={f3(sonnet[p.k])}
+								data-tip-label={`Claude Sonnet 5.5 · ${p.sub}`}
+							/>
+							{rows.map((r) => {
+								const [a, b] = r.v[p.k];
+								const lo = Math.min(a, b);
+								const hi = Math.max(a, b);
+								const right = r.size === '27B' ? Math.max(hi, teacher[p.k]) : hi;
+								return (
+									<div class="ev-sweep__row">
+										<span class="ev-sweep__bar" style={`left:${x(p, lo)};width:calc(${x(p, hi)} - ${x(p, lo)})`} />
+										<span
+											class="ev-sweep__hit"
+											style={`left:${x(p, a)}`}
+											tabindex="0"
+											data-tip-value={f3(a)}
+											data-tip-label={`${r.size} ${r.base}, not fine-tuned · ${p.sub}`}
+										>
+											<span class="ev-dot ev-dot--plot" style="background:var(--viz-base)" />
+										</span>
+										<span
+											class="ev-sweep__hit"
+											style={`left:${x(p, b)}`}
+											tabindex="0"
+											data-tip-value={`${f3(b)} (${d3(a, b)})`}
+											data-tip-label={`${r.size}, fine-tuned on MiMo data · ${p.sub}`}
+										>
+											<span class="ev-dot ev-dot--plot" style="background:var(--viz-tuned)" />
+										</span>
+										{r.size === '27B' && (
+											<span
+												class="ev-sweep__hit"
+												style={`left:${x(p, teacher[p.k])}`}
+												tabindex="0"
+												data-tip-value={f3(teacher[p.k])}
+												data-tip-label={`27B, stronger proprietary teacher · ${p.sub}`}
+											>
+												<span class="ev-dot ev-dot--plot ev-dot--ring" />
+											</span>
+										)}
+										<span class="ev-sweep__delta" style={`left:calc(${x(p, right)} + 12px)`}>
+											{d3(a, b)}
+										</span>
+									</div>
+								);
+							})}
+						</div>
+						<div class="ev-sweep__axis">
+							{p.ticks.map((t) => <span style={`left:${x(p, t)}`}>{t.toFixed(1)}</span>)}
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+	<figcaption>
+		<strong>Figure 3.</strong> Agreement with the reference labels on 58,197 held-out judgments, before and after fine-tuning,
+		at five sizes. Numbers beside each pair are the gain from fine-tuning. The vertical line is Claude Sonnet 5.5. The
+		27B row uses Qwen3.8-27B, the others Qwen3.5.
+	</figcaption>
+	<details class="ev-datatable">
+		<summary>Data table</summary>
+		<table>
+			<thead>
+				<tr><th>Judge</th><th>Yes-or-no accuracy</th><th>Graded, exact</th><th>Graded, within one</th></tr>
+			</thead>
+			<tbody>
+				{rows.map((r) => (
+					<>
+						<tr><td>{r.size} {r.base}, not fine-tuned</td><td>{f3(r.v.acc[0])}</td><td>{f3(r.v.exact[0])}</td><td>{f3(r.v.w1[0])}</td></tr>
+						<tr><td>{r.size}, fine-tuned on MiMo data</td><td>{f3(r.v.acc[1])}</td><td>{f3(r.v.exact[1])}</td><td>{f3(r.v.w1[1])}</td></tr>
+					</>
+				))}
+				<tr><td>27B, stronger proprietary teacher</td><td>{f3(teacher.acc)}</td><td>{f3(teacher.exact)}</td><td>{f3(teacher.w1)}</td></tr>
+				<tr><td>Claude Sonnet 5.5</td><td>{f3(sonnet.acc)}</td><td>{f3(sonnet.exact)}</td><td>{f3(sonnet.w1)}</td></tr>
+			</tbody>
+		</table>
+	</details>
+</figure>
+
+<script>
+	import { bindTips } from './tip';
+	bindTips();
+</script>
+
+<style>
+	.ev-sweep__legend {
+		margin: 0 0 1.25rem !important;
+	}
+	.ev-sweep__legend li {
+		color: var(--viz-ink-2);
+	}
+	.ev-sweep__scroll {
+		overflow-x: auto;
+	}
+	.ev-sweep {
+		display: grid;
+		grid-template-columns: 4.25rem repeat(3, minmax(9.5rem, 1fr));
+		gap: 0 2rem;
+		min-width: 40rem;
+		padding-right: 2.25rem;
+	}
+	.ev-sweep__head {
+		height: 3rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		padding-bottom: 0.55rem;
+	}
+	.ev-sweep__title {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--viz-ink);
+	}
+	.ev-sweep__sub {
+		font-size: 0.8125rem;
+		color: var(--viz-ink-2);
+	}
+	.ev-sweep__plot {
+		position: relative;
+		border-bottom: 1px solid var(--viz-axis);
+	}
+	.ev-sweep__row {
+		position: relative;
+		height: 2.75rem;
+	}
+	.ev-sweep__rowlabel {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		line-height: 1.15;
+	}
+	.ev-sweep__size {
+		font-size: 0.9375rem;
+		font-weight: 600;
+		color: var(--viz-ink);
+	}
+	.ev-sweep__base {
+		font-size: 0.75rem;
+		color: var(--viz-muted);
+	}
+	.ev-sweep__grid {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 1px;
+		background: var(--viz-grid);
+	}
+	.ev-sweep__ref {
+		position: absolute;
+		top: -0.35rem;
+		bottom: 0;
+		width: 2px;
+		margin-left: -1px;
+		background: var(--viz-ink);
+		border-radius: 2px;
+		z-index: 1;
+		cursor: default;
+	}
+	.ev-sweep__ref::after {
+		content: '';
+		position: absolute;
+		inset: 0 -8px;
+	}
+	.ev-sweep__bar {
+		position: absolute;
+		top: calc(50% - 1px);
+		height: 2px;
+		border-radius: 2px;
+		background: var(--viz-tuned);
+		opacity: 0.45;
+	}
+	.ev-sweep__hit {
+		position: absolute;
+		top: 50%;
+		width: 24px;
+		height: 24px;
+		margin: -12px 0 0 -12px;
+		display: grid;
+		place-items: center;
+		border-radius: 999px;
+		z-index: 2;
+		cursor: default;
+	}
+	.ev-sweep__hit:focus-visible {
+		outline: 2px solid var(--viz-ink);
+	}
+	.ev-sweep__hit:hover .ev-dot {
+		transform: scale(1.2);
+	}
+	.ev-dot {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 999px;
+		flex: none;
+	}
+	.ev-dot--plot {
+		width: 11px;
+		height: 11px;
+		box-shadow: 0 0 0 2px var(--viz-surface);
+		transition: transform 80ms ease;
+	}
+	.ev-dot--ring {
+		background: var(--viz-surface);
+		border: 2px solid var(--viz-ref);
+	}
+	.ev-refkey {
+		display: inline-block;
+		width: 2px;
+		height: 14px;
+		border-radius: 2px;
+		background: var(--viz-ink);
+	}
+	.ev-sweep__delta {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 0.75rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--viz-ink-2);
+		white-space: nowrap;
+		padding: 0 0.2rem;
+		margin-left: -0.2rem;
+		background: var(--viz-surface);
+		border-radius: 4px;
+		z-index: 3;
+	}
+	.ev-sweep__axis {
+		position: relative;
+		height: 1.6rem;
+		font-size: 0.75rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--viz-muted);
+	}
+	.ev-sweep__axis span {
+		position: absolute;
+		top: 0.35rem;
+		transform: translateX(-50%);
+	}
+	.ev-legend {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		padding: 0;
+		font-size: 0.8125rem;
+	}
+	.ev-legend li {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin: 0 !important;
+	}
+</style>
