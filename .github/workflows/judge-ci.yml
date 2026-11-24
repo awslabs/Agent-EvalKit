@@ -1,0 +1,41 @@
+name: Judge tests
+
+on:
+  pull_request:
+    paths:
+      - 'judge/**'
+      - '.github/workflows/judge-ci.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'judge/**'
+      - '.github/workflows/judge-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  datagen:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: judge/datagen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Run tests
+        run: uv run --python 3.11 --extra dev pytest -q
+
+  train:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: judge/train
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Run CPU tests
+        run: uv run --python 3.11 --extra dev pytest -q
+        env:
+          UV_TORCH_BACKEND: cpu

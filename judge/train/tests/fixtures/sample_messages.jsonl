@@ -1,0 +1,5 @@
+{"id": "msg_001", "messages": [{"role": "user", "content": "Rate this answer from 1 to 5: Paris is the capital of France."}, {"role": "assistant", "content": "{\"score\": 5}"}]}
+{"id": "msg_002", "messages": [{"role": "system", "content": "You are a strict evaluator."}, {"role": "user", "content": "Is 2 + 2 = 5 correct?"}, {"role": "assistant", "content": "{\"verdict\": \"no\"}"}]}
+
+{"id": "msg_003", "messages": [{"role": "user", "content": "Summarize the agent goal."}, {"role": "assistant", "content": "Book a flight."}, {"role": "user", "content": "Did it succeed?"}, {"role": "assistant", "content": "Yes."}]}
+{"id": "msg_004", "messages": [{"role": "user", "content": "Grade the tone."}, {"role": "assistant", "content": "{\"score\": 3}"}], "meta": {"source": "synthetic"}}

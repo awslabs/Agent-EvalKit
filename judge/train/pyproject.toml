@@ -1,0 +1,41 @@
+[project]
+name = "evalkit-judge-train"
+version = "0.1.0"
+description = "SFT training for the Agent-EvalKit judge model (Qwen3.5, TRL SFTTrainer, FSDP)"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+# torch is listed for completeness. scripts/setup.sh installs a CUDA build of torch
+# first, then this package. The released checkpoints were trained with transformers 5.7.0.
+dependencies = [
+    "torch>=2.10",
+    "transformers>=5.7.0,<6.0",
+    "trl>=0.29.0,<1.0",
+    "accelerate>=1.13.0,<2.0",
+    "datasets>=4.0,<5.0",
+    "peft>=0.18.0,<1.0",
+    "safetensors",
+    "huggingface_hub",
+    "pyyaml>=6.0",
+    "pydantic>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+# GatedDeltaNet kernels for Qwen3.5. 0.4.2 is pinned because 0.5.0 corrupts outputs.
+# causal-conv1d and flash-attn need a CUDA toolchain. scripts/setup.sh builds them.
+qwen35 = [
+    "flash-linear-attention==0.4.2",
+    "fla-core==0.4.2",
+]
+mlflow = ["mlflow>=3.0,<4.0"]
+dev = ["pytest>=7.2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/judge_train"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

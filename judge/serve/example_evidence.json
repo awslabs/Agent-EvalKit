@@ -1,0 +1,4 @@
+{
+  "context": "User: I need the three cheapest nonstop flights from Seattle to Denver next Friday, departing after 3pm.\n\nAssistant: [tool_call search_flights {\"origin\": \"SEA\", \"destination\": \"DEN\", \"date\": \"next Friday\", \"nonstop\": true}]\n\nTool result: [{\"flight\": \"AS 612\", \"depart\": \"13:05\", \"price\": 129}, {\"flight\": \"UA 2210\", \"depart\": \"15:40\", \"price\": 154}, {\"flight\": \"WN 418\", \"depart\": \"17:15\", \"price\": 139}, {\"flight\": \"F9 1022\", \"depart\": \"19:50\", \"price\": 98}]\n\nAssistant: Here are the three cheapest nonstop options: F9 1022 at 19:50 for $98, AS 612 at 13:05 for $129, and WN 418 at 17:15 for $139.",
+  "available_tools": "[{\"name\": \"search_flights\", \"description\": \"Search flights by origin, destination, date, and nonstop flag. Returns flight number, departure time, and price.\"}]"
+}

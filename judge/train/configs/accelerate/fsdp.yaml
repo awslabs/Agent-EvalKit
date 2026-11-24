@@ -1,0 +1,19 @@
+# FSDP settings for `accelerate launch`. Process count, machine count, and
+# rendezvous address are passed on the command line by scripts/launch.sh.
+#
+# Activation checkpointing is turned on here. Keep training.gradient_checkpointing
+# false in the training config. Setting both can hang NCCL.
+distributed_type: FSDP
+mixed_precision: bf16
+
+fsdp_config:
+  fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+  fsdp_backward_prefetch: BACKWARD_PRE
+  fsdp_forward_prefetch: false
+  fsdp_cpu_ram_efficient_loading: true
+  fsdp_sync_module_states: true
+  fsdp_use_orig_params: true
+  fsdp_sharding_strategy: FULL_SHARD
+  fsdp_state_dict_type: FULL_STATE_DICT
+  fsdp_offload_params: false
+  fsdp_activation_checkpointing: true

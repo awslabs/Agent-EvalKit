@@ -1,0 +1,11 @@
+# Versions the released judges were trained with. scripts/setup.sh installs against this file.
+# Delete a line to let that package float within the range in pyproject.toml.
+transformers==5.7.0
+trl==0.29.1
+accelerate==1.13.0
+datasets==4.8.5
+peft==0.19.1
+huggingface-hub==1.14.0
+safetensors==0.7.0
+flash-linear-attention==0.4.2
+fla-core==0.4.2

@@ -1,0 +1,51 @@
+# Qwen3.5-4B judge SFT. This is the recipe used for the released judge checkpoints.
+#
+# Download the base model first:
+#   huggingface-cli download Qwen/Qwen3.5-4B --local-dir ./models/Qwen3.5-4B
+#
+# Global batch = nodes x 8 GPUs x per_device_train_batch_size x gradient_accumulation_steps.
+# The recipe uses 128 sequences per optimizer step (4 nodes x 8 GPUs x 1 x 4).
+# To keep 128 on fewer GPUs, raise gradient_accumulation_steps:
+#   1 node (8 GPUs)  -> 16
+#   2 nodes (16 GPUs) -> 8
+#   4 nodes (32 GPUs) -> 4
+model_name_or_path: ./models/Qwen3.5-4B
+attn_implementation: flash_attention_2
+
+data:
+  train_path: ./data/train.jsonl
+  # val_path: ./data/val.jsonl
+  # Stage A output. Run `python -m judge_train.data.prepare --config <this file>` first.
+  # Remove this line to tokenize inline instead.
+  tokenized_data_path: ./data/tokenized/qwen3.5-4b
+  max_length: 8192
+  packing: false
+  format: prompt_completion
+  chat_template_kwargs:
+    enable_thinking: false
+
+training:
+  exp_name: judge-qwen3.5-4b
+  output_dir: ./outputs
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 4
+  learning_rate: 5.0e-6
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  bf16: true
+  gradient_checkpointing: false  # activation checkpointing comes from configs/accelerate/fsdp.yaml
+  fsdp: full_shard
+  save_strategy: steps
+  save_steps: 1000
+  save_total_limit: 2
+  save_only_model: true
+  logging_steps: 10
+  eval_strategy: "no"
+  report_to: none  # or mlflow, wandb, tensorboard
+  dataloader_num_workers: 4
+  completion_only_loss: true
+
+seed: 42

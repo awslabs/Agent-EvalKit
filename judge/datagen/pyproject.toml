@@ -1,0 +1,28 @@
+[project]
+name = "evalkit-judge-data"
+version = "0.1.0"
+description = "Training data pipeline for an LLM judge that scores agent traces with arbitrary rubrics."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx",
+    "numpy",
+]
+
+[project.optional-dependencies]
+bedrock = ["boto3"]
+embed = ["sentence-transformers"]
+cluster = ["scikit-learn"]
+dev = ["pytest>=7.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/judge_data"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
