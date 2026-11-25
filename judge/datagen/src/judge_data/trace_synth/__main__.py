@@ -62,7 +62,7 @@ def agent_seed(agent: dict) -> dict:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="python -m judge_data.trace_synth", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--rubric-library", required=True)
     ap.add_argument("--agent-registry", required=True,
                     help="Agent registry JSONL (agent_id, source_repo, system_prompt, tools, "

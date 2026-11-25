@@ -9,8 +9,8 @@ The trace pool is any JSONL of traces in the normalised Trace schema
 
 CLIs, in order::
 
-    python -m judge_data.rubric_trace_match.run           # match rubrics to traces -> pairs
-    python -m judge_data.annotate --pairs <run out dir>   # teacher judges every pair
-    python -m judge_data.rubric_trace_match.assemble      # training files, splits, slices
-    python -m judge_data.rubric_trace_match.verify        # invariant checks on the output
+    python -m judge_data.rubric_trace_match                # match rubrics to traces -> pairs
+    python -m judge_data.annotate --pairs <match out dir>  # teacher judges every pair
+    python -m judge_data.rubric_trace_match.assemble       # training files, splits, slices
+    python -m judge_data.rubric_trace_match.verify         # invariant checks on the output
 """

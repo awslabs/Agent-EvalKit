@@ -7,7 +7,7 @@ receives, and the reply becomes an SFT record `{id, prompt, completion}`.
 - contracts: re-serve a judgement under other output contracts
 - scrub: reasoning tag removal and target label leak detection
 - synth: annotation of synthesized pairs (a pairs JSONL from trace_synth)
-- matched: annotation of matched pairs (directories from rubric_trace_match.run)
+- matched: annotation of matched pairs (directories from rubric_trace_match)
 
 CLI: `python -m judge_data.annotate`. It reads the source from `--pairs` and runs synth or matched.
 """

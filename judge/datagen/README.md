@@ -21,7 +21,7 @@ Two ways to get training data:
 ```
 concepts.jsonl ──> rubric_build ──> rubric_library.jsonl ──> trace_synth ──> pairs.jsonl ──> annotate ──> output.jsonl
                                               │
-trace_pool.jsonl ─────────────────────────────┴──> rubric_trace_match.run ──> match/ ──> annotate ──> annotated/ ──> rubric_trace_match.assemble ──> training.jsonl
+trace_pool.jsonl ─────────────────────────────┴──> rubric_trace_match ──> match/ ──> annotate ──> annotated/ ──> rubric_trace_match.assemble ──> training.jsonl
 ```
 
 Both paths use the same `annotate` step. It reads the kind of pairs from `--pairs`.
@@ -313,7 +313,7 @@ synthesizes only for train rubrics. `--concepts N` samples N rubrics for a quick
 ### annotate
 
 One step for both kinds of pairs. A file passed to `--pairs` is a pairs JSONL from `trace_synth`.
-One or more directories are outputs of `rubric_trace_match.run`. `--source synth` or
+One or more directories are outputs of `rubric_trace_match`. `--source synth` or
 `--source matched` overrides the detection.
 
 Synthesized pairs:
@@ -369,7 +369,7 @@ resumes.
 Match, annotate, assemble, verify:
 
 ```bash
-python -m judge_data.rubric_trace_match.run --rubric-library out/rubric_library.jsonl \
+python -m judge_data.rubric_trace_match --rubric-library out/rubric_library.jsonl \
     --traces trace_pool.jsonl --traces-limit 5000 --cap 6 --out out/match $B
 
 python -m judge_data.annotate --pairs out/match \
@@ -382,7 +382,7 @@ python -m judge_data.rubric_trace_match.verify --file out/training/training.json
     --rubric-library out/rubric_library.jsonl
 ```
 
-`run` asks the model which behaviours each rubric needs and each trace shows, then scores every
+Matching asks the model which behaviours each rubric needs and each trace shows, then scores every
 pair, gates by level, picks the target turn or tool call, and keeps the top `--cap` per rubric
 under a per agent cap. Sampling is stratified on the trace `tags` named by `--strata`
 (default `topic,flow_type`) and over samples long traces and traces with failed tool calls.

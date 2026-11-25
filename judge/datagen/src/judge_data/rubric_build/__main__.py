@@ -71,7 +71,7 @@ def concepts_from_seeds(seeds: list[dict], client, a) -> tuple[list[dict], dict]
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="python -m judge_data.rubric_build", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     src = ap.add_mutually_exclusive_group(required=True)
     src.add_argument("--concepts", help="Concept list JSONL (concept_id, concept, level, domain)")
     src.add_argument("--seeds", help="Seed rubrics JSONL (rubric_idx, metric_name, definition, ...)")

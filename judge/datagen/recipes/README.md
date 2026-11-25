@@ -82,7 +82,7 @@ python -m judge_data.annotate --pairs out/pairs.jsonl --out out/output_teacher2.
 ## One annotation step for both kinds of pairs
 
 Stage 3 is `python -m judge_data.annotate`. It also annotates matched pairs, the output of
-`rubric_trace_match.run` on an existing trace pool. A file passed to `--pairs` means synthesized
+`rubric_trace_match` on an existing trace pool. A file passed to `--pairs` means synthesized
 pairs. One or more directories mean matched pairs. `--source synth|matched` overrides this.
 
 | Option | Synthesized pairs (this recipe) | Matched pairs |
@@ -98,7 +98,7 @@ pairs. One or more directories mean matched pairs. `--source synth|matched` over
 Matched pairs write `annotated.jsonl` into `--out`. Assemble and verify follow.
 
 ```bash
-python -m judge_data.rubric_trace_match.run --rubric-library out/rubric_library.jsonl \
+python -m judge_data.rubric_trace_match --rubric-library out/rubric_library.jsonl \
     --traces trace_pool.jsonl --cap 6 --out out/match $B
 python -m judge_data.annotate --pairs out/match \
     --rubric-library out/rubric_library.jsonl --out out/annotated --strip-pct 30 $B

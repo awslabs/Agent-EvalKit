@@ -4,7 +4,7 @@
     python -m judge_data.annotate --pairs out/pairs.jsonl --out out/output.jsonl \\
         --rubric-library out/rubric_library.jsonl --agent-registry agent_registry.jsonl $B
 
-    # matched pairs, one or more directories from rubric_trace_match.run
+    # matched pairs, one or more directories from rubric_trace_match
     python -m judge_data.annotate --pairs out/match --out out/annotated \\
         --rubric-library out/rubric_library.jsonl --strip-pct 30 $B
 
@@ -46,7 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pairs", action="append", required=True,
                     help="A pairs JSONL from trace_synth, or a directory with pairs.jsonl and "
-                         "traces.jsonl from rubric_trace_match.run (repeatable for directories)")
+                         "traces.jsonl from rubric_trace_match (repeatable for directories)")
     ap.add_argument("--out", required=True,
                     help="synth: output records JSONL. matched: output directory")
     ap.add_argument("--source", choices=SOURCES, default=None,

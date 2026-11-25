@@ -1,6 +1,6 @@
 """CLI: match a rubric library to a trace pool. Produces pairs and stops there.
 
-    python -m judge_data.rubric_trace_match.run \\
+    python -m judge_data.rubric_trace_match \\
         --rubric-library out/rubric_library.jsonl --traces trace_pool.jsonl \\
         --traces-limit 2000 --cap 6 --out out/match \\
         --backend vllm --base-url http://localhost:8000/v1 --model-id MiMo-V2.6-Pro-MOPD
@@ -52,7 +52,7 @@ def pick_rubrics(recs: list[dict], n: int | None, seed: int) -> list[dict]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(prog="python -m judge_data.rubric_trace_match", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--rubric-library", required=True, help="Rubric library JSONL")
     ap.add_argument("--traces", required=True, help="Trace pool JSONL (normalised Trace schema)")
     ap.add_argument("--out", required=True, help="Output directory")

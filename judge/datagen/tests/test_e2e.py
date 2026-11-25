@@ -91,7 +91,7 @@ def test_matching_pipeline(tmp_path, concepts_file, pool_file):
     lib = tmp_path / "rubric_library.jsonl"
     run("judge_data.rubric_build", "--concepts", str(concepts_file), "--out", str(lib), *MOCK,
         cwd=tmp_path)
-    run("judge_data.rubric_trace_match.run", "--rubric-library", str(lib), "--traces",
+    run("judge_data.rubric_trace_match", "--rubric-library", str(lib), "--traces",
         str(pool_file), "--traces-limit", "6", "--cap", "3", "--out", str(tmp_path / "m"), *MOCK,
         cwd=tmp_path)
     assert read_jsonl(tmp_path / "m" / "pairs.jsonl")

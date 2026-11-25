@@ -1,10 +1,10 @@
-"""Annotation of matched pairs: directories written by `rubric_trace_match.run`.
+"""Annotation of matched pairs: directories written by `rubric_trace_match`.
 
     python -m judge_data.annotate \
         --pairs out/match --rubric-library out/rubric_library.jsonl --out out/annotated \
         --backend vllm --base-url http://localhost:8000/v1 --model-id MiMo-V2.6-Pro-MOPD
 
-`--pairs` is a directory holding pairs.jsonl and traces.jsonl (the output of `run`), and may be
+`--pairs` is a directory holding pairs.jsonl and traces.jsonl (the output of `python -m judge_data.rubric_trace_match`), and may be
 repeated. Pair ids are `rubric_id|trace_id`, so the union across input directories deduplicates
 naturally and a pair produced twice is annotated once.
 
@@ -63,7 +63,7 @@ def derive_target(rec: dict, t: dict, pair: dict) -> dict | None:
 
 
 def run(a: argparse.Namespace) -> None:
-    """Annotate one or more `rubric_trace_match.run` output directories. `a` comes from
+    """Annotate one or more `rubric_trace_match` output directories. `a` comes from
     `annotate.__main__`, with this source's defaults filled in."""
 
     strip_all_ids: set[str] = set()
