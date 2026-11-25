@@ -144,7 +144,7 @@ If you have a pool of agent traces, `rubric_trace_match` picks traces for each r
 should see conversations about refunds, so sampling is stratified to give each rubric a spread of relevant traces. The output is a list of rubric-trace pairs that goes straight to annotation.
 
 ```bash title="Step 2a · rubric_trace_match"
-python -m judge_data.rubric_trace_match.run --rubric-library out/rubric_library.jsonl \
+python -m judge_data.rubric_trace_match --rubric-library out/rubric_library.jsonl \
     --traces trace_pool.jsonl --cap 6 --out out/match $B
 ```
 
